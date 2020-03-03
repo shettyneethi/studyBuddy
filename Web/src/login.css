@@ -1,0 +1,55 @@
+.reservation {
+    margin: 100px 0 0 300px;
+    width: 1200px;
+    overflow: scroll;
+}
+
+table {
+    position: relative;
+}
+
+th{
+    border: 1px solid black;
+    border-collapse: collapse;
+    background-color: lightgray;
+    color: blue;
+}
+
+tr{
+    border: 1px solid black;
+    border-collapse: collapse;
+    color: blue;
+}
+
+td{
+    border: 1px solid black;
+    border-collapse: collapse;
+    color: blue;
+}
+
+.reservation td {
+    border: 1px solid black;
+    background-color: transparent;
+    color: blue; 
+}
+
+.available{
+    background-color: green; 
+    position: relative;
+    color:white;
+    width: 100%;
+}
+
+.booked{
+    background-color: red;
+    position: relative;
+    color: white;
+    width: 100%;
+}
+
+.selected{
+    background-color: yellow;
+    position: relative;
+    color: green;
+    width: 100%;
+}
