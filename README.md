@@ -32,6 +32,8 @@ cd repo
 npm install
 
 npm run build 
+
+npm start -- starts the server on localhost:3000
 ````
 
 ### Deploy application to Google App Engine 
