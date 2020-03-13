@@ -37,7 +37,7 @@ class Login extends React.Component {
         {this.state.isLoggedIn ? null :
           <div id="login-form" align="center">
 
-             <form class="loginForm">
+             <form className="loginForm">
                 <h1 align="center">LOGIN</h1>
 
                 <input type="text" name="username" onChange={this.handleChange} value={this.state.usrName} placeholder="Username" required></input><br/><br/>
