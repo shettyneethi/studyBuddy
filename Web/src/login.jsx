@@ -1,6 +1,19 @@
 import React from 'react';
 import './login.css'
 import { Button, TextField } from '@material-ui/core';
+import { styled } from '@material-ui/core/styles';
+
+
+const MyButton = styled(Button)({
+  background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+  border: 0,
+  borderRadius: 3,
+  boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+  color: 'white',
+  height: 48,
+  padding: '0 30px',
+});
+
 class Login extends React.Component {
   constructor() {
     super();
@@ -38,12 +51,12 @@ class Login extends React.Component {
           <div id="login-form" align="center">
 
             <form class="loginForm">
-              <h1 align="center">LOGIN</h1>
+              <h1 align="center">Let's get you started</h1>
 
               <TextField required id="standard-required" type="text" label="Username" name="username" onChange={this.handleChange} value={this.state.usrName} ></TextField><br /><br />
 
               <TextField required id="standard-required" type="password" name="password" label="Password" ></TextField ><br /><br />
-              <Button variant="outlined" color="primary" onClick={this.handleSubmit}>Submit</Button>
+              <MyButton onClick={this.handleSubmit}>Submit</MyButton>
             </form>
           </div>
         }
