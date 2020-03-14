@@ -6,19 +6,26 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import DropdownPlugin from "./dropdown.jsx";
 import Posts from "./posts.jsx";
 import SearchBar from "react-search-bar-semantic-ui";
-import {Search, Grid } from 'semantic-ui-react';
+import {Search, Grid, Segment} from 'semantic-ui-react';
 import css from './homepage.css'
+import Request from './request.jsx';
 
 class Homepage extends Component {
   state = {
     courses: ["CS", "MS", "FRCS"],
-    skills: ["C", "C++"]
+    skills: ["C", "C++"],
+    isOpen: false
     
   };
 
+  toggleModal = () => {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  }
+
   render() {
     return (
-
       <div className="gridContainer">
         <Grid padded >
             <Grid.Row centered  columns={4}  className="searchbar">
@@ -86,10 +93,15 @@ class Homepage extends Component {
                     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
                     crossorigin="anonymous"
                   />
-                  <button>
+                  <button onClick={this.toggleModal} >
                     {" "}
                     <Icon style={{ fontSize: 40}}>add_circle</Icon>
                   </button>
+
+                <Request show={this.state.isOpen}
+                  onClose={this.toggleModal}>
+                  Here's some content for the modal
+                </Request>
                   </div>
 
               </Grid.Column >

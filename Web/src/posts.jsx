@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Post from "./post.jsx";
+import { Segment } from "semantic-ui-react";
 
 const data = [
   {
@@ -68,16 +69,18 @@ class Posts extends Component {
   render() {
     return (
       <div>
-        {this.state.posts.map(c => (
-          <Post
-            request={c}
-            key={c.id}
-            handleCount={this.handleCount}
-            handlePersonIcon={this.handlePersonIcon}
-            handleInterested={this.handleInterested}
-            handleDone={this.handleDone}
-          ></Post>
-        ))}
+        <Segment>
+          {this.state.posts.map(c => (
+            <Post
+              request={c}
+              key={c.id}
+              handleCount={this.handleCount}
+              handlePersonIcon={this.handlePersonIcon}
+              handleInterested={this.handleInterested}
+              handleDone={this.handleDone}
+            ></Post>
+          ))}
+        </Segment>
       </div>
     );
   }
