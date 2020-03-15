@@ -20,7 +20,7 @@ class Post extends Component {
     return (
       <React.Fragment>
         <Segment>
-        <Grid>
+        <Grid padded>
           
         <Grid.Row  columns={2}>
         
