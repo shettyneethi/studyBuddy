@@ -22,7 +22,7 @@ class Homepage extends Component {
     
   };
 
-  SUGGEST_URL = 'https://studybuddy-5828.appspot.com/suggest'
+  SUGGEST_URL = 'https://api-suggest-dot-studybuddy-5828.appspot.com/suggest'
 
   componentWillMount() {
     this.onSuggestionsFetchRequested = debounce(
