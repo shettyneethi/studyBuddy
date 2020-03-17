@@ -21,7 +21,7 @@ class Homepage extends Component {
     suggestions: [],
     cacheAPISugesstions: [],
     isOpen: false
-    
+
   };
 
   SUGGEST_URL = 'https://api-suggest-dot-studybuddy-5828.appspot.com/suggest'
@@ -35,10 +35,12 @@ class Homepage extends Component {
 
   renderSuggestion = suggestion => {
     return (
-      <div className="result">
-        <div>{suggestion.post}</div>
-        <div>{suggestion.course}</div>
-      </div>
+      <ul className="ui-autocomplete">
+        
+        <li >{suggestion.post}</li>
+        <li>{suggestion.course}</li>
+        
+      </ul>
     )
   }
 
@@ -101,13 +103,13 @@ class Homepage extends Component {
             <Grid.Row centered  columns={4}  className="searchbar">
                 <Grid.Column centered verticalAlign='middle' width={10}>
                     <Autosuggest
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-        getSuggestionValue={suggestion => suggestion.course}
-        renderSuggestion={this.renderSuggestion}
-        inputProps={autoSuggestInputProps}
-      />
+                        suggestions={suggestions}
+                        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                        getSuggestionValue={suggestion => suggestion.course}
+                        renderSuggestion={this.renderSuggestion}
+                        inputProps={autoSuggestInputProps}
+                    />
                 </Grid.Column >
 
                 <Grid.Column  verticalAlign='middle' width={2}>

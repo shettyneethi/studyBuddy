@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import DropdownPlugin from './dropdown.jsx'
 import CheckboxCustom from './checkbox.jsx';
-import {Grid, Segment } from 'semantic-ui-react';
+import {Grid, Segment, Form, TextArea} from 'semantic-ui-react';
+import css from './request.css';
 
 class Request extends Component {
     state = {
@@ -25,8 +26,8 @@ class Request extends Component {
                 </div>
               </Grid.Column>
               </Grid.Row>
-              <Grid.Row centered  columns={2}  className="filtercontainer">
-                <Grid.Column width={6}>
+              <Grid.Row centered  columns={3}  className="filtercontainer">
+                <Grid.Column >
                   <div className='courseDivision'>
                   <DropdownPlugin
                     menu={this.state.courses}
@@ -42,6 +43,12 @@ class Request extends Component {
                   ></DropdownPlugin>
                   </div>
                 </Grid.Column>
+                <Grid.Column>
+              <DropdownPlugin  
+                menu={this.state.tags}
+                title="Select tag"
+                ></DropdownPlugin>
+            </Grid.Column>
             </Grid.Row>
             <Grid.Row  className="messageContainer">
               <Grid.Column>
@@ -53,24 +60,20 @@ class Request extends Component {
             <Grid.Row  className="textContainer">
               <Grid.Column>
               <div className='textDivision'>
-              <input></input>
+              <Form>
+                <TextArea placeholder='Optional description' />
+              </Form>
               </div>
               </Grid.Column>
             </Grid.Row>
             
-           <Grid.Row columns={2}  className="heading">
-            <Grid.Column width={6}>
+           <Grid.Row columns={1}  className="heading">
+            <Grid.Column >
               <button
                 style={{ fontSize: 15 }}
                 className="badge badge-secondary btn-sm ">
               Post
               </button>
-            </Grid.Column>
-            <Grid.Column>
-            <Segment>
-              <CheckboxCustom  menu={this.state.tags}>    
-              </CheckboxCustom>
-            </Segment>
             </Grid.Column>
           </Grid.Row>
         </Grid>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Checkbox } from 'semantic-ui-react'
+import { Checkbox, Grid } from 'semantic-ui-react'
 
 class CheckboxCustom extends Component {
     
@@ -7,8 +7,9 @@ class CheckboxCustom extends Component {
         console.log(this.props.menu);
         return ( 
             <div>
+                <Grid padded>
             {this.props.menu.map(c => <Checkbox label={c} key={c} >{c}</Checkbox>)}
-            
+                </Grid> 
             </div>
          );
     }
