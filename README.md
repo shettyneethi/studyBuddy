@@ -41,7 +41,7 @@ npm start -- starts the server on localhost:3000
 
 Create `app.yaml` and execute the following commands 
 ```
-gcloud app deploy
+gcloud app deploy app.yaml
 
 gcloud app browse 
 ```
