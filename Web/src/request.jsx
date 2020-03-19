@@ -26,6 +26,7 @@ class Request extends Component {
                 </div>
               </Grid.Column>
               </Grid.Row>
+
               <Grid.Row centered  columns={3}  className="filtercontainer">
                 <Grid.Column >
                   <div className='courseDivision'>
@@ -50,6 +51,7 @@ class Request extends Component {
                 ></DropdownPlugin>
             </Grid.Column>
             </Grid.Row>
+
             <Grid.Row  className="messageContainer">
               <Grid.Column>
               <div className='messageDivision'>

@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import PersonIcon from "@material-ui/icons/Person";
 import { Grid, Segment,Label} from 'semantic-ui-react';
 import Modal from './modal.jsx';
+import IconButton from '@material-ui/core/IconButton';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 
 class Post extends Component {
   state = {
@@ -25,19 +27,18 @@ class Post extends Component {
         <Grid.Row  columns={2}>
         
               <Grid.Column >
-                <div className="personDivision">
-        <link
-          rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-          crossorigin="anonymous"
-        />
+
+         <IconButton onClick={this.props.handlePersonIcon}
+              edge="end"
+              aria-label="account of current user"
+              // aria-controls={menuId}
+              aria-haspopup="true"
+              // onClick={handleProfileMenuOpen}
+              color="inherit"
+            >
+              <AccountCircle style={{ fontSize: 40 }} />
+        </IconButton>
         
-        <button onClick={this.props.handlePersonIcon}>
-          {" "}
-          <PersonIcon style={{ fontSize: 40 }}>person</PersonIcon>
-        </button>
-        </div>
         </Grid.Column>
         <Grid.Column >
             <div>
@@ -49,9 +50,7 @@ class Post extends Component {
         <Grid.Row  columns={1}>
               <Grid.Column >
         <p> {name} </p>
-        </Grid.Column>
-
-          
+        </Grid.Column>   
         </Grid.Row>
 
         <Grid.Row  columns={1}>

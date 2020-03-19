@@ -12,6 +12,14 @@ import Autosuggest from 'react-autosuggest';
 import axios from 'axios'
 import { debounce } from 'throttle-debounce'
 import Request from './request.jsx';
+import { Navbar, Nav } from 'react-bootstrap';
+import logo from './logo.jpg'
+import SearchIcon from '@material-ui/icons/Search'
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import Badge from '@material-ui/core/Badge';
+import IconButton from '@material-ui/core/IconButton';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 class Homepage extends Component {
   state = {
@@ -35,13 +43,15 @@ class Homepage extends Component {
 
   renderSuggestion = suggestion => {
     return (
-      <ul className="ui-autocomplete">
+      // <ul className="ui-autocomplete">
         
-        <li >{suggestion.post}</li>
-        <li>{suggestion.course}</li>
+      <div>
+        <span>{suggestion.post}</span>
+        <span>{suggestion.course}</span>
+        </div>
         
-      </ul>
-    )
+     
+    );
   }
 
   onChange = (event, { newValue }) => {
@@ -77,6 +87,7 @@ class Homepage extends Component {
       s.course.toLowerCase().includes(inputValue)
     );
   };
+  
 
   toggleModal = () => {
     this.setState({
@@ -90,67 +101,65 @@ class Homepage extends Component {
 
     // Autosuggest will pass through all these props to the input.
     const autoSuggestInputProps = {
-        placeholder: 'Type a programming language',
+        placeholder: 'Search..',
         value,
         onChange: this.onChange
       };
+
+    const renderInputComponent = inputProps => (
+        <div className="inputContainer">
+          <img className="icon" src="https://img.icons8.com/ios-filled/50/000000/search.png" />
+          <input {...inputProps} />
+        </div>
+      );
+      
 
     return (
 
       <div className="gridContainer">
 
+      <Navbar bg="light" expand="lg">
+        <Navbar.Brand href="#home">
+          <img
+            alt=""
+            src={logo}
+            width="60"
+            height="60"
+          />{' '}
+          StudyBuddy
+        </Navbar.Brand>
+        
+        <Nav class="collapse navbar-collapse justify-content-center" padded>
+          <Autosuggest
+                suggestions={suggestions}
+                onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                getSuggestionValue={suggestion => suggestion.course}
+                renderSuggestion={this.renderSuggestion}
+                inputProps={autoSuggestInputProps}
+                renderInputComponent={renderInputComponent}
+            />
+        </Nav>
+        <button className='requestButton' style={{fontSize:17}}>My Requests</button>
+        <IconButton aria-label="show 17 new notifications" color="inherit">
+              <Badge badgeContent={17} color="secondary">
+                <NotificationsIcon fontSize='large' />
+              </Badge>
+        </IconButton>
+        <IconButton 
+              edge="end"
+              aria-label="account of current user"
+              // aria-controls={menuId}
+              aria-haspopup="true"
+              // onClick={handleProfileMenuOpen}
+              color="inherit"
+            >
+              <AccountCircle fontSize='large' />
+        </IconButton>
+      
+      </Navbar>
+
         <Grid padded >
-            <Grid.Row centered  columns={4}  className="searchbar">
-                <Grid.Column centered verticalAlign='middle' width={10}>
-                    <Autosuggest
-                        suggestions={suggestions}
-                        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-                        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-                        getSuggestionValue={suggestion => suggestion.course}
-                        renderSuggestion={this.renderSuggestion}
-                        inputProps={autoSuggestInputProps}
-                    />
-                </Grid.Column >
-
-                <Grid.Column  verticalAlign='middle' width={2}>
-              <div className="filterCourseDivision">
-            <DropdownPlugin
-                menu={this.state.courses}
-                title="Choose Course"
-              ></DropdownPlugin>
-              </div>
-              </Grid.Column >
-              <Grid.Column  verticalAlign='middle' width={2}>
-                <div className='filterSkillDivision'>
-            <DropdownPlugin
-              menu={this.state.skills}
-              title="Choose Skill"
-            ></DropdownPlugin>
-            </div>
-
-            </Grid.Column >
-
-                <Grid.Column centered verticalAlign='middle' width={2}>
-                <div className='personDivison'>
-                  <link
-                    rel="stylesheet"
-                    href="https://fonts.googleapis.com/icon?family=Material+Icons"
-                  />
-                
-                  <button>
-                    {" "}
-                    <PersonIcon style={{ fontSize: 40 }}>person</PersonIcon>
-                  </button>
-                </div>
-                </Grid.Column>
-
-            </Grid.Row>
-
-          <Grid.Row centered  columns={1}  className="searchbar">
-            <Grid.Column width={16}></Grid.Column>
-            
-              </Grid.Row>
-              
           <Grid.Row columns={3} padded>
           <Grid.Column width={1}>
             </Grid.Column>
@@ -163,17 +172,11 @@ class Homepage extends Component {
             </Grid.Column>
             <Grid.Column  width={6}>
                 <div className='newPostDivision' >
-
-                <link
-                    rel="stylesheet"
-                    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-                    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-                    crossorigin="anonymous"
-                  />
-                  <button onClick={this.toggleModal} >
+                
+                  <IconButton onClick={this.toggleModal} >
                     {" "}
-                    <Icon style={{ fontSize: 40}}>add_circle</Icon>
-                  </button>
+                    <AddCircleIcon style={{ fontSize: 40, color:'black'}} ></AddCircleIcon>
+                  </IconButton>
 
                 <Request show={this.state.isOpen}
                   onClose={this.toggleModal}>
@@ -183,8 +186,8 @@ class Homepage extends Component {
 
               </Grid.Column >
           </Grid.Row>
-
-    </Grid></div>
+    </Grid>
+    </div>
       
     );
   }

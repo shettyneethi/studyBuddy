@@ -6,13 +6,11 @@ import './App.css';
 import Request from './request.jsx'
 import CheckboxCustom from './checkbox.jsx'
 
+
 class App extends Component {
   render() {
     return (
       <div>
-        <div id="app">
-          <Header />
-        </div>    
         <div id="homepage">
           <HomePage />
         </div>
