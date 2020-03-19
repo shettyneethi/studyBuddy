@@ -9,7 +9,8 @@ Reshma Morampudi <br>
 Yash Sapra <br>
 
 ## Deployment 
-Execute the following Commands
+Execute the following Commands 
+`gcloud app deploy Web/app.yaml python-app/api.yaml`
 
 ### Create project on GCP 
 ```
@@ -40,7 +41,7 @@ npm start -- starts the server on localhost:3000
 
 Create `app.yaml` and execute the following commands 
 ```
-gcloud app deploy
+gcloud app deploy app.yaml
 
 gcloud app browse 
 ```
