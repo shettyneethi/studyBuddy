@@ -2,6 +2,8 @@ import React from 'react';
 import './login.css'
 import { Button, TextField } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
+import { GoogleLogin } from 'react-google-login';
+
 
 
 const MyButton = styled(Button)({
@@ -14,23 +16,30 @@ const MyButton = styled(Button)({
   padding: '0 30px',
 });
 
+const responseGoogle = (response) => {
+  console.log(response);
+}
+
 class Login extends React.Component {
   constructor() {
     super();
 
     this.state = {
       usrName: "",
+      password: "",
       isLoggedIn: false,
       message: ""
     }
 
   }
 
-
-  handleChange = (evt) => {
+  handleUserNameChange = (evt) => {
     this.setState({ usrName: evt.target.value });
   }
 
+  handlePasswordChange = (evt) => {
+    this.setState({ password: evt.target.value });
+  }
 
 
   handleSubmit = () => {
@@ -48,17 +57,31 @@ class Login extends React.Component {
         {this.state.isLoggedIn ? <h1 align="center"> {this.state.message}</h1> : null}
 
         {this.state.isLoggedIn ? null :
+        <div>
           <div id="login-form" align="center">
 
-            <form class="loginForm">
+            <form className="loginForm">
               <h1 align="center">Let's get you started</h1>
 
-              <TextField required id="standard-required" type="text" label="Username" name="username" onChange={this.handleChange} value={this.state.usrName} ></TextField><br /><br />
+              <TextField required className="standard-required" type="text" label="Username" name="username" onChange={this.handleUserNameChange} value={this.state.usrName} ></TextField><br /><br />
 
-              <TextField required id="standard-required" type="password" name="password" label="Password" ></TextField ><br /><br />
-              <MyButton onClick={this.handleSubmit}>Submit</MyButton>
+              <TextField required className="standard-required" type="password" name="password" label="Password" onChange={this.handlePasswordChange}></TextField ><br /><br />
+              <MyButton onClick={this.handleSubmit}>Submit</MyButton><label> or </label> 
+              <GoogleLogin
+                clientId="135947534732-6ju1jmq810rma59imcnd0g0a676je8u6.apps.googleusercontent.com"
+                buttonText="Login"
+                onSuccess={responseGoogle}
+                onFailure={responseGoogle}
+                cookiePolicy={'single_host_origin'}
+            />
             </form>
           </div>
+          
+          <div id="googleButton">
+            
+          </div>
+        </div>
+
         }
       </div>
 
