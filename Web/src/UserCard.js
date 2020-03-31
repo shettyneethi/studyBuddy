@@ -6,7 +6,6 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import HomeIcon from '@material-ui/icons/Home';
 import EditIcon from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles(theme => ({
@@ -35,7 +34,7 @@ export default function UserCard() {
             <CardMedia
                 className={classes.media}
                 image="https://source.unsplash.com/user/sethdoylee/R5tHd-aYmPs"
-                title="Paella dish"
+                title="User Profile"
             />
             <CardContent>
                 <Typography id="name" variant="h5" color="textSecondary" component="p">
@@ -53,9 +52,6 @@ export default function UserCard() {
 
             </CardContent>
             <CardActions disableSpacing>
-                <IconButton aria-label="home">
-                    <HomeIcon />
-                </IconButton>
                 <IconButton aria-label="edit">
                     <EditIcon />
                 </IconButton>
