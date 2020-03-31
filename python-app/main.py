@@ -50,7 +50,7 @@ def suggest():
 def create_post():
     req = request.json
     data = {}
-    myclient = pymongo.MongoClient("mongodb+srv://reshma:<password>@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    myclient = pymongo.MongoClient("mongodb+srv://reshma:Rmnsbrps120@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["test-db"]
     mycollections = mydb["sample-posts"]
     data["username"] = "reshma"
