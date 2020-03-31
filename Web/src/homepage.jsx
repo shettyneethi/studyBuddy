@@ -21,17 +21,63 @@ import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 
+const data = [
+  {
+    id: 100,
+    name: "CSCI-4448",
+    interested_count: 1,
+    interested_peers: ["peer1","peer2","peer3"]
+  },
+
+  {
+    id: 200,
+    name: "name2",
+    interested_count: 2,
+    interested_peers: ["peer4","peer5","peer6"]
+  },
+  {
+    id: 101,
+    name: "name1",
+    interested_count: 1,
+    interested_peers: ["peer1","peer2","peer3"]
+  
+  },
+  {
+    id: 102,
+    name: "name1",
+    interested_count: 1,
+    interested_peers: ["peer1","peer2","peer3"]
+  
+  },
+  {
+    id: 103,
+    name: "name1",
+    interested_count: 1,
+    interested_peers: ["peer1","peer2","peer3"]
+  
+  },
+  {
+    id: 104,
+    name: "name1",
+    interested_count: 1,
+    interested_peers: ["peer1","peer2","peer3"]
+  
+  }
+]
+
 class Homepage extends Component {
+  
   state = {
     courses: ["CS", "MS", "FRCS"],
     skills: ["C", "C++"],
     value: '',
     suggestions: [],
     cacheAPISugesstions: [],
-    isOpen: false
-
+    isOpen: false,
+    data: data,
+    filterResults: data
   };
-
+    
   SUGGEST_URL = 'https://api-suggest-dot-studybuddy-5828.appspot.com/suggest'
 
   componentWillMount() {
@@ -60,6 +106,8 @@ class Homepage extends Component {
     });
   };
 
+  
+
   componentDidMount() {
     axios
     .get(this.SUGGEST_URL, {})
@@ -79,6 +127,22 @@ class Homepage extends Component {
     });
   };
 
+  onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) =>{
+    var filterRes = this.state.data;
+      filterRes = filterRes.filter(
+        (item) =>  item.name == suggestionValue)
+      
+      if(filterRes != 0) {
+        this.setState({ 
+          filterResults: filterRes
+          });
+      }
+      else {
+        this.setState({ 
+          filterResults: this.state.data
+          });
+      }
+};
   getSuggestions = (allPosts, searchValue) => {
     const inputValue = searchValue.trim().toLowerCase();
     const inputLength = inputValue.length;
@@ -136,6 +200,7 @@ class Homepage extends Component {
                 onSuggestionsClearRequested={this.onSuggestionsClearRequested}
                 getSuggestionValue={suggestion => suggestion.course}
                 renderSuggestion={this.renderSuggestion}
+                onSuggestionSelected={this.onSuggestionSelected}
                 inputProps={autoSuggestInputProps}
                 renderInputComponent={renderInputComponent}
             />
@@ -166,7 +231,7 @@ class Homepage extends Component {
             <Grid.Column width={9}>
     
                 <div className='postsDivision'>
-            <Posts />
+            <Posts filterRes={this.state.filterResults}/>
             </div>
 
             </Grid.Column>

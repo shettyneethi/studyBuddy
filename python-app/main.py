@@ -8,6 +8,9 @@ from flask_caching import Cache
 import pymongo
 import sys
 from bson.json_util import dumps
+from flask import request
+import json
+import datetime 
 
 cache = Cache(config = {
     "DEBUG": True,          # some Flask specific configs
@@ -41,7 +44,36 @@ def status():
 def suggest():
     return dumps(getPostsFromMongo())
 
+##### POST ######
+@app.route('/requests/create', methods=["POST"])
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
+def create_post():
+    req = request.json
+    data = {}
+    myclient = pymongo.MongoClient("mongodb+srv://reshma:<password>@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["test-db"]
+    mycollections = mydb["sample-posts"]
+    data["username"] = "reshma"
+    data["course"] = req["course"]
+    data["skill"] = req["skill"]
+    data["msg"] = req["message"]
+    data["tag"] = req["tag"]
+    data["post_time"] = datetime.datetime.now()
+    x = mycollections.insert_one(data)
+
+    return "Success"
+    
+@app.route('/requests/delete', methods=["DELETE"])
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
+def delete_post():
+    req = request.json
+    # username = req["username"]
+    course = req["course"]
+    skill = req["skill"]
+    msg = req["message"]
+    tag = req["tag"]
+    
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
-
 
