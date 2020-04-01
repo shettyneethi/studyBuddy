@@ -101,9 +101,19 @@ class Homepage extends Component {
   }
 
   onChange = (event, { newValue }) => {
-    this.setState({
-      value: newValue
-    });
+
+    if(newValue.length != 0){
+      this.setState({
+        value: newValue
+      }); 
+    }
+    else{
+      this.setState({
+        value: newValue,
+        filterResults: this.state.data
+      });
+    }
+    
   };
 
   
