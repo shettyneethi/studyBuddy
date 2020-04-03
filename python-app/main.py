@@ -11,6 +11,9 @@ from bson.json_util import dumps
 from flask import request
 import json
 import datetime 
+from utility.producer import send_to_kafka
+import logging
+logging.basicConfig(filename='main-service.out', level=logging.INFO)
 
 cache = Cache(config = {
     "DEBUG": True,          # some Flask specific configs
@@ -50,7 +53,7 @@ def suggest():
 def create_post():
     req = request.json
     data = {}
-    myclient = pymongo.MongoClient("mongodb+srv://reshma:<password>@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["test-db"]
     mycollections = mydb["sample-posts"]
     data["username"] = "reshma"
@@ -59,7 +62,12 @@ def create_post():
     data["msg"] = req["message"]
     data["tag"] = req["tag"]
     data["post_time"] = datetime.datetime.now()
+
     x = mycollections.insert_one(data)
+    logging.info("Succesfully pushed to MongoDB")
+
+    send_to_kafka(data)
+    logging.info("Succesfully pushed to Kafka queue")
 
     return "Success"
     
