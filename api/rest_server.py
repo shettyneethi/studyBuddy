@@ -15,7 +15,6 @@ mydb = myclient["STUDYBUDDY"]
 def login():
     usrDetails = mydb["user_details"]
     data = request.get_json()
-    # print(data["user_name"])
     myquery = { "user_name": data["user_name"], "password" : data["password"] }
 
     response = {
@@ -28,6 +27,38 @@ def login():
     try:
         if(usrDetails.find(myquery).count() == 1):
             response["status"] = "SUCCESS"
+    except:
+            response["status"] = "ERROR"
+            status = 400
+
+    response_pickled = jsonpickle.encode(response)
+    return Response(response=response_pickled,
+           status=status , mimetype="application/json")
+
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    usrDetails = mydb["user_details"]
+    data = request.get_json()
+    row = { "user_name": data["user_name"], "password" : data["password"] , "email": data["email"]}
+    myquery1 = { "user_name": data["user_name"] }
+    myquery2 = { "email": data["email"] }
+
+    response = {
+        "status" : "SUCCESS",
+        "message" : "Sign Up Successful"
+    }
+
+    status=200
+
+    try:
+        if(usrDetails.find(myquery1).count() > 0):
+            response["status"] = "FAIL"
+            response["message"] = "Account with this username already exists"
+        elif(usrDetails.find(myquery2).count() > 0):
+            response["status"] = "FAIL"
+            response["message"] = "Account with this Email ID already exists"
+        else:
+            usrDetails.insert_one(row)
     except:
             response["status"] = "ERROR"
             status = 400

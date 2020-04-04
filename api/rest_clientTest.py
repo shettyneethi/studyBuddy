@@ -23,6 +23,23 @@ if cmd == 'login':
     print("Response is", response)
     print(json.loads(response.text))
     if(json.loads(response.text) == {'status': 'SUCCESS'}):
-        print("TEST 1: PASS")
+        print("TEST RES: PASS")
+    else:
+        print("TEST RES: FAIL")
+elif(cmd == 'signup'):
+    user_name = sys.argv[3]
+    password = "password"
+    email = sys.argv[4]
+    req = {
+        "user_name" : user_name,
+        "password" : password,
+        "email" : email
+    }
+    req_url = addr + '/api/signup' 
+    headers = {'content-type': 'application/json'}
+    response = requests.post(req_url, json=req, headers=headers)
+    print("Response is", response)
+    print(json.loads(response.text))
+
 else:
     print("Unknown option", cmd)                
