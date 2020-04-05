@@ -32,8 +32,8 @@ COLLECTION = "sample-posts"
 
 # Load up posts from mongoDB on startup
 def getPostsFromMongo(database = DATABASE, collection = COLLECTION):
-    mongoClient = pymongo.MongoClient("mongodb+srv://reshma:Rmnsbrps120@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    posts = [x for x in mongoClient[database][collection].find()]
+    mongoClient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    posts = [x for x in mongoClient[database][collection].find().sort('_id', -1)]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(len(posts), str(sys.getsizeof(posts))))
     return posts
 
@@ -56,9 +56,9 @@ def create_post():
     req = request.json
     data = {}
     print(req)
-    # myclient = pymongo.MongoClient("mongodb+srv://reshma:Rmnsbrps120@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    # mydb = myclient["test-db"]
-    # mycollections = mydb["sample-posts"]
+    myclient = pymongo.MongoClient("mongodb+srv://reshma:Rmnsbrps120@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["test-db"]
+    mycollections = mydb["sample-posts"]
     data["username"] = "reshma"
     data["course"] = req["course"]
     data["skill"] = req["skill"]
@@ -67,22 +67,19 @@ def create_post():
     data["interested_count"] = 0
     data["post_time"] = datetime.datetime.now()
 
-    # x = mycollections.insert_one(data)
-    # logging.info("Succesfully pushed to MongoDB")
+    x = mycollections.insert_one(data)
+    logging.info("Succesfully pushed to MongoDB")
     
     send_to_kafka(data)
     logging.info("Succesfully pushed to Kafka queue")
 
-
-    # subcribe_to_kafka()
-    # logging.info(message)
     response_data = {
             "sucess": True,
             "status_code": 200
         }
 
     return jsonify(response_data)
-    
+  
 @app.route('/requests/delete', methods=["DELETE"])
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def delete_post():

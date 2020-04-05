@@ -92,10 +92,9 @@ class Homepage extends Component {
 
 
   updateData(data) {
-    var res = this.state.filterResults
-    res.push(data)
-    this.setState({filterResults:res})
-
+    let res = this.state.filterResults
+    let res_sort = [data].concat(res)
+    this.setState({cacheAPISugesstions: res_sort, filterResults: res_sort})
   }
 
 
