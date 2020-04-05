@@ -39,9 +39,6 @@ def subcribe_to_kafka():
                 consumer.close()
     return Response(events(), mimetype="text/event-stream")
             
-
-
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8081, debug=True)
-  
-    
+
