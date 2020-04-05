@@ -10,7 +10,7 @@ KAFKA_IP = '34.106.95.122'
 TOPIC_NAME = 'posts'
 
 producer = KafkaProducer(bootstrap_servers=[KAFKA_IP], value_serializer=lambda m: dumps(m).encode('ascii'))
-test ='{"_id":{"$oid":"5e780494e79c2ce922c888e1"},"username":"Kafka","course":"Kafka Test","skill":"Kafka Test","msg":"This is a test message","tag":"Project","post_time":{"$date":{"$numberLong":"1584902196429"}}}'
+# test ='{"_id":{"$oid":"5e780494e79c2ce922c888e1"},"username":"Kafka","course":"Kafka Test","skill":"Kafka Test","msg":"This is a test message","tag":"Project","post_time":{"$date":{"$numberLong":"1584902196429"}}}'
 
 
 def on_send_success(record_metadata):
@@ -28,5 +28,5 @@ def send_to_kafka(msg, topic=TOPIC_NAME):
     producer.flush()
 
 
-if __name__ == '__main__':
-    send_to_kafka(test)
+# if __name__ == '__main__':
+#     send_to_kafka(test)

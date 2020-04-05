@@ -24,7 +24,8 @@ class Request extends Component {
     selectedCourse: "",
     selectedSkill: "",
     selectedTag: "",
-    message: ""
+    message: "",
+    result: ""
   };
   handleCourseChange = (event, data) => {
     this.setState({
@@ -44,6 +45,7 @@ class Request extends Component {
     });
   };
 
+  // componentDidMount() {
   handleSubmit = event => {
     // alert('A name was submitted: ' + this.state.value);
     // event.preventDefault();
@@ -62,8 +64,9 @@ class Request extends Component {
       body: JSON.stringify(data)
     })
       .then(res => res.json())
-      .then(res => console.log(res));
+      .then(data => this.setState({result:data}));
   };
+// }
 
   handleMessageChange = event => {
     this.setState({ message: event.target.value });
@@ -71,6 +74,8 @@ class Request extends Component {
 
   handlePost = () =>{
     this.handleSubmit();
+    // this.componentDidMount();
+    // this.props.updateposts();
     this.props.onClose();
   }
 
@@ -78,6 +83,7 @@ class Request extends Component {
     if (!this.props.show) {
       return null;
     }
+    // console.log(this.state.result)
     return (
           <div className='requestContainer'>
             <Segment>

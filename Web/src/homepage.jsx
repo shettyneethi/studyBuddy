@@ -21,49 +21,6 @@ import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 
-const data = [
-  {
-    id: 100,
-    name: "CSCI-4448",
-    interested_count: 1,
-    interested_peers: ["peer1","peer2","peer3"]
-  },
-
-  {
-    id: 200,
-    name: "name2",
-    interested_count: 2,
-    interested_peers: ["peer4","peer5","peer6"]
-  },
-  {
-    id: 101,
-    name: "name1",
-    interested_count: 1,
-    interested_peers: ["peer1","peer2","peer3"]
-  
-  },
-  {
-    id: 102,
-    name: "name1",
-    interested_count: 1,
-    interested_peers: ["peer1","peer2","peer3"]
-  
-  },
-  {
-    id: 103,
-    name: "name1",
-    interested_count: 1,
-    interested_peers: ["peer1","peer2","peer3"]
-  
-  },
-  {
-    id: 104,
-    name: "name1",
-    interested_count: 1,
-    interested_peers: ["peer1","peer2","peer3"]
-  
-  }
-]
 
 class Homepage extends Component {
   
@@ -74,11 +31,10 @@ class Homepage extends Component {
     suggestions: [],
     cacheAPISugesstions: [],
     isOpen: false,
-    data: data,
-    filterResults: data
+    filterResults: []
   };
     
-  SUGGEST_URL = 'https://api-suggest-dot-studybuddy-5828.appspot.com/suggest'
+  // SUGGEST_URL = 'https://api-suggest-dot-studybuddy-5828.appspot.com/suggest'
 
   componentWillMount() {
     this.onSuggestionsFetchRequested = debounce(
@@ -89,10 +45,8 @@ class Homepage extends Component {
 
   renderSuggestion = suggestion => {
     return (
-      // <ul className="ui-autocomplete">
-        
       <div>
-        <span>{suggestion.post}</span>
+        <span>{suggestion.msg}</span>
         <span>{suggestion.course}</span>
         </div>
         
@@ -110,7 +64,7 @@ class Homepage extends Component {
     else{
       this.setState({
         value: newValue,
-        filterResults: this.state.data
+        filterResults: this.state.filterResults
       });
     }
     
@@ -118,13 +72,32 @@ class Homepage extends Component {
 
   
 
+  // componentDidMount() {
+  //   axios
+  //   .get(this.SUGGEST_URL, {})
+  //   .then(res => {
+  //     this.setState({ cacheAPISugesstions: res.data});
+  //   })
+  // }
   componentDidMount() {
-    axios
-    .get(this.SUGGEST_URL, {})
-    .then(res => {
-      this.setState({ cacheAPISugesstions: res.data});
-    })
+    fetch('http://127.0.0.1:8080/suggest')
+        .then(response => response.json())
+        .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res}));
+
+    this.eventSource = new EventSource('http://127.0.0.1:8081/posts');
+    this.eventSource.onmessage = e =>
+    this.updateData(JSON.parse(e.data));
+
   }
+
+
+  updateData(data) {
+    var res = this.state.filterResults
+    res.push(data)
+    this.setState({filterResults:res})
+
+  }
+
 
   onSuggestionsFetchRequested = ({ value }) => {
     this.setState({ suggestions: this.getSuggestions(this.state.cacheAPISugesstions, value) });
@@ -138,7 +111,7 @@ class Homepage extends Component {
   };
 
   onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) =>{
-    var filterRes = this.state.data;
+    var filterRes = this.state.filterResults;
       filterRes = filterRes.filter(
         (item) =>  item.name == suggestionValue)
       
@@ -149,7 +122,7 @@ class Homepage extends Component {
       }
       else {
         this.setState({ 
-          filterResults: this.state.data
+          filterResults: this.state.filterResults
           });
       }
 };
@@ -172,6 +145,8 @@ class Homepage extends Component {
   render() {
     const value = this.state.value;
     const suggestions = this.state.suggestions;
+
+    console.log(this.state.filterResults)
 
     // Autosuggest will pass through all these props to the input.
     const autoSuggestInputProps = {
@@ -254,7 +229,9 @@ class Homepage extends Component {
                   </IconButton>
 
                 <Request show={this.state.isOpen}
-                  onClose={this.toggleModal}>
+                  // updateposts = {this.updateposts}
+                  onClose={this.toggleModal}
+                  >
                   Here's some content for the modal
                 </Request>
                   </div>

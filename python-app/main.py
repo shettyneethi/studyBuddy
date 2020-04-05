@@ -11,7 +11,9 @@ from bson.json_util import dumps
 from flask import request
 import json
 import datetime 
+from flask import jsonify
 from utility.producer import send_to_kafka
+from utility.consumer import subcribe_to_kafka, getConsumer 
 import logging
 logging.basicConfig(filename='main-service.out', level=logging.INFO)
 
@@ -26,11 +28,11 @@ CORS(app)
 cache.init_app(app)
 
 DATABASE = "test-db"
-COLLECTION = "posts" 
+COLLECTION = "sample-posts" 
 
 # Load up posts from mongoDB on startup
 def getPostsFromMongo(database = DATABASE, collection = COLLECTION):
-    mongoClient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mongoClient = pymongo.MongoClient("mongodb+srv://reshma:Rmnsbrps120@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     posts = [x for x in mongoClient[database][collection].find()]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(len(posts), str(sys.getsizeof(posts))))
     return posts
@@ -53,23 +55,33 @@ def suggest():
 def create_post():
     req = request.json
     data = {}
-    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient["test-db"]
-    mycollections = mydb["sample-posts"]
+    print(req)
+    # myclient = pymongo.MongoClient("mongodb+srv://reshma:Rmnsbrps120@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    # mydb = myclient["test-db"]
+    # mycollections = mydb["sample-posts"]
     data["username"] = "reshma"
     data["course"] = req["course"]
     data["skill"] = req["skill"]
     data["msg"] = req["message"]
     data["tag"] = req["tag"]
+    data["interested_count"] = 0
     data["post_time"] = datetime.datetime.now()
 
-    x = mycollections.insert_one(data)
-    logging.info("Succesfully pushed to MongoDB")
-
+    # x = mycollections.insert_one(data)
+    # logging.info("Succesfully pushed to MongoDB")
+    
     send_to_kafka(data)
     logging.info("Succesfully pushed to Kafka queue")
 
-    return "Success"
+
+    # subcribe_to_kafka()
+    # logging.info(message)
+    response_data = {
+            "sucess": True,
+            "status_code": 200
+        }
+
+    return jsonify(response_data)
     
 @app.route('/requests/delete', methods=["DELETE"])
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
