@@ -99,7 +99,7 @@ def edit_profile():
     req = request.json
     data = {}
     myclient = pymongo.MongoClient(
-        "mongodb+srv://reshma:Rmnsbrps@159@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
     mycollections = mydb["user_details"]
     data["name"] = req["name"]
