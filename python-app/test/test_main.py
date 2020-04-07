@@ -1,10 +1,11 @@
 import unittest
 import os
 import json
-import main
+import sys
 from flask import Flask
 from unittest.mock import Mock, patch
-
+sys.path.append("..")
+import main
 
 class UsersTest(unittest.TestCase):
   def setUp(self):
@@ -48,5 +49,6 @@ class UsersTest(unittest.TestCase):
     
 
 if __name__ == "__main__":
+    
     unittest.main()
 

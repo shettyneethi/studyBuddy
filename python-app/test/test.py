@@ -3,17 +3,14 @@ from json import dumps
 from kafka import KafkaProducer
 import logging
 logging.basicConfig(level=logging.INFO)
-
-
 import unittest
 import os
 import json
-import producer
 from unittest.mock import Mock, patch
-
-
 from flask import Flask
-
+import sys
+sys.path.append("../utility")
+import producer
 
 class UsersTest(unittest.TestCase):
   """
@@ -35,11 +32,3 @@ class UsersTest(unittest.TestCase):
       
 if __name__ == "__main__":
     unittest.main()
-
-
-
-
-# produce json messages
-# producer = KafkaProducer(bootstrap_servers=['34.106.95.122'], value_serializer=lambda m: dumps(m).encode('ascii'))
-# producer.send('test', {"key":"value"})
-# producer.flush()

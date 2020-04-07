@@ -1,10 +1,11 @@
 import unittest
 import os
 import json
-import consumer
 from unittest.mock import Mock, patch
-
 from flask import Flask
+import sys
+sys.path.append("../utility")
+import consumer
 
 
 class UsersTest(unittest.TestCase):
