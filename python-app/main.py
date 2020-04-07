@@ -2,7 +2,7 @@
 # intended to test out react auto-suggest feature
 ##
 
-from flask import Flask
+from flask import Flask, Response
 from flask_cors import CORS, cross_origin
 from flask_caching import Cache
 import pymongo
@@ -12,7 +12,10 @@ from flask import request
 import json
 import datetime
 from flask import jsonify
+from utility.producer import send_to_kafka
 import logging
+logging.basicConfig(filename='main-service.out', level=logging.INFO)
+
 cache = Cache(config={
     "DEBUG": True,          # some Flask specific configs
     "CACHE_TYPE": "simple",  # Flask-Caching related configs
@@ -24,9 +27,17 @@ CORS(app)
 cache.init_app(app)
 
 DATABASE = "test-db"
-COLLECTION = "posts"
+COLLECTION = "sample-posts"
 
-# Load up posts from mongoDB on startup
+
+def insertToMongo(data):
+    myclient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient[DATABASE]
+    mycollections = mydb[COLLECTION]
+    x = mycollections.insert_one(data)
+
+    return x.acknowledged
 
 
 def insertProfileToMongo(data):
@@ -67,19 +78,34 @@ def suggest():
 def create_post():
     req = request.json
     data = {}
-    myclient = pymongo.MongoClient(
-        "mongodb+srv://reshma:<password>@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient["test-db"]
-    mycollections = mydb["sample-posts"]
-    data["username"] = "reshma"
-    data["course"] = req["course"]
-    data["skill"] = req["skill"]
-    data["msg"] = req["message"]
-    data["tag"] = req["tag"]
-    data["post_time"] = datetime.datetime.now()
-    x = mycollections.insert_one(data)
 
-    return "Success"
+    try:
+        data["username"] = "test"
+        data["course"] = req["course"]
+        data["skill"] = req["skill"]
+        data["msg"] = req["msg"]
+        data["tag"] = req["tag"]
+        data["interested_count"] = 0
+        data["post_time"] = datetime.datetime.now()
+
+        x = insertToMongo(data)
+        logging.info("Succesfully pushed to MongoDB")
+
+        send_to_kafka(data)
+        logging.info("Succesfully pushed to Kafka queue")
+
+        response_data = {
+            "sucess": True,
+            "status_code": 200
+        }
+
+    except:
+        response_data = {
+            "sucess": False,
+            "status_code": 404
+        }
+
+    return jsonify(response_data)
 
 
 @app.route('/requests/delete', methods=["DELETE"])
