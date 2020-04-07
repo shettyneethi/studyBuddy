@@ -56,7 +56,7 @@ def create_post():
     req = request.json
     data = {}
     myclient = pymongo.MongoClient(
-        "mongodb+srv://reshma:Rmnsbrps@159@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+        "mongodb+srv://reshma:<password>@159@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["test-db"]
     mycollections = mydb["sample-posts"]
     data["username"] = "reshma"
