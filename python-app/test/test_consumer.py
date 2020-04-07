@@ -6,6 +6,8 @@ from flask import Flask
 import sys
 sys.path.append("../utility")
 import consumer
+import logging
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 
 class UsersTest(unittest.TestCase):

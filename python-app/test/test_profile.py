@@ -1,5 +1,8 @@
 import unittest
 import pymongo
+import logging
+import sys
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 class UsersTest(unittest.TestCase):
     data = {}

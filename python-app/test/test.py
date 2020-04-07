@@ -2,7 +2,6 @@ from time import sleep
 from json import dumps
 from kafka import KafkaProducer
 import logging
-logging.basicConfig(level=logging.INFO)
 import unittest
 import os
 import json
@@ -11,6 +10,7 @@ from flask import Flask
 import sys
 sys.path.append("../utility")
 import producer
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 class UsersTest(unittest.TestCase):
   """
@@ -27,8 +27,6 @@ class UsersTest(unittest.TestCase):
     mock_producer.return_value.send.return_value.get.return_value.topic = 'posts'
     actual = producer.send_to_kafka(test)
     self.assertEqual(expected_topic, actual)
-    
-
       
 if __name__ == "__main__":
     unittest.main()
