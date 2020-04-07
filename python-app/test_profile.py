@@ -22,4 +22,6 @@ def test_post_profile():
 
 
 def test_get_profile():
+
     assert mycollections.test.find_one()['name'] == "Test_Name"
+    mycollections.test.drop()
