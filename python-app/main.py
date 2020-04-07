@@ -2,7 +2,7 @@
 # intended to test out react auto-suggest feature
 ##
 
-from flask import Flask
+from flask import Flask, Response
 from flask_cors import CORS, cross_origin
 from flask_caching import Cache
 import pymongo
@@ -10,8 +10,13 @@ import sys
 from bson.json_util import dumps
 from flask import request
 import json
-import datetime
-cache = Cache(config={
+import datetime 
+from flask import jsonify
+from utility.producer import send_to_kafka
+import logging
+logging.basicConfig(filename='main-service.out', level=logging.INFO)
+
+cache = Cache(config = {
     "DEBUG": True,          # some Flask specific configs
     "CACHE_TYPE": "simple",  # Flask-Caching related configs
     "CACHE_DEFAULT_TIMEOUT": 300
@@ -22,17 +27,22 @@ CORS(app)
 cache.init_app(app)
 
 DATABASE = "test-db"
-COLLECTION = "posts"
+COLLECTION = "sample-posts" 
+
+def insertToMongo(data):
+    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient[DATABASE]
+    mycollections = mydb[COLLECTION]
+    x = mycollections.insert_one(data)
+
+    return x.acknowledged
+
 
 # Load up posts from mongoDB on startup
-
-
-def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
-    mongoClient = pymongo.MongoClient(
-        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    posts = [x for x in mongoClient[database][collection].find()]
-    print("pulled {} posts from MongoDB, total size: {} bytes".format(
-        len(posts), str(sys.getsizeof(posts))))
+def getPostsFromMongo(database = DATABASE, collection = COLLECTION):
+    mongoClient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    posts = [x for x in mongoClient[database][collection].find().sort('_id', -1)]
+    print("pulled {} posts from MongoDB, total size: {} bytes".format(len(posts), str(sys.getsizeof(posts))))
     return posts
 
 
@@ -55,21 +65,35 @@ def suggest():
 def create_post():
     req = request.json
     data = {}
-    myclient = pymongo.MongoClient(
-        "mongodb+srv://reshma:<password>@159@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient["test-db"]
-    mycollections = mydb["sample-posts"]
-    data["username"] = "reshma"
-    data["course"] = req["course"]
-    data["skill"] = req["skill"]
-    data["msg"] = req["message"]
-    data["tag"] = req["tag"]
-    data["post_time"] = datetime.datetime.now()
-    x = mycollections.insert_one(data)
+    
+    try:
+        data["username"] = "test"
+        data["course"] = req["course"]
+        data["skill"] = req["skill"]
+        data["msg"] = req["msg"]
+        data["tag"] = req["tag"]
+        data["interested_count"] = 0
+        data["post_time"] = datetime.datetime.now()
 
-    return "Success"
+        x = insertToMongo(data)
+        logging.info("Succesfully pushed to MongoDB")
 
+        send_to_kafka(data)
+        logging.info("Succesfully pushed to Kafka queue")
 
+        response_data = {
+                "sucess": True,
+                "status_code": 200
+            }
+
+    except:
+        response_data = {
+            "sucess": False,
+            "status_code": 404
+        }
+
+    return jsonify(response_data)
+  
 @app.route('/requests/delete', methods=["DELETE"])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def delete_post():
