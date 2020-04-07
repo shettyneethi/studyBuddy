@@ -20,6 +20,7 @@ import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import ViewProfile from "./ViewProfile.js"
 
 class Homepage extends Component {
 
