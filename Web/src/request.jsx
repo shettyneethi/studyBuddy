@@ -51,12 +51,12 @@ class Request extends Component {
     // event.preventDefault();
     // console.log(this.state.message);
     const data = {
-      message: this.state.message,
+      msg: this.state.message,
       course: this.state.selectedCourse,
       skill: this.state.selectedSkill,
       tag: this.state.selectedTag
     };
-    fetch("http://127.0.0.1:8080/requests/create", {
+    fetch("/requests/create", {
       method: "POST",
       headers: {
         "Content-type": "application/json"

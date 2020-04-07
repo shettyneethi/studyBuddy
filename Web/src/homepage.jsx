@@ -31,7 +31,8 @@ class Homepage extends Component {
     suggestions: [],
     cacheAPISugesstions: [],
     isOpen: false,
-    filterResults: []
+    filterResults: [],
+    posts: []
   };
     
   // SUGGEST_URL = 'https://api-suggest-dot-studybuddy-5828.appspot.com/suggest'
@@ -64,7 +65,7 @@ class Homepage extends Component {
     else{
       this.setState({
         value: newValue,
-        filterResults: this.state.filterResults
+        filterResults: this.state.posts
       });
     }
     
@@ -80,9 +81,9 @@ class Homepage extends Component {
   //   })
   // }
   componentDidMount() {
-    fetch('http://127.0.0.1:8080/suggest')
+    fetch('/suggest')
         .then(response => response.json())
-        .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res}));
+        .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res}));
 
     this.eventSource = new EventSource('http://127.0.0.1:8081/posts');
     this.eventSource.onmessage = e =>
@@ -111,8 +112,11 @@ class Homepage extends Component {
 
   onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) =>{
     var filterRes = this.state.filterResults;
+    console.log('Before filter' + filterRes)
+    console.log(suggestionValue)
       filterRes = filterRes.filter(
-        (item) =>  item.name == suggestionValue)
+        (item) =>  item.course == suggestionValue)
+      console.log('FilterRes' +filterRes );
       
       if(filterRes != 0) {
         this.setState({ 
@@ -121,7 +125,7 @@ class Homepage extends Component {
       }
       else {
         this.setState({ 
-          filterResults: this.state.filterResults
+          filterResults: this.state.posts
           });
       }
 };

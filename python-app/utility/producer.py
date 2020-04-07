@@ -24,8 +24,9 @@ def on_send_error(excp):
 # produce json messages
 def send_to_kafka(msg, topic=TOPIC_NAME):
     logging.info(msg)
-    producer.send(TOPIC_NAME, msg)
-    producer.flush()
+    producer = KafkaProducer(bootstrap_servers=[KAFKA_IP], value_serializer=lambda m: dumps(m).encode('ascii'))
+    future_record_metadata = producer.send(TOPIC_NAME, msg)
+    return future_record_metadata.get(timeout=10).topic
 
 
 # if __name__ == '__main__':
