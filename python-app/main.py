@@ -11,6 +11,8 @@ from bson.json_util import dumps
 from flask import request
 import json
 import datetime
+from flask import jsonify
+import logging
 cache = Cache(config={
     "DEBUG": True,          # some Flask specific configs
     "CACHE_TYPE": "simple",  # Flask-Caching related configs
@@ -25,6 +27,16 @@ DATABASE = "test-db"
 COLLECTION = "posts"
 
 # Load up posts from mongoDB on startup
+
+
+def insertProfileToMongo(data):
+    myclient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["STUDYBUDDY"]
+    mycollections = mydb["user_details"]
+    x = mycollections.insert_one(data)
+
+    return x.acknowledged
 
 
 def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
@@ -56,7 +68,7 @@ def create_post():
     req = request.json
     data = {}
     myclient = pymongo.MongoClient(
-        "mongodb+srv://reshma:<password>@159@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+        "mongodb+srv://reshma:<password>@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["test-db"]
     mycollections = mydb["sample-posts"]
     data["username"] = "reshma"
@@ -87,9 +99,6 @@ def getProfileFromMongo(database="STUDYBUDDY", collection="user_details"):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     profiles = [x for x in mongoClient[database][collection].find()]
-    print("pulled {} profiles from MongoDB, total size: {} bytes".format(
-        len(profiles), str(sys.getsizeof(profiles))))
-    print(dumps(profiles[0]))
     return dumps(profiles[0])
 
 
@@ -98,17 +107,26 @@ def getProfileFromMongo(database="STUDYBUDDY", collection="user_details"):
 def edit_profile():
     req = request.json
     data = {}
-    myclient = pymongo.MongoClient(
-        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient["STUDYBUDDY"]
-    mycollections = mydb["user_details"]
-    data["name"] = req["name"]
-    data["skills"] = req["skills"]
-    data["courses"] = req["courses"]
-    data["department"] = req["department"]
-    x = mycollections.insert_one(data)
+    try:
+        data["name"] = req["name"]
+        data["skills"] = req["skills"]
+        data["courses"] = req["courses"]
+        data["department"] = req["department"]
 
-    return "Success"
+        x = insertProfileToMongo(data)
+        logging.info("Profile succesfully pushed to MongoDB")
+
+        response_data = {
+            "success": True,
+            "status_code": 200
+        }
+
+    except:
+        response_data = {
+            "success": False,
+            "status_code": 404
+        }
+    return jsonify(response_data)
 
 
 if __name__ == '__main__':
