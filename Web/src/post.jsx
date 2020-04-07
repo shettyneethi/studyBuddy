@@ -18,7 +18,7 @@ class Post extends Component {
   }
   
   render() {
-    const { name, interested_count } = this.props.request
+    const { username, interested_count, msg, tag, course, skill } = this.props.request
     return (
       <React.Fragment>
         <Segment>
@@ -42,20 +42,27 @@ class Post extends Component {
         </Grid.Column>
         <Grid.Column >
             <div>
-              <Label tag color="teal">Assignment</Label>
+              <Label tag color="teal">{tag}</Label>
             </div>
           </Grid.Column>
         </Grid.Row>
 
-        <Grid.Row  columns={1}>
+        <Grid.Row  columns={3}>
               <Grid.Column >
-        <p> {name} </p>
+        <p> {username} </p>
         </Grid.Column>   
+        <Grid.Column >
+        <p> {course} </p>
+        </Grid.Column>
+        <Grid.Column >
+        <p> {skill} </p>
+        </Grid.Column>
+
         </Grid.Row>
 
         <Grid.Row  columns={1}>
           <Grid.Column >
-        <p> Message</p>
+        <p> {msg}</p>
         </Grid.Column>
         </Grid.Row>
 
