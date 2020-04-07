@@ -1,5 +1,5 @@
 # StudyBuddy
-
+![Build Badge](https://34.71.199.201/job/studyBuddy-api-pipeline/badge/icon)
 ## Team Members
 Bhavani Rishitha Ravipati <br>
 Neethi Shetty <br>
