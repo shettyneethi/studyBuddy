@@ -36,8 +36,10 @@ class UserCard extends Component {
         },
         ).then((response) => response.json())
             .then(response => {
-                this.setState({ name: response.user_name });
-                this.setState({ skills: response.user_name });
+                this.setState({ name: response.name });
+                this.setState({ skills: response.skills });
+                this.setState({ courses: response.courses });
+                this.setState({ department: response.department });
             });
 
     }
