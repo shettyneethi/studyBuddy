@@ -1,10 +1,8 @@
 import React from 'react';
-import './login.css'
 import { Button, TextField } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 import { GoogleLogin } from 'react-google-login';
-
-
+import "./login.css";
 
 const MyButton = styled(Button)({
   background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
@@ -28,7 +26,8 @@ class Login extends React.Component {
       usrName: "",
       password: "",
       isLoggedIn: false,
-      message: ""
+      message: "",
+      isSuccess: false,
     }
 
   }
@@ -48,6 +47,26 @@ class Login extends React.Component {
       message: "Welcome to StudyBuddy " + this.state.usrName + "!!!"
     });
 
+    const data = {
+      user_name: this.state.usrName,
+      password: this.state.password,
+    }
+
+    // fetch("http://127.0.0.1:5000/api/login", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-type": "application/json"
+    //     },
+    //     body: JSON.stringify(data)
+    // })
+    // .then(res => res.json()).then(data => {
+    //   if(data.response === 'SUCCESS'){
+    //     this.setState.isLoggedIn = true
+    //   }
+    //   else{
+    //     this.setState.isLoggedIn = false
+    //   }
+    // });
   }
 
   render() {
@@ -75,6 +94,7 @@ class Login extends React.Component {
                 cookiePolicy={'single_host_origin'}
             />
             </form>
+            <h3>Don't have an account? <a>Sign up here!</a></h3>
           </div>
           
           <div id="googleButton">
