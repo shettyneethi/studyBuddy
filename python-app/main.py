@@ -10,13 +10,13 @@ import sys
 from bson.json_util import dumps
 from flask import request
 import json
-import datetime 
+import datetime
 from flask import jsonify
 from utility.producer import send_to_kafka
 import logging
 logging.basicConfig(filename='main-service.out', level=logging.INFO)
 
-cache = Cache(config = {
+cache = Cache(config={
     "DEBUG": True,          # some Flask specific configs
     "CACHE_TYPE": "simple",  # Flask-Caching related configs
     "CACHE_DEFAULT_TIMEOUT": 300
@@ -27,10 +27,12 @@ CORS(app)
 cache.init_app(app)
 
 DATABASE = "test-db"
-COLLECTION = "sample-posts" 
+COLLECTION = "sample-posts"
+
 
 def insertToMongo(data):
-    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    myclient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient[DATABASE]
     mycollections = mydb[COLLECTION]
     x = mycollections.insert_one(data)
@@ -38,11 +40,22 @@ def insertToMongo(data):
     return x.acknowledged
 
 
-# Load up posts from mongoDB on startup
-def getPostsFromMongo(database = DATABASE, collection = COLLECTION):
-    mongoClient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    posts = [x for x in mongoClient[database][collection].find().sort('_id', -1)]
-    print("pulled {} posts from MongoDB, total size: {} bytes".format(len(posts), str(sys.getsizeof(posts))))
+def insertProfileToMongo(data):
+    myclient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["STUDYBUDDY"]
+    mycollections = mydb["user_details"]
+    x = mycollections.insert_one(data)
+
+    return x.acknowledged
+
+
+def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
+    mongoClient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    posts = [x for x in mongoClient[database][collection].find()]
+    print("pulled {} posts from MongoDB, total size: {} bytes".format(
+        len(posts), str(sys.getsizeof(posts))))
     return posts
 
 
@@ -65,7 +78,7 @@ def suggest():
 def create_post():
     req = request.json
     data = {}
-    
+
     try:
         data["username"] = "test"
         data["course"] = req["course"]
@@ -82,9 +95,9 @@ def create_post():
         logging.info("Succesfully pushed to Kafka queue")
 
         response_data = {
-                "sucess": True,
-                "status_code": 200
-            }
+            "sucess": True,
+            "status_code": 200
+        }
 
     except:
         response_data = {
@@ -93,7 +106,8 @@ def create_post():
         }
 
     return jsonify(response_data)
-  
+
+
 @app.route('/requests/delete', methods=["DELETE"])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def delete_post():
@@ -111,9 +125,6 @@ def getProfileFromMongo(database="STUDYBUDDY", collection="user_details"):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     profiles = [x for x in mongoClient[database][collection].find()]
-    print("pulled {} profiles from MongoDB, total size: {} bytes".format(
-        len(profiles), str(sys.getsizeof(profiles))))
-    print(dumps(profiles[0]))
     return dumps(profiles[0])
 
 
@@ -122,17 +133,26 @@ def getProfileFromMongo(database="STUDYBUDDY", collection="user_details"):
 def edit_profile():
     req = request.json
     data = {}
-    myclient = pymongo.MongoClient(
-        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient["STUDYBUDDY"]
-    mycollections = mydb["user_details"]
-    data["name"] = req["name"]
-    data["skills"] = req["skills"]
-    data["courses"] = req["courses"]
-    data["department"] = req["department"]
-    x = mycollections.insert_one(data)
+    try:
+        data["name"] = req["name"]
+        data["skills"] = req["skills"]
+        data["courses"] = req["courses"]
+        data["department"] = req["department"]
 
-    return "Success"
+        x = insertProfileToMongo(data)
+        logging.info("Profile succesfully pushed to MongoDB")
+
+        response_data = {
+            "success": True,
+            "status_code": 200
+        }
+
+    except:
+        response_data = {
+            "success": False,
+            "status_code": 404
+        }
+    return jsonify(response_data)
 
 
 if __name__ == '__main__':
