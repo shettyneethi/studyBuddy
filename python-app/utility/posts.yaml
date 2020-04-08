@@ -1,0 +1,3 @@
+runtime: python37
+service: api-update-posts
+entrypoint: gunicorn -b :$PORT consumer:app

@@ -1,5 +1,4 @@
 from kafka import KafkaConsumer
-from bson.json_util import loads
 from flask import Flask, Response
 from flask_cors import CORS, cross_origin
 from flask_caching import Cache
@@ -9,6 +8,12 @@ app = Flask(__name__)
 CORS(app)
 KAFKA_IP = '34.106.95.122'
 TOPIC_NAME = 'posts'
+
+@app.route('/status', methods=["GET"])
+@app.route('/', methods=["GET"])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+def status():
+    return "app is running!"
 
 
 def getConsumer(readLatest=False):
@@ -25,19 +30,22 @@ def getConsumer(readLatest=False):
                          group_id=None
                         )
 
+consumer = getConsumer(readLatest=True) 
 
 @app.route('/posts', methods=["GET"])
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def subcribe_to_kafka():
     print("Message")
-    consumer = getConsumer(readLatest=True) 
+    # consumer = getConsumer(readLatest=True) 
     def events():
         for message in consumer:
             if message is not None:
                 print(message)
                 yield 'data: {0}\n\n'.format(message.value.decode('ascii'))
-                consumer.close()
-    return Response(events(), mimetype="text/event-stream")
+                # consumer.close()
+    res = Response(events(), mimetype="text/event-stream") 
+    print(res.headers)
+    return res
             
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8081, debug=True)

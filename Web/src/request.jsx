@@ -56,7 +56,7 @@ class Request extends Component {
       skill: this.state.selectedSkill,
       tag: this.state.selectedTag
     };
-    fetch("/requests/create", {
+    fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/requests/create", {
       method: "POST",
       headers: {
         "Content-type": "application/json"

@@ -81,11 +81,11 @@ class Homepage extends Component {
   //   })
   // }
   componentDidMount() {
-    fetch('/suggest')
+    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest')
         .then(response => response.json())
         .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res}));
 
-    this.eventSource = new EventSource('http://127.0.0.1:8081/posts');
+    this.eventSource = new EventSource('https://api-update-posts-dot-studybuddy-5828.appspot.com/posts');
     this.eventSource.onmessage = e =>
     this.updateData(JSON.parse(e.data));
 
