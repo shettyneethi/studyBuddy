@@ -10,7 +10,7 @@ cmd = sys.argv[2]
 addr = 'http://{}:5000'.format(host)
 
 if cmd == 'login':
-    user_name = "abc@gmail.com"
+    user_name = "admin"
     password = "password"
 
     req = {

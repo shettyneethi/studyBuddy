@@ -6,13 +6,12 @@ import io
 
 # Initialize the Flask application
 app = Flask(__name__)
-myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-mydb = myclient["STUDYBUDDY"]
-
 
 # route http posts to this method
 @app.route('/api/login', methods=['POST'])
 def login():
+    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["STUDYBUDDY"]
     usrDetails = mydb["user_details"]
     data = request.get_json()
     myquery = { "user_name": data["user_name"], "password" : data["password"] }
@@ -37,6 +36,8 @@ def login():
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
+    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["STUDYBUDDY"]
     usrDetails = mydb["user_details"]
     data = request.get_json()
     row = { "user_name": data["user_name"], "password" : data["password"] , "email": data["email"]}
@@ -49,7 +50,6 @@ def signup():
     }
 
     status=200
-
     try:
         if(usrDetails.find(myquery1).count() > 0):
             response["status"] = "FAIL"
@@ -68,4 +68,4 @@ def signup():
            status=status , mimetype="application/json")
 
 # start flask app
-app.run(host="0.0.0.0", port=5000)
+app.run(host="127.0.0.1", port=5000)
