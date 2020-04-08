@@ -4,6 +4,7 @@ import json
 import sys
 from flask import Flask
 from unittest.mock import Mock, patch
+sys.path.append("..")
 import login
 
 class LoginAPITest(unittest.TestCase):
