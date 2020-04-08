@@ -53,7 +53,7 @@ def insertProfileToMongo(data):
 def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    posts = [x for x in mongoClient[database][collection].find()]
+    posts = [x for x in mongoClient[database][collection].find().sort('_id', -1)]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(
         len(posts), str(sys.getsizeof(posts))))
     return posts
