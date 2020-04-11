@@ -85,7 +85,7 @@ class Homepage extends Component {
         .then(response => response.json())
         .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res}));
 
-    this.eventSource = new EventSource('https://api-update-posts-dot-studybuddy-5828.appspot.com/posts');
+    this.eventSource = new EventSource('http://34.71.199.201:8080/posts');
     this.eventSource.onmessage = e =>
     this.updateData(JSON.parse(e.data));
 
