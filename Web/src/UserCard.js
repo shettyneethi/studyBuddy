@@ -7,12 +7,15 @@ import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
+import { Link } from 'react-router';
+import Homepage from './homepage';
 const styles = theme => ({
     root: {
-        maxWidth: 345,
+        width: 410,
+        height: 460
     },
     media: {
-        height: 0,
+        height: 250,
         paddingTop: '56.25%', // 16:9
     },
 
@@ -43,8 +46,13 @@ class UserCard extends Component {
             });
 
     }
+    handleOnClick = () => {
+
+        this.context.router.push('/profile/new');
+    }
     render() {
         const { classes } = this.props;
+
 
 
         return (
@@ -57,24 +65,26 @@ class UserCard extends Component {
                         title="User Profile"
                     />
                     <CardContent>
-                        <Typography id="name" variant="h5" color="textSecondary" component="p">
+                        <Typography id="name" variant="h4" color="textSecondary" component="p">
                             {this.state.name}
                         </Typography>
-                        <Typography id="skills" variant="caption" color="textSecondary" component="p">
+                        <Typography id="skills" variant="h6" color="textSecondary" component="p">
                             Skills: {this.state.skills}
                         </Typography>
-                        <Typography id="courses" variant="caption" color="textSecondary" component="p">
+                        <Typography id="courses" variant="h6" color="textSecondary" component="p">
                             Courses: {this.state.courses}
                         </Typography>
-                        <Typography id="department" variant="caption" color="textSecondary" component="p">
+                        <Typography id="department" variant="h6" color="textSecondary" component="p">
                             Department: {this.state.department}
                         </Typography>
 
                     </CardContent>
                     <CardActions disableSpacing>
                         <IconButton aria-label="edit">
-                            <EditIcon />
 
+                            <a href="http://localhost:3000/profile/edit" >
+                                <EditIcon />
+                            </a>
                         </IconButton>
 
 
@@ -88,4 +98,5 @@ class UserCard extends Component {
     }
 }
 
+// export default  withStyles(styles)(UserCard) withRouter(UserCard);
 export default withStyles(styles)(UserCard);
