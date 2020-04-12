@@ -85,7 +85,7 @@ class Homepage extends Component {
         .then(response => response.json())
         .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res}));
 
-    this.eventSource = new EventSource('http://34.71.199.201:8080/posts');
+    this.eventSource = new EventSource('https://34.71.199.201:8081/posts');
     this.eventSource.onmessage = e =>
     this.updateData(JSON.parse(e.data));
 
@@ -93,6 +93,7 @@ class Homepage extends Component {
 
 
   updateData(data) {
+    console.log(data)
     let res = this.state.filterResults
     let res_sort = [data].concat(res)
     this.setState({cacheAPISugesstions: res_sort, filterResults: res_sort})
