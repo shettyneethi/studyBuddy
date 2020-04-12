@@ -7,8 +7,7 @@ import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
-import { Link } from 'react-router';
-import Homepage from './homepage';
+import LoadingIcon from "./loading.gif"
 const styles = theme => ({
     root: {
         width: 410,
@@ -28,10 +27,10 @@ class UserCard extends Component {
 
 
     state = {
-        name: 'Your name comes here',
-        skills: 'Your skills comes here',
-        courses: 'Your courses comes here',
-        department: 'Your department comes here'
+        name: null,
+        skills: null,
+        courses: null,
+        department: null
     }
     componentDidMount() {
         fetch("http://127.0.0.1:8080/api/profile", {
@@ -54,47 +53,50 @@ class UserCard extends Component {
         const { classes } = this.props;
 
 
+        if (this.state.name && this.state.skills && this.state.courses && this.state.department) {
+            return (
+                <div>
+                    <Card className={classes.root} >
 
-        return (
-            <div>
-                <Card className={classes.root} >
+                        <CardMedia
+                            className={classes.media}
+                            image="https://source.unsplash.com/user/sethdoylee/R5tHd-aYmPs"
+                            title="User Profile"
+                        />
+                        <CardContent>
+                            <Typography id="name" variant="h4" color="textSecondary" component="p">
+                                {this.state.name}
+                            </Typography>
+                            <Typography id="skills" variant="h6" color="textSecondary" component="p">
+                                Skills: {this.state.skills}
+                            </Typography>
+                            <Typography id="courses" variant="h6" color="textSecondary" component="p">
+                                Courses: {this.state.courses}
+                            </Typography>
+                            <Typography id="department" variant="h6" color="textSecondary" component="p">
+                                Department: {this.state.department}
+                            </Typography>
 
-                    <CardMedia
-                        className={classes.media}
-                        image="https://source.unsplash.com/user/sethdoylee/R5tHd-aYmPs"
-                        title="User Profile"
-                    />
-                    <CardContent>
-                        <Typography id="name" variant="h4" color="textSecondary" component="p">
-                            {this.state.name}
-                        </Typography>
-                        <Typography id="skills" variant="h6" color="textSecondary" component="p">
-                            Skills: {this.state.skills}
-                        </Typography>
-                        <Typography id="courses" variant="h6" color="textSecondary" component="p">
-                            Courses: {this.state.courses}
-                        </Typography>
-                        <Typography id="department" variant="h6" color="textSecondary" component="p">
-                            Department: {this.state.department}
-                        </Typography>
+                        </CardContent>
+                        <CardActions disableSpacing>
+                            <IconButton aria-label="edit">
 
-                    </CardContent>
-                    <CardActions disableSpacing>
-                        <IconButton aria-label="edit">
-
-                            <a href="http://localhost:3000/profile/edit" >
-                                <EditIcon />
-                            </a>
-                        </IconButton>
-
-
-                    </CardActions>
+                                <a href="http://localhost:3000/profile/edit" >
+                                    <EditIcon />
+                                </a>
+                            </IconButton>
 
 
+                        </CardActions>
 
-                </Card>
-            </div>
-        );
+
+
+                    </Card>
+                </div>
+            );
+        } else {
+            return <img src={LoadingIcon} alt="loading..." />
+        }
     }
 }
 
