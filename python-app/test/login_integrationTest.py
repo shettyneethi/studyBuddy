@@ -10,7 +10,7 @@ cmd = sys.argv[2]
 addr = 'http://{}:5000'.format(host)
 
 if cmd == 'login':
-    user_name = "admin"
+    user_name = sys.argv[3]
     password = "password"
 
     req = {
@@ -22,7 +22,7 @@ if cmd == 'login':
     response = requests.post(req_url, json=req, headers=headers)
     print("Response is", response)
     print(json.loads(response.text))
-    if(json.loads(response.text) == {'status': 'SUCCESS'}):
+    if((json.loads(response.text))['status'] == 'SUCCESS' ):
         print("TEST RES: PASS")
     else:
         print("TEST RES: FAIL")
