@@ -14,9 +14,6 @@ class App extends Component {
             <Route path='/profile/edit' component={UserEdit} />
           </Switch>
         </Router>
-        {/* <div id="homepage">
-          <HomePage />
-        </div> */}
       </div>
     );
   }
