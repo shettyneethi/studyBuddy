@@ -8,6 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import LoadingIcon from "./loading.gif"
+
 const styles = theme => ({
     root: {
         width: 410,
@@ -45,10 +46,6 @@ class UserCard extends Component {
             });
 
     }
-    handleOnClick = () => {
-
-        this.context.router.push('/profile/new');
-    }
     render() {
         const { classes } = this.props;
 
@@ -81,7 +78,7 @@ class UserCard extends Component {
                         <CardActions disableSpacing>
                             <IconButton aria-label="edit">
 
-                                <a href="http://localhost:3000/profile/edit" >
+                                <a href="/profile/edit" >
                                     <EditIcon />
                                 </a>
                             </IconButton>

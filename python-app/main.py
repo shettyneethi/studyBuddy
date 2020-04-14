@@ -13,6 +13,7 @@ import json
 import datetime
 from flask import jsonify
 from utility.producer import send_to_kafka
+from bson.objectid import ObjectId
 import logging
 logging.basicConfig(filename='main-service.out', level=logging.INFO)
 
@@ -45,7 +46,10 @@ def insertProfileToMongo(data):
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
     mycollections = mydb["user_details"]
-    x = mycollections.insert_one(data)
+    myquery = {"_id": ObjectId(data["_id"])}
+    newvalues = {"$set": {"name": data["name"], "skills": data["skills"],
+                          "courses": data["courses"], "department": data["department"]}}
+    x = mycollections.update_one(myquery, newvalues)
 
     return x.acknowledged
 
@@ -53,7 +57,8 @@ def insertProfileToMongo(data):
 def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    posts = [x for x in mongoClient[database][collection].find().sort('_id', -1)]
+    posts = [x for x in mongoClient[database]
+             [collection].find().sort('_id', -1)]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(
         len(posts), str(sys.getsizeof(posts))))
     return posts
@@ -128,7 +133,7 @@ def getProfileFromMongo(database="STUDYBUDDY", collection="user_details"):
     return dumps(profiles[0])
 
 
-@app.route('/api/profile', methods=["POST"])
+@app.route('/api/profile', methods=["PUT"])
 @cross_origin(origin='*', headers=['Content-Type', 'application/json'])
 def edit_profile():
     req = request.json
@@ -138,7 +143,7 @@ def edit_profile():
         data["skills"] = req["skills"]
         data["courses"] = req["courses"]
         data["department"] = req["department"]
-
+        data["_id"] = req["_id"]
         x = insertProfileToMongo(data)
         logging.info("Profile succesfully pushed to MongoDB")
 
