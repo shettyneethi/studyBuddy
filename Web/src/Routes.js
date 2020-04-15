@@ -19,11 +19,11 @@ export default class Routes extends Component {
                 <Switch>
 
                 <Route exact path="/" render={props => 
-                (<Homepage {...props} filterReq={this.getMyRequests}/>)
+                (<Homepage {...props} filterReq={this.getMyRequests} />)
                 }/>/>
                     
                 <Route exact path="/myRequests" render={props => 
-                (<MyRequests {...props} filterRes={this.state.filterMyRequests}/>)
+                (<MyRequests {...props} filterRes={this.state.filterMyRequests} />)
             }/>
                 </Switch>
             </Router>
