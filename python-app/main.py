@@ -42,22 +42,26 @@ def insertToMongo(data):
     return x.acknowledged
 
 
-def insertProfileToMongo(data):
+def updateProfileToMongo(data):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
     mycollections = mydb["user_details"]
-    x = mycollections.insert_one(data)
+    myquery = {"_id": ObjectId(data["_id"])}
+    newvalues = {"$set": {"name": data["name"], "skills": data["skills"],
+                          "courses": data["courses"], "department": data["department"]}}
+    x = mycollections.update_one(myquery, newvalues)
 
     return x.acknowledged
 
+
 def updatePostMongo(data, post_id):
     myclient = pymongo.MongoClient(
-            "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient[DATABASE]
     mycollections = mydb[COLLECTION]
-    new_data = {"$set":data}
-    res = mycollections.update_one({ "_id":post_id }, new_data)
+    new_data = {"$set": data}
+    res = mycollections.update_one({"_id": post_id}, new_data)
 
     return res.modified_count
 
@@ -65,7 +69,8 @@ def updatePostMongo(data, post_id):
 def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    posts = [x for x in mongoClient[database][collection].find().sort('_id', -1)]
+    posts = [x for x in mongoClient[database]
+             [collection].find().sort('_id', -1)]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(
         len(posts), str(sys.getsizeof(posts))))
     return posts
@@ -129,7 +134,7 @@ def update_post(id):
     print(id)
     data = {}
     try:
-        
+
         data["interested_count"] = req["interested_count"]
         data["interested_people"] = req["interested_people"]
         post_id = ObjectId(req["id"].get('$oid'))
@@ -157,18 +162,18 @@ def update_post(id):
 
     return jsonify(response_data)
 
+
 @app.route('/requests/delete/<id>', methods=["DELETE"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def delete_post(id):
     post_id = ObjectId(id)
-    
 
     myclient = pymongo.MongoClient(
-            "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient[DATABASE]
     mycollections = mydb[COLLECTION]
-    res = mycollections.delete_one({ "_id":post_id})
-    
+    res = mycollections.delete_one({"_id": post_id})
+
     return 'Success'
 
 
@@ -181,7 +186,7 @@ def getProfileFromMongo(database="STUDYBUDDY", collection="user_details"):
     return dumps(profiles[0])
 
 
-@app.route('/api/profile', methods=["POST"])
+@app.route('/api/profile', methods=["PUT"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'application/json'])
 def edit_profile():
     req = request.json
@@ -191,8 +196,8 @@ def edit_profile():
         data["skills"] = req["skills"]
         data["courses"] = req["courses"]
         data["department"] = req["department"]
-
-        x = insertProfileToMongo(data)
+        data["_id"] = req["_id"]
+        x = updateProfileToMongo(data)
         logging.info("Profile succesfully pushed to MongoDB")
 
         response_data = {
