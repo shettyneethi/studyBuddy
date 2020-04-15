@@ -21,8 +21,19 @@ import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ViewProfile from "./ViewProfile.js"
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch 
+} from 'react-router-dom';
+import 'abortcontroller-polyfill';
+
+
 
 class Homepage extends Component {
+  _isMounted = false;
+  controller = new window.AbortController();
 
   state = {
     courses: ["CS", "MS", "FRCS"],
@@ -32,8 +43,10 @@ class Homepage extends Component {
     cacheAPISugesstions: [],
     isOpen: false,
     filterResults: [],
-    posts: []
+    posts: [],
+    filterRequests: []
   };
+  
     
   // SUGGEST_URL = 'https://api-suggest-dot-studybuddy-5828.appspot.com/suggest'
 
@@ -71,7 +84,7 @@ class Homepage extends Component {
     
   };
 
-
+  
 
   // componentDidMount() {
   //   axios
@@ -81,23 +94,52 @@ class Homepage extends Component {
   //   })
   // }
   componentDidMount() {
-    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest')
+
+    this._isMounted = true;
+    console.log('In didmount');
+    console.log(this._isMounted);
+    fetch('http://127.0.0.1:8080/suggest', {
+      signal: this.controller.signal
+    })
         .then(response => response.json())
         .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res}));
 
-    this.eventSource = new EventSource('https://api-update-posts-dot-studybuddy-5828.appspot.com/posts');
+    console.log(this._isMounted);
+
+    this.eventSource = new EventSource('http://127.0.0.1:8081/api/posts');
     this.eventSource.onmessage = e =>
-    this.updateData(JSON.parse(e.data));
+    this.updateData(JSON.parse(e.data), e);
 
   }
 
 
-  updateData(data) {
+  updateData(data, e) {
+    console.log(e)
+    console.log(data)
     let res = this.state.filterResults
     let res_sort = [data].concat(res)
-    this.setState({cacheAPISugesstions: res_sort, filterResults: res_sort})
+    this.setState({cacheAPISugesstions: res_sort, filterResults: res_sort, posts: res_sort});
   }
 
+  componentWillUnmount() {
+    console.log('In unmount');
+    this._isMounted = false;
+    console.log(this._isMounted);
+    this.controller.abort();
+    if(this.eventSource)
+      this.eventSource.close();
+
+  }
+
+
+  handleMyRequest = () => {
+
+    var filterMyReq = this.state.filterResults;
+    filterMyReq = filterMyReq.filter(
+        (item) =>  item.username == 'reshma');
+    this.props.filterReq(filterMyReq);
+
+  }
 
   onSuggestionsFetchRequested = ({ value }) => {
     this.setState({ suggestions: this.getSuggestions(this.state.cacheAPISugesstions, value) });
@@ -145,6 +187,7 @@ class Homepage extends Component {
     });
   }
 
+  
   render() {
     const value = this.state.value;
     const suggestions = this.state.suggestions;
@@ -193,22 +236,15 @@ class Homepage extends Component {
               renderInputComponent={renderInputComponent}
             />
           </Nav>
-          <button className='requestButton' style={{ fontSize: 17 }}>My Requests</button>
+          
+          <Link to="/myRequests" onClick = {this.handleMyRequest}>My Requests</Link>
+                 
           <IconButton aria-label="show 17 new notifications" color="inherit">
             <Badge badgeContent={17} color="secondary">
               <NotificationsIcon fontSize='large' />
             </Badge>
           </IconButton>
-          {/* <IconButton
-            edge="end"
-            aria-label="account of current user"
-            // aria-controls={menuId}
-            aria-haspopup="true"
-            // onClick={handleProfileMenuOpen}
-            color="inherit"
-          >
-            <AccountCircle fontSize='large' />
-          </IconButton> */}
+
           <ViewProfile />
 
         </Navbar>
@@ -233,7 +269,6 @@ class Homepage extends Component {
                 </IconButton>
 
                 <Request show={this.state.isOpen}
-                  // updateposts = {this.updateposts}
                   onClose={this.toggleModal}
                   >
                   Here's some content for the modal

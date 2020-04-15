@@ -41,7 +41,7 @@ def insertToMongo(data):
     return x.acknowledged
 
 
-def insertProfileToMongo(data):
+def updateProfileToMongo(data):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
@@ -66,20 +66,20 @@ def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
 
 @app.route('/status', methods=["GET"])
 @app.route('/', methods=["GET"])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def status():
     return "app is running!"
 
 
 @app.route('/suggest', methods=["GET"])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 @cache.cached(timeout=50)
 def suggest():
     return dumps(getPostsFromMongo())
 
 ##### POST ######
 @app.route('/requests/create', methods=["POST"])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def create_post():
     req = request.json
     data = {}
@@ -114,7 +114,7 @@ def create_post():
 
 
 @app.route('/requests/delete', methods=["DELETE"])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def delete_post():
     req = request.json
     # username = req["username"]
@@ -125,7 +125,7 @@ def delete_post():
 
 
 @app.route('/api/profile', methods=["GET"])
-@cross_origin(origin='*', headers=['Content-Type', 'application/json'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'application/json'])
 def getProfileFromMongo(database="STUDYBUDDY", collection="user_details"):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
@@ -134,7 +134,7 @@ def getProfileFromMongo(database="STUDYBUDDY", collection="user_details"):
 
 
 @app.route('/api/profile', methods=["PUT"])
-@cross_origin(origin='*', headers=['Content-Type', 'application/json'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'application/json'])
 def edit_profile():
     req = request.json
     data = {}
@@ -144,7 +144,7 @@ def edit_profile():
         data["courses"] = req["courses"]
         data["department"] = req["department"]
         data["_id"] = req["_id"]
-        x = insertProfileToMongo(data)
+        x = updateProfileToMongo(data)
         logging.info("Profile succesfully pushed to MongoDB")
 
         response_data = {

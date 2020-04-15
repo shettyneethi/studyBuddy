@@ -11,7 +11,7 @@ TOPIC_NAME = 'posts'
 
 @app.route('/status', methods=["GET"])
 @app.route('/', methods=["GET"])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def status():
     return "app is running!"
 
@@ -30,23 +30,23 @@ def getConsumer(readLatest=False):
                          group_id=None
                         )
 
-consumer = getConsumer(readLatest=True) 
 
-@app.route('/posts', methods=["GET"])
-@cross_origin(origin='*',headers=['Content-Type','Authorization'])
+
+@app.route('/api/posts', methods=["GET"])
+@cross_origin(origins='*',allow_headers=['Content-Type','Authorization'])
 def subcribe_to_kafka():
-    print("Message")
-    # consumer = getConsumer(readLatest=True) 
+    print('Message')
+    consumer = getConsumer(readLatest=True) 
     def events():
         for message in consumer:
             if message is not None:
                 print(message)
                 yield 'data: {0}\n\n'.format(message.value.decode('ascii'))
-                # consumer.close()
+                consumer.close()
     res = Response(events(), mimetype="text/event-stream") 
     print(res.headers)
     return res
             
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8081, debug=True)
+    app.run(host='127.0.0.1', port=8081)
 

@@ -4,14 +4,21 @@ import TextField from '@material-ui/core/TextField';
 import { Container } from "@material-ui/core";
 import LoadingIcon from "./loading.gif"
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 const styles = theme => ({
-    root: {
-        width: 410,
-        height: 460
+    textField: {
+        width: '60%',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        paddingBottom: 0,
+        marginTop: 0,
+        fontWeight: 500,
+
     },
-    media: {
-        height: 250,
-        paddingTop: '56.25%', // 16:9
+    input: {
+        color: 'white'
     },
 
 });
@@ -92,34 +99,46 @@ class UserEdit extends Component {
         if (this.state.name && this.state.skills && this.state.courses && this.state.department) {
             return (
                 <div>
+                    <IconButton aria-label="back" onClick={() => this.props.history.push('/')}>
+                        <ArrowBackIcon fontSize="large" />
+                    </IconButton>
                     <Container width="lg">
-                        <form className={classes.root} noValidate autoComplete="on" onSubmit={this.handleSubmit}>
-                            <div>
-                                <TextField id="name" label="Name" defaultValue={this.state.name} onChange={this.onNameChange} />
-                                <br /><br />
-                                <TextField id="skills" label="Skills" defaultValue={this.state.skills} onChange={this.onSkillsChange} />
-                                <br /><br />
+                        <center>
+                            <form className={classes.root} noValidate autoComplete="on" onSubmit={this.handleSubmit}>
+                                <div>
+                                    <br /><br /><br />
+                                    <Typography variant="h4" align="center" gutterBottom>
+                                        Edit your profile
+                                </Typography>
+                                    <TextField id="name" label="Name" className={classes.textField} defaultValue={this.state.name} onChange={this.onNameChange} />
+                                    <br /><br />
+                                    <TextField id="skills" label="Skills" className={classes.textField} defaultValue={this.state.skills} onChange={this.onSkillsChange} />
+                                    <br /><br />
 
-                                <TextField id="courses" label="Courses" defaultValue={this.state.courses} onChange={this.onCoursesChange} />
-                                <br /><br />
+                                    <TextField id="courses" label="Courses" className={classes.textField} defaultValue={this.state.courses} onChange={this.onCoursesChange} />
+                                    <br /><br />
 
-                                <TextField id="department" label="Department" defaultValue={this.state.department} onChange={this.onDepartmentChange} />
-                                <br /><br />
-                                <Button variant="contained" color="primary" onClick={(e) => this.handleSubmit(e)}>
-                                    Save
+                                    <TextField id="department" label="Department" className={classes.textField} defaultValue={this.state.department} onChange={this.onDepartmentChange} />
+                                    <br /><br />
+                                    <Button variant="contained" color="primary" onClick={(e) => this.handleSubmit(e)}>
+                                        Save
       </Button>
-                            </div>
+                                </div>
 
-                        </form>
+                            </form>
 
-
+                        </center>
                     </Container>
 
 
                 </div>
             );
         } else {
-            return <img src={LoadingIcon} alt="loading..." />
+            return (
+                <center>
+                    <img src={LoadingIcon} alt="loading..." />
+                </center>
+            );
         }
 
     }
