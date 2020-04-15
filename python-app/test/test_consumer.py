@@ -21,8 +21,13 @@ class UsersTest(unittest.TestCase):
     self.client = consumer.app.test_client
 
   @patch('consumer.KafkaConsumer')
+  def  test_post_creation(self, mock_consumer):
+    response = self.client().get('api/posts')
+    self.assertEqual(response.status, '200 OK')
+
+  @patch('consumer.KafkaConsumer')
   def  test_post_updation(self, mock_consumer):
-    response = self.client().get('/posts')
+    response = self.client().get('/api/updated/posts')
     self.assertEqual(response.status, '200 OK')
 
 

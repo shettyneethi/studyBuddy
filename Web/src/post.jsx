@@ -8,6 +8,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 class Post extends Component {
   state = {
     count: 0,
+    people: [],
     isOpen: false
   };
 
@@ -16,9 +17,60 @@ class Post extends Component {
       isOpen: !this.state.isOpen
     });
   }
+
+  handlePersonIcon = () => {
+    console.log("Open profile");
+  };
+
+  handleCount = () => {
+    console.log("Open members");
+  };
+
+  handleDone(id) {
+    const url = "http://127.0.0.1:8080"
+    
+    fetch(`${url}/requests/delete/${id}`, {
+      method: "DELETE"
+    })
+      .then(res => res.json())
+
+  };
+
+   
+  handleInterested(id, username, interested_count, interested_people) {
+    
+    let people_update = [username].concat(interested_people)
+    let count_update = interested_count+1
+
+    console.log('In interested')
+    console.log(id)
+
+    const data = {
+      interested_people: people_update,
+      interested_count: count_update,
+      id: id 
+    };
+    
+    const url = "http://127.0.0.1:8080"
+
+    fetch(`${url}/requests/update/${data.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+
+   
+  };
   
   render() {
-    const { username, interested_count, msg, tag, course, skill } = this.props.request
+    const { username, interested_count, interested_people, msg, tag, course, skill, _id} = this.props.request
+    console.log(this.props.request)
+    console.log(this.props.value)
+    const id = _id['$oid']
+    
     return (
       <React.Fragment>
         <Segment>
@@ -28,7 +80,7 @@ class Post extends Component {
         
               <Grid.Column >
 
-         <IconButton onClick={this.props.handlePersonIcon}
+         <IconButton onClick={this.handlePersonIcon}
               edge="end"
               aria-label="account of current user"
               // aria-controls={menuId}
@@ -69,9 +121,10 @@ class Post extends Component {
         <Grid.Row  columns={3}>
         <Grid.Column width={3}>
         <button
-          onClick={this.props.handleInterested}
+          onClick={() => {this.handleInterested(_id, username, interested_count, interested_people)}}
           style={{ fontSize: 15 }}
           className="badge badge-secondary btn-sm "
+          disabled={this.props.value}
         >
           Interested
         </button>
@@ -88,7 +141,8 @@ class Post extends Component {
         </button>
 
         <Modal show={this.state.isOpen}
-          onClose={this.toggleModal}>
+          onClose={this.toggleModal}
+          interested_people= {interested_people}>
           Here's some content for the modal
         </Modal>
 
@@ -96,7 +150,7 @@ class Post extends Component {
         
         <Grid.Column width={2}>
         <button
-          onClick={this.props.handleDone}
+          onClick={() => {this.handleDone(id)}}
           style={{ fontSize: 15 }}
           className="badge badge-success btn-sm "
         >

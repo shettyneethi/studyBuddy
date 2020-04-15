@@ -44,7 +44,8 @@ class Homepage extends Component {
     isOpen: false,
     filterResults: [],
     posts: [],
-    filterRequests: []
+    filterRequests: [],
+    recent_post:{}
   };
   
     
@@ -106,19 +107,46 @@ class Homepage extends Component {
 
     console.log(this._isMounted);
 
-    this.eventSource = new EventSource('http://127.0.0.1:8081/api/posts');
-    this.eventSource.onmessage = e =>
+    this.eventSource_a = new EventSource('http://127.0.0.1:8081/api/posts');
+    this.eventSource_a.onmessage = e =>
     this.updateData(JSON.parse(e.data), e);
+
+    this.eventSource_b = new EventSource('http://127.0.0.1:8081/api/updated/posts');
+    this.eventSource_b.onmessage = e =>
+    this.updatePost(JSON.parse(e.data), e);
 
   }
 
 
   updateData(data, e) {
-    console.log(e)
+    // console.log(e)
     console.log(data)
     let res = this.state.filterResults
     let res_sort = [data].concat(res)
-    this.setState({cacheAPISugesstions: res_sort, filterResults: res_sort, posts: res_sort});
+    this.setState({cacheAPISugesstions: res_sort, filterResults: res_sort, posts: res_sort, recent_post: data});
+  }
+
+  updatePost(data, e) {
+    console.log(data)
+    
+    let post = this.state.filterResults
+    let post_id = data['_id']['$oid']
+   
+    // console.log(post_id)
+    var i;
+    for(i=0; i<post.length; i++)
+    { 
+    if(post_id==post[i]['_id']['$oid'])
+    {
+      // console.log(post[i]['_id']['$oid'])
+      post[i]['interested_count'] = data['interested_count'];
+      post[i]['interested_people']= data['interested_people'];
+
+    }
+  }
+  // console.log(post)
+    
+    this.setState({filterResults: post});
   }
 
   componentWillUnmount() {
@@ -126,8 +154,11 @@ class Homepage extends Component {
     this._isMounted = false;
     console.log(this._isMounted);
     this.controller.abort();
-    if(this.eventSource)
-      this.eventSource.close();
+    if(this.eventSource_a)
+      this.eventSource_a.close();
+
+    if(this.eventSource_b)
+      this.eventSource_b.close();
 
   }
 
@@ -136,7 +167,7 @@ class Homepage extends Component {
 
     var filterMyReq = this.state.filterResults;
     filterMyReq = filterMyReq.filter(
-        (item) =>  item.username == 'reshma');
+        (item) =>  item.username == 'test');
     this.props.filterReq(filterMyReq);
 
   }
@@ -192,7 +223,7 @@ class Homepage extends Component {
     const value = this.state.value;
     const suggestions = this.state.suggestions;
 
-    console.log(this.state.filterResults)
+    // console.log(this.state.filterResults)
 
     // Autosuggest will pass through all these props to the input.
     const autoSuggestInputProps = {
@@ -256,7 +287,7 @@ class Homepage extends Component {
             <Grid.Column width={9}>
 
               <div className='postsDivision'>
-                <Posts filterRes={this.state.filterResults} />
+                <Posts filterRes={this.state.filterResults} value={false}/>
               </div>
 
             </Grid.Column>
