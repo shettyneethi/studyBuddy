@@ -288,7 +288,7 @@ class Homepage extends Component {
 
                   <AddCircleIcon style={{ fontSize: 40, color: 'black' }} ></AddCircleIcon>
                 </IconButton>
-                {"Create New Buddy Request "}
+                {"Create New Buddy Request"}
 
                 <Request show={this.state.isOpen}
                   onClose={this.toggleModal}
