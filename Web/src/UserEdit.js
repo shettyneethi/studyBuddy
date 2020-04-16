@@ -73,7 +73,7 @@ class UserEdit extends Component {
             .then(this.props.history.push('/'))
             .then(() => {
                 console.log(data._id)
-                alert("Hey " + data.name + ", your profile updated successfully");
+                alert("Hey " + data.name.split(" ")[0] + ", your profile updated successfully");
             })
 
     };
