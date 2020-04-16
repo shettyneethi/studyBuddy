@@ -47,8 +47,9 @@
   font-family: Helvetica, sans-serif;
   font-weight: 300;
   font-size: 16px;
-  border: 1px solid #aaa;
-  border-radius: 4px;
+  border: 1px solid #00B4CC;
+  border-radius: 50px 50px 50px 50px;
+color: #9DBFAF;
 }
 
 .react-autosuggest__input--focused {
