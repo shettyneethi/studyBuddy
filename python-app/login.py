@@ -25,7 +25,7 @@ def login():
     }
 
     status=200
-    print(myquery)
+    # print(myquery)
 
     try:
         if(usrDetails.find(myquery).count() == 1):
@@ -57,7 +57,7 @@ def signup():
         "status" : "SUCCESS",
         "message" : "Sign Up Successful"
     }
-    print(row)
+    # print(row)
     status=200
     try:
         if(usrDetails.find(myquery1).count() > 0):
@@ -68,6 +68,31 @@ def signup():
             response["message"] = "Account with this Email ID already exists"
         else:
             usrDetails.insert_one(row)
+    except:
+            response["status"] = "ERROR"
+            status = 400
+
+    response_pickled = jsonpickle.encode(response)
+    return Response(response=response_pickled,
+           status=status , mimetype="application/json")
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["STUDYBUDDY"]
+    usrDetails = mydb["user_details"]
+    data = request.get_json()
+    myquery = { "token": data["token"] }
+
+    response = {
+        "status" : "FAIL"
+    }
+    status=200
+
+    try:
+        if(usrDetails.find(myquery).count() == 1):
+            usrDetails.update(myquery, {"$unset": {"token":1} } )
+            response["status"] = "SUCCESS"
     except:
             response["status"] = "ERROR"
             status = 400

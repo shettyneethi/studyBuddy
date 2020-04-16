@@ -40,6 +40,15 @@ elif(cmd == 'signup'):
     response = requests.post(req_url, json=req, headers=headers)
     print("Response is", response)
     print(json.loads(response.text))
-
+elif(cmd == 'logout'):
+    token = sys.argv[3]
+    req = {
+        "token" : token
+    }
+    req_url = addr + '/api/logout' 
+    headers = {'content-type': 'application/json'}
+    response = requests.post(req_url, json=req, headers=headers)
+    print("Response is", response)
+    print(json.loads(response.text))
 else:
     print("Unknown option", cmd)                
