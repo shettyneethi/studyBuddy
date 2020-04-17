@@ -106,7 +106,7 @@ class Homepage extends Component {
 
     console.log(this._isMounted);
 
-    this.eventSource = new EventSource('http://127.0.0.1:8081/api/posts');
+    this.eventSource = new EventSource('https://api-update-posts-dot-studybuddy-5828.appspot.com/api/posts');
     this.eventSource.onmessage = e =>
     this.updateData(JSON.parse(e.data), e);
 
