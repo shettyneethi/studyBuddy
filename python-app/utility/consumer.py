@@ -11,7 +11,7 @@ TOPIC_NAME = 'posts'
 
 @app.route('/status', methods=["GET"])
 @app.route('/', methods=["GET"])
-@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def status():
     return "app is running!"
 
@@ -43,25 +43,9 @@ def subcribe_to_kafka():
                 print(message)
                 yield 'data: {0}\n\n'.format(message.value.decode('ascii'))
         consumer.close()
-    res = Response(events(), mimetype="text/event-stream") 
-    print(res.headers)
-    return res
-
-@app.route('/api/updated/posts', methods=["GET"])
-@cross_origin(origins='*',allow_headers=['Content-Type','Authorization'])
-def subcribe_to_kafka_updated_posts():
-    print('Message')
-    consumer = getConsumer('updated_posts', readLatest=True) 
-    def events():
-        for message in consumer:
-            if message is not None:
-                print(message)
-                yield 'data: {0}\n\n'.format(message.value.decode('ascii'))
-        consumer.close()
-    res = Response(events(), mimetype="text/event-stream") 
+    res = Response(events(), mimetype="text/event-stream", headers={'X-Accel-Buffering': 'no'}) 
     print(res.headers)
     return res
             
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8081)
-
+    app.run(host='0.0.0.0', port=8081, ssl_context='adhoc')
