@@ -1,28 +1,32 @@
 import React, { Component } from "react";
 // import Header from './header.jsx';
-import Icon from "@material-ui/core/Icon";
-import PersonIcon from "@material-ui/icons/Person";
 import "bootstrap/dist/css/bootstrap.min.css";
-import DropdownPlugin from "./dropdown.jsx";
 import Posts from "./posts.jsx";
 import SearchBar from "react-search-bar-semantic-ui";
-import { Search, Grid, Segment } from 'semantic-ui-react';
-import css from './homepage.css'
+import { Search, Grid, Segment } from 'semantic-ui-react'
 import Autosuggest from 'react-autosuggest';
-import axios from 'axios'
 import { debounce } from 'throttle-debounce'
 import Request from './request.jsx';
 import { Navbar, Nav } from 'react-bootstrap';
-import logo from './logo.jpg'
-import SearchIcon from '@material-ui/icons/Search'
+import fav from './images/fav.jpg'
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ViewProfile from "./ViewProfile.js"
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch
+} from 'react-router-dom';
+import 'abortcontroller-polyfill';
+
+
 
 class Homepage extends Component {
+  _isMounted = false;
+  controller = new window.AbortController();
 
   state = {
     courses: ["CS", "MS", "FRCS"],
@@ -32,10 +36,9 @@ class Homepage extends Component {
     cacheAPISugesstions: [],
     isOpen: false,
     filterResults: [],
-    posts: []
+    posts: [],
+    filterRequests: []
   };
-    
-  // SUGGEST_URL = 'https://api-suggest-dot-studybuddy-5828.appspot.com/suggest'
 
   componentWillMount() {
     this.onSuggestionsFetchRequested = debounce(
@@ -48,6 +51,7 @@ class Homepage extends Component {
     return (
       <div>
         <span>{suggestion.msg}</span>
+        <span>{"  "}</span>
         <span>{suggestion.course}</span>
       </div>
 
@@ -57,48 +61,82 @@ class Homepage extends Component {
 
   onChange = (event, { newValue }) => {
 
-    if(newValue.length != 0){
+    if (newValue.length != 0) {
       this.setState({
         value: newValue
-      }); 
+      });
     }
-    else{
+    else {
       this.setState({
         value: newValue,
         filterResults: this.state.posts
       });
     }
-    
+
   };
 
-
-
-  // componentDidMount() {
-  //   axios
-  //   .get(this.SUGGEST_URL, {})
-  //   .then(res => {
-  //     this.setState({ cacheAPISugesstions: res.data});
-  //   })
-  // }
+ 
   componentDidMount() {
-    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest')
-        .then(response => response.json())
-        .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res}));
 
-    this.eventSource = new EventSource('https://34.71.199.201:8081/posts');
-    this.eventSource.onmessage = e =>
-    this.updateData(JSON.parse(e.data));
+    this._isMounted = true;
+    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest', {
+      signal: this.controller.signal
+    })
+      .then(response => response.json())
+      .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res }));
 
+    this.eventSource_a = new EventSource('https://34.71.199.201:8081/api/posts');
+    this.eventSource_a.onmessage = e =>
+      this.updateData(JSON.parse(e.data), e);
+
+    this.eventSource_b = new EventSource('https://34.71.199.201:8081/api/updated/posts');
+    this.eventSource_b.onmessage = e =>
+      this.updatePost(JSON.parse(e.data), e);
   }
 
 
-  updateData(data) {
-    console.log(data)
+
+  updateData(data, e) {
     let res = this.state.filterResults
     let res_sort = [data].concat(res)
-    this.setState({cacheAPISugesstions: res_sort, filterResults: res_sort})
+    this.setState({ cacheAPISugesstions: res_sort, filterResults: res_sort, posts: res_sort});
   }
 
+  updatePost(data, e) {
+    let post = this.state.filterResults
+    let post_id = data['_id']['$oid']
+    var i;
+    for (i = 0; i < post.length; i++) {
+      if (post_id == post[i]['_id']['$oid']) {
+        post[i]['interested_count'] = data['interested_count'];
+        post[i]['interested_people'] = data['interested_people'];
+
+      }
+    }
+
+    this.setState({ filterResults: post });
+  }
+
+
+  componentWillUnmount() {
+    this._isMounted = false;
+    this.controller.abort();
+    if (this.eventSource_a)
+      this.eventSource_a.close();
+
+    if (this.eventSource_b)
+      this.eventSource_b.close();
+  }
+
+
+  handleMyRequest = () => {
+
+    var filterMyReq = this.state.filterResults;
+    filterMyReq = filterMyReq.filter(
+      (item) => item.username == 'test');
+    this.props.filterReq(filterMyReq);
+
+  }
 
   onSuggestionsFetchRequested = ({ value }) => {
     this.setState({ suggestions: this.getSuggestions(this.state.cacheAPISugesstions, value) });
@@ -111,25 +149,22 @@ class Homepage extends Component {
     });
   };
 
-  onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) =>{
+  onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
     var filterRes = this.state.filterResults;
-    console.log('Before filter' + filterRes)
-    console.log(suggestionValue)
-      filterRes = filterRes.filter(
-        (item) =>  item.course == suggestionValue)
-      console.log('FilterRes' +filterRes );
-      
-      if(filterRes != 0) {
-        this.setState({ 
-          filterResults: filterRes
-          });
-      }
-      else {
-        this.setState({ 
-          filterResults: this.state.posts
-          });
-      }
-};
+    filterRes = filterRes.filter(
+      (item) => item.course == suggestionValue)
+
+    if (filterRes != 0) {
+      this.setState({
+        filterResults: filterRes
+      });
+    }
+    else {
+      this.setState({
+        filterResults: this.state.posts
+      });
+    }
+  };
   getSuggestions = (allPosts, searchValue) => {
     const inputValue = searchValue.trim().toLowerCase();
     const inputLength = inputValue.length;
@@ -146,11 +181,10 @@ class Homepage extends Component {
     });
   }
 
+
   render() {
     const value = this.state.value;
     const suggestions = this.state.suggestions;
-
-    console.log(this.state.filterResults)
 
     // Autosuggest will pass through all these props to the input.
     const autoSuggestInputProps = {
@@ -168,16 +202,15 @@ class Homepage extends Component {
 
 
     return (
-
       <div className="gridContainer">
 
         <Navbar bg="light" expand="lg">
           <Navbar.Brand href="#home">
             <img
               alt=""
-              src={logo}
-              width="60"
-              height="60"
+              src={fav}
+              width="70"
+              height="70"
             />{' '}
           StudyBuddy
         </Navbar.Brand>
@@ -194,24 +227,15 @@ class Homepage extends Component {
               renderInputComponent={renderInputComponent}
             />
           </Nav>
-          <button className='requestButton' style={{ fontSize: 17 }}>My Requests</button>
+
+          <Link to="/myRequests" onClick={this.handleMyRequest}>My Requests</Link>
           <IconButton aria-label="show 17 new notifications" color="inherit">
             <Badge badgeContent={17} color="secondary">
               <NotificationsIcon fontSize='large' />
             </Badge>
           </IconButton>
-          {/* <IconButton
-            edge="end"
-            aria-label="account of current user"
-            // aria-controls={menuId}
-            aria-haspopup="true"
-            // onClick={handleProfileMenuOpen}
-            color="inherit"
-          >
-            <AccountCircle fontSize='large' />
-          </IconButton> */}
-          <ViewProfile />
 
+          <ViewProfile />
         </Navbar>
 
         <Grid padded >
@@ -221,7 +245,7 @@ class Homepage extends Component {
             <Grid.Column width={9}>
 
               <div className='postsDivision'>
-                <Posts filterRes={this.state.filterResults} />
+                <Posts filterRes={this.state.filterResults} value_int={false} value_delete={true} />
               </div>
 
             </Grid.Column>
@@ -229,14 +253,14 @@ class Homepage extends Component {
               <div className='newPostDivision' >
 
                 <IconButton onClick={this.toggleModal} >
-                  {" "}
+
                   <AddCircleIcon style={{ fontSize: 40, color: 'black' }} ></AddCircleIcon>
                 </IconButton>
+                {"Create New Buddy Request"}
 
                 <Request show={this.state.isOpen}
-                  // updateposts = {this.updateposts}
                   onClose={this.toggleModal}
-                  >
+                >
                   Here's some content for the modal
                 </Request>
               </div>

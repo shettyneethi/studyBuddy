@@ -34,7 +34,7 @@ class UserCard extends Component {
         department: null
     }
     componentDidMount() {
-        fetch("http://127.0.0.1:8080/api/profile", {
+        fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile", {
             method: 'GET'
         },
         ).then((response) => response.json())
