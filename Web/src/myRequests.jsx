@@ -20,10 +20,10 @@ class MyRequests extends Component {
         <Grid.Row padded>
         <Link to="/" >Home</Link>
         </Grid.Row>
-
+ 
         <Grid.Row padded>
         <div className='postsDivision'>
-            <Posts filterRes={this.props.filterRes} />
+            <Posts filterRes={this.props.filterRes} value={true}/>
             </div>
         </Grid.Row>
         </Grid>
