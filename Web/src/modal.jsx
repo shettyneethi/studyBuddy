@@ -39,11 +39,6 @@ class Modal extends React.Component {
          ))
       }
             </div>
-
-              {/* <CheckboxCustom  
-                menu={this.props.interested_people}
-                title="Select tag"
-                ></CheckboxCustom> */}
             </Grid.Column>
             </Grid.Row>
 

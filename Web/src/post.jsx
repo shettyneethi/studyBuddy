@@ -4,6 +4,7 @@ import { Grid, Segment,Label} from 'semantic-ui-react';
 import Modal from './modal.jsx';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import ViewProfile from "./ViewProfile.js"
 
 class Post extends Component {
   state = {
@@ -41,10 +42,6 @@ class Post extends Component {
     
     let people_update = [username].concat(interested_people)
     let count_update = interested_count+1
-
-    console.log('In interested')
-    console.log(id)
-
     const data = {
       interested_people: people_update,
       interested_count: count_update,
@@ -67,8 +64,6 @@ class Post extends Component {
   
   render() {
     const { username, interested_count, interested_people, msg, tag, course, skill, _id} = this.props.request
-    console.log(this.props.request)
-    console.log(this.props.value)
     const id = _id['$oid']
     
     return (
@@ -83,9 +78,7 @@ class Post extends Component {
          <IconButton onClick={this.handlePersonIcon}
               edge="end"
               aria-label="account of current user"
-              // aria-controls={menuId}
               aria-haspopup="true"
-              // onClick={handleProfileMenuOpen}
               color="inherit"
             >
               <AccountCircle style={{ fontSize: 40 }} />
@@ -124,7 +117,7 @@ class Post extends Component {
           onClick={() => {this.handleInterested(_id, username, interested_count, interested_people)}}
           style={{ fontSize: 15 }}
           className="badge badge-secondary btn-sm "
-          disabled={this.props.value}
+          disabled={this.props.value_int}
         >
           Interested
         </button>
@@ -153,6 +146,7 @@ class Post extends Component {
           onClick={() => {this.handleDone(id)}}
           style={{ fontSize: 15 }}
           className="badge badge-success btn-sm "
+          disabled={this.props.value_delete}
         >
           Done
         </button>

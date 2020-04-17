@@ -45,11 +45,7 @@ class Request extends Component {
     });
   };
 
-  // componentDidMount() {
   handleSubmit = event => {
-    // alert('A name was submitted: ' + this.state.value);
-    // event.preventDefault();
-    // console.log(this.state.message);
     const data = {
       msg: this.state.message,
       course: this.state.selectedCourse,
@@ -66,7 +62,6 @@ class Request extends Component {
       .then(res => res.json())
       .then(data => this.setState({result:data}));
   };
-// }
 
   handleMessageChange = event => {
     this.setState({ message: event.target.value });
@@ -74,8 +69,6 @@ class Request extends Component {
 
   handlePost = () =>{
     this.handleSubmit();
-    // this.componentDidMount();
-    // this.props.updateposts();
     this.props.onClose();
   }
 
@@ -83,7 +76,6 @@ class Request extends Component {
     if (!this.props.show) {
       return null;
     }
-    // console.log(this.state.result)
     return (
           <div className='requestContainer'>
             <Segment>

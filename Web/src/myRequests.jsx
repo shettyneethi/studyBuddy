@@ -23,7 +23,7 @@ class MyRequests extends Component {
  
         <Grid.Row padded>
         <div className='postsDivision'>
-            <Posts filterRes={this.props.filterRes} value={true}/>
+            <Posts filterRes={this.props.filterRes} value_int={true} value_delete={false}/>
             </div>
         </Grid.Row>
         </Grid>
