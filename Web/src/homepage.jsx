@@ -99,7 +99,7 @@ class Homepage extends Component {
     this._isMounted = true;
     console.log('In didmount');
     console.log(this._isMounted);
-    fetch('http://127.0.0.1:8080/suggest', {
+    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest', {
       signal: this.controller.signal
     })
         .then(response => response.json())
@@ -107,11 +107,11 @@ class Homepage extends Component {
 
     console.log(this._isMounted);
 
-    this.eventSource_a = new EventSource('http://127.0.0.1:8081/api/posts');
+    this.eventSource_a = new EventSource('https://api-update-posts-dot-studybuddy-5828.appspot.com/api/posts');
     this.eventSource_a.onmessage = e =>
     this.updateData(JSON.parse(e.data), e);
 
-    this.eventSource_b = new EventSource('http://127.0.0.1:8081/api/updated/posts');
+    this.eventSource_b = new EventSource('https://api-update-posts-dot-studybuddy-5828.appspot.com/api/updated/posts');
     this.eventSource_b.onmessage = e =>
     this.updatePost(JSON.parse(e.data), e);
 

@@ -27,7 +27,7 @@ class Post extends Component {
   };
 
   handleDone(id) {
-    const url = "http://127.0.0.1:8080"
+    const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
     
     fetch(`${url}/requests/delete/${id}`, {
       method: "DELETE"
@@ -51,7 +51,7 @@ class Post extends Component {
       id: id 
     };
     
-    const url = "http://127.0.0.1:8080"
+    const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
 
     fetch(`${url}/requests/update/${data.id}`, {
       method: "PUT",

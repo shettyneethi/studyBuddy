@@ -22,7 +22,7 @@ class UsersTest(unittest.TestCase):
 
   @patch('consumer.KafkaConsumer')
   def  test_post_creation(self, mock_consumer):
-    response = self.client().get('api/posts')
+    response = self.client().get('/api/posts')
     self.assertEqual(response.status, '200 OK')
 
   @patch('consumer.KafkaConsumer')
