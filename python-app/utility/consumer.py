@@ -43,7 +43,22 @@ def subcribe_to_kafka():
                 print(message)
                 yield 'data: {0}\n\n'.format(message.value.decode('ascii'))
         consumer.close()
-    res = Response(events(), mimetype="text/event-stream", headers={'X-Accel-Buffering': 'no'}) 
+    res = Response(events(), mimetype="text/event-stream")
+    print(res.headers)	
+    return res	
+
+@app.route('/api/updated/posts', methods=["GET"])	
+@cross_origin(origins='*',allow_headers=['Content-Type','Authorization'])	
+def subcribe_to_kafka_updated_posts():	
+    print('Message')	
+    consumer = getConsumer('updated_posts', readLatest=True) 	
+    def events():	
+        for message in consumer:	
+            if message is not None:	
+                print(message)	
+                yield 'data: {0}\n\n'.format(message.value.decode('ascii'))	
+        consumer.close()	
+    res = Response(events(), mimetype="text/event-stream")  
     print(res.headers)
     return res
             
