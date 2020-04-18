@@ -28,11 +28,18 @@ class Post extends Component {
   };
 
   handleDone(id) {
+    console.log('In Done')
+    console.log(id)
+    const deleteMethod = {
+      method: 'DELETE', 
+      headers: {
+       'Content-type': 'application/json'
+      },
+     }
+     
     const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
     
-    fetch(`${url}/requests/delete/${id}`, {
-      method: "DELETE"
-    })
+    fetch(`${url}/requests/delete/${id}`, deleteMethod)
       .then(res => res.json())
 
   };
@@ -117,7 +124,7 @@ class Post extends Component {
           onClick={() => {this.handleInterested(_id, username, interested_count, interested_people)}}
           style={{ fontSize: 15 }}
           className="badge badge-secondary btn-sm "
-          disabled={this.props.value_int}
+          disabled={this.props.value}
         >
           Interested
         </button>
@@ -130,7 +137,6 @@ class Post extends Component {
           className="badge badge-primary m-2"
         >
           {interested_count}
-          {console.log(this.state.isOpen)}
         </button>
 
         <Modal show={this.state.isOpen}
@@ -143,10 +149,10 @@ class Post extends Component {
         
         <Grid.Column width={2}>
         <button
-          onClick={() => {this.handleDone(id)}}
+          onClick= {() => { if (window.confirm('Do you want to delete this item?')) this.handleDone(id) } }
           style={{ fontSize: 15 }}
           className="badge badge-success btn-sm "
-          disabled={this.props.value_delete}
+          disabled={!this.props.value}
         >
           Done
         </button>

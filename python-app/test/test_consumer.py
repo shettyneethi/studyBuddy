@@ -30,6 +30,11 @@ class UsersTest(unittest.TestCase):
     response = self.client().get('/api/updated/posts')
     self.assertEqual(response.status, '200 OK')
 
+  @patch('consumer.KafkaConsumer')
+  def  test_post_deletion(self, mock_consumer):
+    response = self.client().get('/api/deleted/posts')
+    self.assertEqual(response.status, '200 OK')
+
 
 if __name__ == "__main__":
     unittest.main()

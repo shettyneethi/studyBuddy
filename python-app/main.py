@@ -65,6 +65,15 @@ def updatePostMongo(data, post_id):
 
     return res.modified_count
 
+def deletePostMongo(post_id):
+    myclient = pymongo.MongoClient(
+            "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient[DATABASE]
+    mycollections = mydb[COLLECTION]
+    res = mycollections.delete_one({"_id": post_id})
+
+    return res.deleted_count
+
 
 def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
     mongoClient = pymongo.MongoClient(
@@ -115,13 +124,13 @@ def create_post():
 
         response_data = {
             "sucess": True,
-            "status_code": 200
+            "message": "Successful Post creation"
         }
 
     except:
         response_data = {
             "sucess": False,
-            "status_code": 404
+            "message": "Invalid data"
         }
 
     return jsonify(response_data)
@@ -131,7 +140,6 @@ def create_post():
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def update_post(id):
     req = request.json
-    print(id)
     data = {}
     try:
 
@@ -147,18 +155,15 @@ def update_post(id):
 
         response_data = {
             "sucess": True,
-            "status_code": 200
+            "message": "Successful Post updation"
         }
 
     except:
 
         response_data = {
             "sucess": False,
-            "status_code": 404
+            "message": "Invalid data"
         }
-
-    # for x in mycollections.find({ "_id":post_id }):
-    #     print('After',x)
 
     return jsonify(response_data)
 
@@ -166,15 +171,23 @@ def update_post(id):
 @app.route('/requests/delete/<id>', methods=["DELETE"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def delete_post(id):
-    post_id = ObjectId(id)
+    try:
+        post_id = ObjectId(id)
+        res = deletePostMongo(post_id)
+        send_to_kafka_updated_posts({'_id':id})
+    
+        response_data = {
+                "sucess": True,
+                "message": "Successful post deletion"
+            }
+    except:
 
-    myclient = pymongo.MongoClient(
-        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient[DATABASE]
-    mycollections = mydb[COLLECTION]
-    res = mycollections.delete_one({"_id": post_id})
+        response_data = {
+            "sucess": False,
+            "message": "Invalid post_id"
+        }
 
-    return 'Success'
+    return jsonify(response_data)
 
 
 @app.route('/api/profile', methods=["GET"])

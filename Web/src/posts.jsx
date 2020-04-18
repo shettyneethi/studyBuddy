@@ -12,8 +12,7 @@ class Posts extends Component {
             <Post
               request={c}
               key={c.id}
-              value_int = {this.props.value_int}
-              value_delete = {this.props.value_delete}
+              value = {this.props.value}
             ></Post>
           ))}
         </Segment>

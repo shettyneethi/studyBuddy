@@ -245,7 +245,7 @@ class Homepage extends Component {
             <Grid.Column width={9}>
 
               <div className='postsDivision'>
-                <Posts filterRes={this.state.filterResults} value_int={false} value_delete={true} />
+                <Posts filterRes={this.state.filterResults} value={false}/>
               </div>
 
             </Grid.Column>
