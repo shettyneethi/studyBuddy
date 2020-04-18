@@ -1,20 +1,15 @@
 import React, { Component } from 'react';
 import Header from './header.jsx';
 import Login from './login.jsx';
-import HomePage from './homepage.jsx'
+import HomePage from './homepage.jsx';
 import './App.css';
-import Request from './request.jsx'
-import CheckboxCustom from './checkbox.jsx'
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 
 class App extends Component {
   render() {
     return (
-      <div>
-        <div id="homepage">
-          <HomePage />
-        </div>
-      </div>
+      <Login />
     );
   }
 }
