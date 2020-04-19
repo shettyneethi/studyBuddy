@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, session
+from flask import Flask, request, Response
 import pymongo
 import jsonpickle
 import io
