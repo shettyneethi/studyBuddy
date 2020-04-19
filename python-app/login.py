@@ -1,8 +1,9 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, session
 import pymongo
 import jsonpickle
 import io
-
+import hashlib
+import secrets
 
 # Initialize the Flask application
 app = Flask(__name__)
@@ -14,25 +15,33 @@ def login():
     mydb = myclient["STUDYBUDDY"]
     usrDetails = mydb["user_details"]
     data = request.get_json()
-    myquery = { "user_name": data["user_name"], "password" : data["password"] }
+    hashed_pwd = hashlib.md5(data["password"].encode()).hexdigest()
+
+    myquery = { "user_name": data["user_name"], "password" : hashed_pwd }
 
     response = {
-        "status" : "FAIL"
+        "status" : "FAIL",
+        "token" : ""
     }
 
     status=200
-    print(myquery)
-
     try:
         if(usrDetails.find(myquery).count() == 1):
+            token = secrets.token_hex(16)
             response["status"] = "SUCCESS"
+            response["token"] = token
+            usrDetails.update(myquery, {"$set": {"token": token}})
+
     except:
             response["status"] = "ERROR"
             status = 400
 
     response_pickled = jsonpickle.encode(response)
-    return Response(response=response_pickled,
+    resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
+    if(response["status"] == "SUCCESS"):
+        resp.set_cookie('user_name:token', data["user_name"]+":"+response["token"], max_age=60*60*24*365*2) 
+    return resp
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
@@ -40,7 +49,9 @@ def signup():
     mydb = myclient["STUDYBUDDY"]
     usrDetails = mydb["user_details"]
     data = request.get_json()
-    row = { "user_name": data["user_name"], "password" : data["password"] , "email": data["email"]}
+    hashed_pwd = hashlib.md5(data["password"].encode()).hexdigest()
+
+    row = { "user_name": data["user_name"], "password" : hashed_pwd , "email": data["email"]}
     myquery1 = { "user_name": data["user_name"] }
     myquery2 = { "email": data["email"] }
 
@@ -48,7 +59,7 @@ def signup():
         "status" : "SUCCESS",
         "message" : "Sign Up Successful"
     }
-
+    # print(row)
     status=200
     try:
         if(usrDetails.find(myquery1).count() > 0):
@@ -67,5 +78,32 @@ def signup():
     return Response(response=response_pickled,
            status=status , mimetype="application/json")
 
-# start flask app
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["STUDYBUDDY"]
+    usrDetails = mydb["user_details"]
+    data = request.get_json()
+    myquery = { "token": data["token"] }
+
+    response = {
+        "status" : "FAIL"
+    }
+    status=200
+
+    try:
+        if(usrDetails.find(myquery).count() == 1):
+            usrDetails.update(myquery, {"$unset": {"token":1} } )
+            response["status"] = "SUCCESS"
+    except:
+            response["status"] = "ERROR"
+            status = 400
+
+    response_pickled = jsonpickle.encode(response)
+    resp =  Response(response=response_pickled,
+           status=status , mimetype="application/json")
+    if(response["status"] == "SUCCESS"):
+        resp.set_cookie('user_name:token', '', max_age=0)
+    return resp
+
 app.run(host="127.0.0.1", port=5000)
