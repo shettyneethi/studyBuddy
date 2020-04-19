@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, session
 import pymongo
 import jsonpickle
 import io
@@ -9,7 +9,7 @@ import secrets
 app = Flask(__name__)
 
 # route http posts to this method
-@app.route('/api/login', methods=['POST'])
+@app.route('/api/login', methods=['POST','GET'])
 def login():
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
@@ -25,21 +25,23 @@ def login():
     }
 
     status=200
-    # print(myquery)
-
     try:
         if(usrDetails.find(myquery).count() == 1):
             token = secrets.token_hex(16)
             response["status"] = "SUCCESS"
             response["token"] = token
             usrDetails.update(myquery, {"$set": {"token": token}})
+
     except:
             response["status"] = "ERROR"
             status = 400
 
     response_pickled = jsonpickle.encode(response)
-    return Response(response=response_pickled,
+    resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
+    if(response["status"] == "SUCCESS"):
+        resp.set_cookie('user_name:token', data["user_name"]+":"+response["token"], max_age=60*60*24*365*2) 
+    return resp
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
@@ -98,8 +100,10 @@ def logout():
             status = 400
 
     response_pickled = jsonpickle.encode(response)
-    return Response(response=response_pickled,
+    resp =  Response(response=response_pickled,
            status=status , mimetype="application/json")
+    if(response["status"] == "SUCCESS"):
+        resp.set_cookie('user_name:token', '', max_age=0)
+    return resp
 
-# start flask app
 app.run(host="127.0.0.1", port=5000)
