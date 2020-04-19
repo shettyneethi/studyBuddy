@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import UserEdit from './UserEdit'
 import Homepage from "./homepage.jsx";
 import MyRequests from './myRequests.jsx';
-
+import Signup from './signup.jsx'
+import Login from './login.jsx';
 
 
 export default class Routes extends Component {
@@ -18,7 +19,7 @@ export default class Routes extends Component {
 
         this._isMounted = true;
     
-        this.eventSource= new EventSource('https://34.71.199.201:8081/api/deleted/posts');
+        this.eventSource= new EventSource('http://127.0.0.1:8081/api/deleted/posts');
         this.eventSource.onmessage = e =>
           this.deletePost(JSON.parse(e.data), e);
       }
@@ -43,14 +44,18 @@ export default class Routes extends Component {
         return (
             <Router>
                 <Switch>
+                    <Route exact path="/" component={Login} />
 
-                    <Route exact path="/" render={props =>
-                        (<Homepage {...props} filterReq={this.getMyRequests} />)
-                    } />/>
+                    <Route exact path='/signup' component={Signup} />
 
-                <Route exact path="/myRequests" render={props =>
-                        (<MyRequests {...props} filterRes={this.state.filterMyRequests} />)
-                    } />
+                    <Route exact path="/home" render={props =>
+                            (<Homepage {...props} filterReq={this.getMyRequests} />)
+                        } />
+
+                    <Route exact path="/myRequests" render={props =>
+                            (<MyRequests {...props} filterRes={this.state.filterMyRequests} />)
+                        } />
+
                     <Route path='/profile/edit' component={UserEdit} />
                 </Switch>
             </Router>

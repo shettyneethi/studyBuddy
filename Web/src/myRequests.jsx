@@ -18,7 +18,7 @@ class MyRequests extends Component {
             <Segment padded>
         <Grid padded>
         <Grid.Row padded>
-        <Link to="/" >Home</Link>
+        <Link to="/home" >Home</Link>
         </Grid.Row>
  
         <Grid.Row padded>

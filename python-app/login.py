@@ -1,16 +1,12 @@
 from flask import Flask, request, Response, session
-<<<<<<< HEAD
 from flask_cors import CORS, cross_origin
 from flask_caching import Cache
-=======
->>>>>>> bba4abb769904216afee7a6b35c50180ef7aaebf
 import pymongo
 import jsonpickle
 import io
 import hashlib
 import secrets
 
-<<<<<<< HEAD
 cache = Cache(config={
     "DEBUG": True,          # some Flask specific configs
     "CACHE_TYPE": "simple",  # Flask-Caching related configs
@@ -25,13 +21,6 @@ cache.init_app(app)
 # route http posts to this method
 @app.route('/api/login', methods=['POST'])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
-=======
-# Initialize the Flask application
-app = Flask(__name__)
-
-# route http posts to this method
-@app.route('/api/login', methods=['POST'])
->>>>>>> bba4abb769904216afee7a6b35c50180ef7aaebf
 def login():
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
@@ -66,10 +55,7 @@ def login():
     return resp
 
 @app.route('/api/signup', methods=['POST'])
-<<<<<<< HEAD
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
-=======
->>>>>>> bba4abb769904216afee7a6b35c50180ef7aaebf
 def signup():
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
@@ -105,10 +91,7 @@ def signup():
            status=status , mimetype="application/json")
 
 @app.route('/api/logout', methods=['POST'])
-<<<<<<< HEAD
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
-=======
->>>>>>> bba4abb769904216afee7a6b35c50180ef7aaebf
 def logout():
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
@@ -136,8 +119,4 @@ def logout():
         resp.set_cookie('user_name:token', '', max_age=0)
     return resp
 
-<<<<<<< HEAD
 app.run(host="127.0.0.1", port=5000)
-=======
-app.run(host="127.0.0.1", port=5000)
->>>>>>> bba4abb769904216afee7a6b35c50180ef7aaebf

@@ -85,11 +85,11 @@ class Homepage extends Component {
       .then(response => response.json())
       .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res }));
 
-    this.eventSource_a = new EventSource('https://34.71.199.201:8081/api/posts');
+    this.eventSource_a = new EventSource('http://127.0.0.1:8081/api/posts');
     this.eventSource_a.onmessage = e =>
       this.updateData(JSON.parse(e.data), e);
 
-    this.eventSource_b = new EventSource('https://34.71.199.201:8081/api/updated/posts');
+    this.eventSource_b = new EventSource('http://127.0.0.1:8081/api/updated/posts');
     this.eventSource_b.onmessage = e =>
       this.updatePost(JSON.parse(e.data), e);
   }
@@ -183,6 +183,8 @@ class Homepage extends Component {
 
 
   render() {
+
+    console.log('In homepage render');
     const value = this.state.value;
     const suggestions = this.state.suggestions;
 

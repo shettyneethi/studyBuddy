@@ -70,7 +70,7 @@ class UserEdit extends Component {
             body: JSON.stringify(data)
         })
 
-            .then(this.props.history.push('/'))
+            .then(this.props.history.push('/home'))
             .then(() => {
                 console.log(data._id)
                 alert("Hey " + data.name.split(" ")[0] + ", your profile updated successfully");
@@ -99,7 +99,7 @@ class UserEdit extends Component {
         if (this.state.name && this.state.skills && this.state.courses && this.state.department) {
             return (
                 <div>
-                    <IconButton aria-label="back" onClick={() => this.props.history.push('/')}>
+                    <IconButton aria-label="back" onClick={() => this.props.history.push('/home')}>
                         <ArrowBackIcon fontSize="large" />
                     </IconButton>
                     <Container width="lg">
