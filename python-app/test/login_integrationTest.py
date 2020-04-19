@@ -40,6 +40,5 @@ elif(cmd == 'signup'):
     response = requests.post(req_url, json=req, headers=headers)
     print("Response is", response)
     print(json.loads(response.text))
-
 else:
     print("Unknown option", cmd)                
