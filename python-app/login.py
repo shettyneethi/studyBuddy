@@ -9,7 +9,7 @@ import secrets
 app = Flask(__name__)
 
 # route http posts to this method
-@app.route('/api/login', methods=['POST','GET'])
+@app.route('/api/login', methods=['POST'])
 def login():
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
