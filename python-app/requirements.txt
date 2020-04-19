@@ -7,3 +7,5 @@ gunicorn==19.9.0
 dnspython==1.16.0
 kafka-python
 pytest
+jsonpickle
+secrets
