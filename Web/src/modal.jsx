@@ -19,16 +19,26 @@ class Modal extends React.Component {
     return ( 
         <div>
       <div className="backdrop" >
-        {/* <div className="modal" style={{modalStyle}}> */}
-        <Segment>
-          {/* {this.props.children} */}
-          <Grid.Row>
-          <Grid.Column>
+        <Segment padded>
+          <Grid.Row padded> 
+          <Grid.Column padded>
 
-              <CheckboxCustom  
-                menu={this.state.tags}
-                title="Select tag"
-                ></CheckboxCustom>
+            <div >
+            { 
+        this.props.interested_people.map((c, idx) => (
+          <div key={idx}>
+            {
+              c.split(",").map(item => (
+                <span>
+                  {item}
+                  <br/>
+                </span>
+              ))
+            }
+          </div>
+         ))
+      }
+            </div>
             </Grid.Column>
             </Grid.Row>
 

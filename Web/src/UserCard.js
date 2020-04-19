@@ -7,12 +7,15 @@ import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
+import LoadingIcon from "./loading.gif"
+
 const styles = theme => ({
     root: {
-        maxWidth: 345,
+        width: 410,
+        height: 460
     },
     media: {
-        height: 0,
+        height: 250,
         paddingTop: '56.25%', // 16:9
     },
 
@@ -25,13 +28,13 @@ class UserCard extends Component {
 
 
     state = {
-        name: 'Your name comes here',
-        skills: 'Your skills comes here',
-        courses: 'Your courses comes here',
-        department: 'Your department comes here'
+        name: null,
+        skills: null,
+        courses: null,
+        department: null
     }
     componentDidMount() {
-        fetch("http://127.0.0.1:8080/api/profile", {
+        fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile", {
             method: 'GET'
         },
         ).then((response) => response.json())
@@ -47,45 +50,52 @@ class UserCard extends Component {
         const { classes } = this.props;
 
 
-        return (
-            <div>
-                <Card className={classes.root} >
+        if (this.state.name && this.state.skills && this.state.courses && this.state.department) {
+            return (
+                <div>
+                    <Card className={classes.root} >
 
-                    <CardMedia
-                        className={classes.media}
-                        image="https://source.unsplash.com/user/sethdoylee/R5tHd-aYmPs"
-                        title="User Profile"
-                    />
-                    <CardContent>
-                        <Typography id="name" variant="h5" color="textSecondary" component="p">
-                            {this.state.name}
-                        </Typography>
-                        <Typography id="skills" variant="caption" color="textSecondary" component="p">
-                            Skills: {this.state.skills}
-                        </Typography>
-                        <Typography id="courses" variant="caption" color="textSecondary" component="p">
-                            Courses: {this.state.courses}
-                        </Typography>
-                        <Typography id="department" variant="caption" color="textSecondary" component="p">
-                            Department: {this.state.department}
-                        </Typography>
+                        <CardMedia
+                            className={classes.media}
+                            image="https://source.unsplash.com/user/sethdoylee/R5tHd-aYmPs"
+                            title="User Profile"
+                        />
+                        <CardContent>
+                            <Typography id="name" variant="h4" color="textSecondary" component="p">
+                                {this.state.name}
+                            </Typography>
+                            <Typography id="skills" variant="h6" color="textSecondary" component="p">
+                                Skills: {this.state.skills}
+                            </Typography>
+                            <Typography id="courses" variant="h6" color="textSecondary" component="p">
+                                Courses: {this.state.courses}
+                            </Typography>
+                            <Typography id="department" variant="h6" color="textSecondary" component="p">
+                                Department: {this.state.department}
+                            </Typography>
 
-                    </CardContent>
-                    <CardActions disableSpacing>
-                        <IconButton aria-label="edit">
-                            <EditIcon />
+                        </CardContent>
+                        <CardActions disableSpacing>
+                            <IconButton aria-label="edit">
 
-                        </IconButton>
-
-
-                    </CardActions>
-
+                                <a href="/profile/edit" >
+                                    <EditIcon />
+                                </a>
+                            </IconButton>
 
 
-                </Card>
-            </div>
-        );
+                        </CardActions>
+
+
+
+                    </Card>
+                </div>
+            );
+        } else {
+            return <img src={LoadingIcon} alt="loading..." />
+        }
     }
 }
 
+// export default  withStyles(styles)(UserCard) withRouter(UserCard);
 export default withStyles(styles)(UserCard);
