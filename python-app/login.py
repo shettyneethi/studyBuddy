@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, session
+from flask import Flask, request, Response
 import pymongo
 import jsonpickle
 import io
@@ -57,16 +57,20 @@ def signup():
 
     response = {
         "status" : "SUCCESS",
-        "message" : "Sign Up Successful"
+        "message" : "Sign Up Successful",
+        "token" : secrets.token_hex(16) 
+
     }
     # print(row)
     status=200
     try:
         if(usrDetails.find(myquery1).count() > 0):
             response["status"] = "FAIL"
+            response["token"] = ""
             response["message"] = "Account with this username already exists"
         elif(usrDetails.find(myquery2).count() > 0):
             response["status"] = "FAIL"
+            response["token"] = ""
             response["message"] = "Account with this Email ID already exists"
         else:
             usrDetails.insert_one(row)
@@ -75,8 +79,11 @@ def signup():
             status = 400
 
     response_pickled = jsonpickle.encode(response)
-    return Response(response=response_pickled,
+    resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
+    if(response["status"] == "SUCCESS"):
+        resp.set_cookie('user_name:token', data["user_name"]+":"+response["token"], max_age=60*60*24*365*2) 
+    return resp
 
 @app.route('/api/logout', methods=['POST'])
 def logout():
