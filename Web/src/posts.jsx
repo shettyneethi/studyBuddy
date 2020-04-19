@@ -4,22 +4,6 @@ import { Segment } from "semantic-ui-react";
 
 
 class Posts extends Component {
-  handlePersonIcon = () => {
-    console.log("Open profile");
-  };
-
-  handleCount = () => {
-    console.log("Open members");
-  };
-
-  handleDone = () => {
-    console.log("Done");
-  };
-
-  handleInterested = () => {
-    console.log("Increment interested count");
-  };
-
   render() {
     return (
       <div>
@@ -28,10 +12,7 @@ class Posts extends Component {
             <Post
               request={c}
               key={c.id}
-              handleCount={this.handleCount}
-              handlePersonIcon={this.handlePersonIcon}
-              handleInterested={this.handleInterested}
-              handleDone={this.handleDone}
+              value = {this.props.value}
             ></Post>
           ))}
         </Segment>

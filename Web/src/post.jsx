@@ -4,10 +4,12 @@ import { Grid, Segment,Label} from 'semantic-ui-react';
 import Modal from './modal.jsx';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import ViewProfile from "./ViewProfile.js"
 
 class Post extends Component {
   state = {
     count: 0,
+    people: [],
     isOpen: false
   };
 
@@ -16,9 +18,61 @@ class Post extends Component {
       isOpen: !this.state.isOpen
     });
   }
+
+  handlePersonIcon = () => {
+    console.log("Open profile");
+  };
+
+  handleCount = () => {
+    console.log("Open members");
+  };
+
+  handleDone(id) {
+    console.log('In Done')
+    console.log(id)
+    const deleteMethod = {
+      method: 'DELETE', 
+      headers: {
+       'Content-type': 'application/json'
+      },
+     }
+     
+    const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
+    
+    fetch(`${url}/requests/delete/${id}`, deleteMethod)
+      .then(res => res.json())
+
+  };
+
+   
+  handleInterested(id, username, interested_count, interested_people) {
+    
+    let people_update = [username].concat(interested_people)
+    let count_update = interested_count+1
+    const data = {
+      interested_people: people_update,
+      interested_count: count_update,
+      id: id 
+    };
+    
+    const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
+
+    fetch(`${url}/requests/update/${data.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+
+   
+  };
   
   render() {
-    const { username, interested_count, msg, tag, course, skill } = this.props.request
+    const { username, interested_count, interested_people, msg, tag, course, skill, _id} = this.props.request
+    const id = _id['$oid']
+    
     return (
       <React.Fragment>
         <Segment>
@@ -28,12 +82,10 @@ class Post extends Component {
         
               <Grid.Column >
 
-         <IconButton onClick={this.props.handlePersonIcon}
+         <IconButton onClick={this.handlePersonIcon}
               edge="end"
               aria-label="account of current user"
-              // aria-controls={menuId}
               aria-haspopup="true"
-              // onClick={handleProfileMenuOpen}
               color="inherit"
             >
               <AccountCircle style={{ fontSize: 40 }} />
@@ -69,9 +121,10 @@ class Post extends Component {
         <Grid.Row  columns={3}>
         <Grid.Column width={3}>
         <button
-          onClick={this.props.handleInterested}
+          onClick={() => {this.handleInterested(_id, username, interested_count, interested_people)}}
           style={{ fontSize: 15 }}
           className="badge badge-secondary btn-sm "
+          disabled={this.props.value}
         >
           Interested
         </button>
@@ -84,11 +137,11 @@ class Post extends Component {
           className="badge badge-primary m-2"
         >
           {interested_count}
-          {console.log(this.state.isOpen)}
         </button>
 
         <Modal show={this.state.isOpen}
-          onClose={this.toggleModal}>
+          onClose={this.toggleModal}
+          interested_people= {interested_people}>
           Here's some content for the modal
         </Modal>
 
@@ -96,9 +149,10 @@ class Post extends Component {
         
         <Grid.Column width={2}>
         <button
-          onClick={this.props.handleDone}
+          onClick= {() => { if (window.confirm('Do you want to delete this item?')) this.handleDone(id) } }
           style={{ fontSize: 15 }}
           className="badge badge-success btn-sm "
+          disabled={!this.props.value}
         >
           Done
         </button>
