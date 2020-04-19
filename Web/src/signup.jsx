@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, TextField } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 import './signup.css';
+import { Redirect } from 'react-router-dom';
 
 const MyButton = styled(Button)({
     background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
@@ -78,11 +79,10 @@ class Signup extends React.Component{
     render(){
         return(
             <div>
-                {this.state.isSignedUp ? <h1 align="center"> {this.state.message} </h1> : null}
 
                 {this.state.didPwdMatch? null : <h3 align="center"> {this.state.message} </h3>}
 
-                {this.state.isSignedUp ? null :
+                {this.state.isSignedUp ? <Redirect to={{pathname: '/profile/edit/'}} /> :
 
                     <div id="signup-form" align="center">
                         <form className="signupForm">
