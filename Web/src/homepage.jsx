@@ -45,6 +45,14 @@ class Homepage extends Component {
       500,
       this.onSuggestionsFetchRequested
     )
+    // if(this.state.token=="")
+    // {
+    //   console.log('in if')
+    //   console.log(this.props.token)
+    //   this.setState({token:this.props.token})
+    //   // console.log(this.state.token)
+      
+    // }
   }
 
   renderSuggestion = suggestion => {
@@ -79,12 +87,14 @@ class Homepage extends Component {
   componentDidMount() {
     
     this._isMounted = true;
-    console.log(this.props.location.state.token)
+    console.log(localStorage.getItem('token'))
+    // console.log(this.state.token)
+    
     fetch('http://127.0.0.1:8080/suggest', {
       method: 'GET',
             headers: {
                 "Content-type": "application/json",
-                'Authorization': 'Bearer ' + this.props.location.state.token
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
               },
       signal: this.controller.signal
     })
@@ -194,6 +204,8 @@ class Homepage extends Component {
     const value = this.state.value;
     const suggestions = this.state.suggestions;
 
+    // console.log(this.state.token);
+
     // Autosuggest will pass through all these props to the input.
     const autoSuggestInputProps = {
       placeholder: 'Search..',
@@ -207,6 +219,7 @@ class Homepage extends Component {
         <input {...inputProps} />
       </div>
     );
+
 
 
     return (

@@ -37,12 +37,12 @@ class UserEdit extends Component {
     }
 
     componentWillMount() {
-        console.log(this.props.location.state.token)
+        
         fetch("http://127.0.0.1:8080/api/profile", {
             method: 'GET',
             headers: {
                 "Content-type": "application/json",
-                'Authorization': 'Bearer ' + this.props.location.state.token
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
               }
         }).then((response) => response.json())
             .then(res => {

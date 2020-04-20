@@ -3,9 +3,6 @@ import { Button, TextField } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 import './signup.css';
 import { Redirect } from 'react-router-dom';
-import Cookies from 'universal-cookie';
-
-const cookies = new Cookies();
 
 const MyButton = styled(Button)({
     background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
@@ -69,7 +66,7 @@ class Signup extends React.Component{
                 body: JSON.stringify(data)
             })
             .then(response => response.json())
-            .then(res => res["status"]==="SUCCESS" ? this.setState({token:res["token"], isSignedUp: true}) : alert(res["message"]))
+            .then(res => res["status"]==="SUCCESS" ? this.setState({token:res["token"], isSignedUp: true},  localStorage.setItem('token', res["token"])) : alert(res["message"]))
             }
             else {
                 this.setState({
@@ -78,10 +75,12 @@ class Signup extends React.Component{
                     message: "Passwords do not match!"
                 })
             }
+            
     }
 
     render(){
         const res = this.state.token
+        
         return(
             <div>
 

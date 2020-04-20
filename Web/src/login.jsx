@@ -61,11 +61,17 @@ class Login extends React.Component {
       body: JSON.stringify(data)
     })
     .then(response => response.json())
-    .then(res => res["status"]==="SUCCESS" ? this.setState({token: res["token"], isLoggedIn: true}) : alert("Login Failed!"))
+    // .then(res => res["status"]==="SUCCESS" ? this.props.getToken(res["token"]) : this.props.getToken(""))
+    .then(res => res["status"]==="SUCCESS" ? (this.setState({token: res["token"], isLoggedIn: true}) , localStorage.setItem('token', res["token"]))  : alert("Login Failed!"));
+    
+    // const { token } = this.state;
+    
+    
   }
    
   render() {
     const res = this.state.token
+    
     return (
     <div>
       <Navbar bg="light" expand="lg">

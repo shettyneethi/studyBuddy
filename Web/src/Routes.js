@@ -15,6 +15,11 @@ export default class Routes extends Component {
     getMyRequests = (data) => {
         this.setState({ filterMyRequests: data })
     }
+
+    getToken = (token) => {
+        console.log(token)
+        this.setState({token:token})
+    }
     componentDidMount() {
 
         this._isMounted = true;
@@ -41,10 +46,11 @@ export default class Routes extends Component {
     }
     
     render() {
+        console.log(this.state.token)
         return (
             <Router>
                 <Switch>
-                    <Route exact path="/" component={Login} />
+                    <Route exact path="/"  component={Login}/>
 
                     <Route exact path='/signup' component={Signup} />
 
