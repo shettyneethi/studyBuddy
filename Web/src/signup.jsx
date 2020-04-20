@@ -3,6 +3,9 @@ import { Button, TextField } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 import './signup.css';
 import { Redirect } from 'react-router-dom';
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
 
 const MyButton = styled(Button)({
     background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
@@ -26,6 +29,7 @@ class Signup extends React.Component{
           isSignedUp: false,
           didPwdMatch: false,
           result: "",
+          token:""
         }
       }
 
@@ -48,24 +52,24 @@ class Signup extends React.Component{
       handleSubmit = () => {
         if(this.state.password === this.state.confirmPwd){
             this.setState({
-                isSignedUp: true,
                 didPwdMatch: true,
                 message: "Your profile created successfully " + this.state.usrName + "!!!"
             });
             const data = {
                 user_name: this.state.usrName,
                 password: this.state.password,
-                email: this.state.email,
+                email: this.state.email
             };
-            fetch("http://127.0.0.1:5000/api/signup", {
+
+            fetch("http://127.0.0.1:8080/api/signup", {
                 method: "POST",
                 headers: {
-                  "Content-type": "application/json"
+                  "Content-type": "application/json"  
                 },
                 body: JSON.stringify(data)
             })
-            .then(res => res.json())
-            .then(data => this.setState({result:data}));
+            .then(response => response.json())
+            .then(res => res["status"]==="SUCCESS" ? this.setState({token:res["token"], isSignedUp: true}) : alert(res["message"]))
             }
             else {
                 this.setState({
@@ -77,18 +81,26 @@ class Signup extends React.Component{
     }
 
     render(){
+        const res = this.state.token
         return(
             <div>
 
                 {this.state.didPwdMatch? null : <h3 align="center"> {this.state.message} </h3>}
 
-                {this.state.isSignedUp ? <Redirect to={{pathname: '/profile/edit/'}} /> :
+                {this.state.isSignedUp ? 
+                
+                <Redirect to={{
+                    pathname: '/profile/edit/', 
+                    state:{token:res}
+                }}  /> 
+                
+                : 
 
                     <div id="signup-form" align="center">
                         <form className="signupForm">
                             <h1 align="center">Create your account here!</h1>
                             <TextField required className="standard-required" type="text" label="Username" name="username" value={this.state.usrName} onChange={this.handleUserNameChange}></TextField><br /><br />
-                            <TextField required className="standard-required" type="email" name="Email" label="Email" onchange={this.handleEmailChange}></TextField ><br /><br />
+                            <TextField required className="standard-required" type="email" label="Email" onChange={this.handleEmailChange}></TextField><br /><br />
                             <TextField required className="standard-required" type="password" name="password" label="Password" onChange={this.handlePasswordChange}></TextField ><br /><br />
                             <TextField required className="standard-required" type="password" name="Confirm password" label="Confirm Password" onChange={this.handleConfirmPassword}></TextField ><br /><br />
                             <MyButton onClick={this.handleSubmit}>Submit</MyButton>

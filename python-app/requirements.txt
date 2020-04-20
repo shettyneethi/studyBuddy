@@ -9,3 +9,4 @@ kafka-python
 pytest
 jsonpickle
 secrets
+flask_jwt_extended

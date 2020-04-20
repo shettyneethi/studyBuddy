@@ -37,7 +37,7 @@ class Post extends Component {
       },
      }
      
-    const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
+    const url = "http://127.0.0.1:8080"
     
     fetch(`${url}/requests/delete/${id}`, deleteMethod)
       .then(res => res.json())
@@ -55,7 +55,7 @@ class Post extends Component {
       id: id 
     };
     
-    const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
+    const url = "http://127.0.0.1:8080"
 
     fetch(`${url}/requests/update/${data.id}`, {
       method: "PUT",

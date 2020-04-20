@@ -56,7 +56,7 @@ export default class Routes extends Component {
                             (<MyRequests {...props} filterRes={this.state.filterMyRequests} />)
                         } />
 
-                    <Route path='/profile/edit' component={UserEdit} />
+                    <Route exact path='/profile/edit' component={UserEdit} />
                 </Switch>
             </Router>
         )

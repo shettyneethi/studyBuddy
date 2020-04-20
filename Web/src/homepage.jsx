@@ -77,9 +77,15 @@ class Homepage extends Component {
 
  
   componentDidMount() {
-
+    
     this._isMounted = true;
-    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest', {
+    console.log(this.props.location.state.token)
+    fetch('http://127.0.0.1:8080/suggest', {
+      method: 'GET',
+            headers: {
+                "Content-type": "application/json",
+                'Authorization': 'Bearer ' + this.props.location.state.token
+              },
       signal: this.controller.signal
     })
       .then(response => response.json())

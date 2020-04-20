@@ -29,40 +29,36 @@ const styles = theme => ({
 
 class UserEdit extends Component {
 
-
     state = {
         name: null,
-        skills: null,
-        courses: null,
-        department: null,
-        _id: null
+        skills: "Data Structures",
+        courses: "CSCI",
+        department: "CS"
     }
 
     componentWillMount() {
-        fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile", {
-            method: 'GET'
-        },
-        ).then((response) => response.json())
-            .then(response => {
-                this.setState({ name: response.name });
-                this.setState({ skills: response.skills });
-                this.setState({ courses: response.courses });
-                this.setState({ department: response.department });
-                this.setState({ _id: response._id.$oid });
-
-            });
-
+        console.log(this.props.location.state.token)
+        fetch("http://127.0.0.1:8080/api/profile", {
+            method: 'GET',
+            headers: {
+                "Content-type": "application/json",
+                'Authorization': 'Bearer ' + this.props.location.state.token
+              }
+        }).then((response) => response.json())
+            .then(res => {
+                this.setState({ name: res[0].user_name });
+           });
     }
+
     handleSubmit() {
         // event.preventDefault();
         const data = {
             name: this.state.name,
             skills: this.state.skills,
             courses: this.state.courses,
-            department: this.state.department,
-            _id: this.state._id
+            department: this.state.department
         };
-        fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile', {
+        fetch('http://127.0.0.1:8080/api/profile', {
             method: "PUT",
             headers: {
                 "Content-type": "application/json"
@@ -72,13 +68,10 @@ class UserEdit extends Component {
 
             .then(this.props.history.push('/home'))
             .then(() => {
-                console.log(data._id)
                 alert("Hey " + data.name.split(" ")[0] + ", your profile updated successfully");
             })
 
     };
-
-
 
     onNameChange = (e) => {
         this.setState({ name: e.target.value });
@@ -94,6 +87,7 @@ class UserEdit extends Component {
     }
 
     render() {
+        
         const { classes } = this.props;
 
         if (this.state.name && this.state.skills && this.state.courses && this.state.department) {

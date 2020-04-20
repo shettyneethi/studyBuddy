@@ -16,6 +16,15 @@ from utility.producer import send_to_kafka, send_to_kafka_updated_posts
 from bson.objectid import ObjectId
 import logging
 logging.basicConfig(filename='main-service.out', level=logging.INFO)
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
+import jsonpickle
+import io
+import hashlib
+import secrets
+import json 
 
 
 cache = Cache(config={
@@ -27,6 +36,9 @@ cache = Cache(config={
 app = Flask(__name__)
 CORS(app)
 cache.init_app(app)
+
+app.config['JWT_SECRET_KEY'] = 'rishitha'  # Change this!
+jwt = JWTManager(app)
 
 DATABASE = "test-db"
 COLLECTION = "sample-requests"
@@ -85,6 +97,121 @@ def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
     return posts
 
 
+@app.route('/api/login', methods=['POST'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+def login():
+    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["STUDYBUDDY"]
+    usrDetails = mydb["user_details"]
+    data = request.get_json()
+    hashed_pwd = hashlib.md5(data["password"].encode()).hexdigest()
+
+    myquery = { "user_name": data["user_name"], "password" : hashed_pwd }
+
+    response = {
+        "status" : "FAIL",
+        "token" : ""
+    }
+
+    status=200
+    try:
+        if(usrDetails.find(myquery).count() == 1):
+            token = create_access_token(identity=data["user_name"])
+            response["status"] = "SUCCESS"
+            response["token"] = token
+            usrDetails.update(myquery, {"$set": {"token": token}})
+
+    except:
+            response["status"] = "ERROR"
+            status = 400
+
+    response_pickled = jsonpickle.encode(response)
+    resp = Response(response=response_pickled,
+           status=status , mimetype="application/json")
+   
+    return resp
+
+@app.route('/api/signup', methods=['POST'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+def signup():
+    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["STUDYBUDDY"]
+    usrDetails = mydb["user_details"]
+    data = request.get_json()
+    
+    hashed_pwd = hashlib.md5(data["password"].encode()).hexdigest()
+
+    row = { "user_name": data["user_name"], "password" : hashed_pwd , "email": data["email"]}
+    myquery1 = { "user_name": data["user_name"] }
+    myquery2 = { "email": data["email"] }
+
+    response = {
+        "status" : "FAIL",
+        "message" : "Sign Up Failed!",
+        "token" : "" 
+    }
+    
+    status = 400
+    
+    try:
+        if(usrDetails.find(myquery1).count() > 0):
+            print('In 1st if')
+            response["message"] = "Account with this username already exists"
+
+        elif(usrDetails.find(myquery2).count() > 0):
+            print("In 2nd if")
+            response["message"] = "Account with this Email ID already exists"
+
+        else:
+            print('In else')
+            token = create_access_token(identity=data["user_name"])
+            row['token']= token
+            usrDetails.insert_one(row)
+            response["status"] = "SUCCESS"
+            response["message"] = "Sign Up Success!"
+            response["token"] = token
+            status=200
+    except:
+            print('In except')
+            response["status"] = "ERROR"
+            
+    response_pickled = jsonpickle.encode(response)
+    
+    resp = Response(response=response_pickled,
+           status=status , mimetype="application/json")
+    print(response)
+    
+    return resp
+
+
+@app.route('/api/logout', methods=['POST'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+def logout():
+    myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = myclient["STUDYBUDDY"]
+    usrDetails = mydb["user_details"]
+    data = request.get_json()
+    myquery = { "token": data["token"] }
+
+    response = {
+        "status" : "FAIL"
+    }
+    status=200
+
+    try:
+        if(usrDetails.find(myquery).count() == 1):
+            usrDetails.update(myquery, {"$unset": {"token":1} } )
+            response["status"] = "SUCCESS"
+    except:
+            response["status"] = "ERROR"
+            status = 400
+
+    response_pickled = jsonpickle.encode(response)
+    resp =  Response(response=response_pickled,
+           status=status , mimetype="application/json")
+    
+    return resp
+
 @app.route('/status', methods=["GET"])
 @app.route('/', methods=["GET"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
@@ -95,8 +222,11 @@ def status():
 @app.route('/suggest', methods=["GET"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 @cache.cached(timeout=50)
+@jwt_required
 def suggest():
     print("In suggest")
+    current_user = get_jwt_identity()
+    print(current_user)
     return dumps(getPostsFromMongo())
 
 ##### POST ######
@@ -169,7 +299,7 @@ def update_post(id):
 
 
 @app.route('/requests/delete/<id>', methods=["DELETE"])
-@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization', "credentials"])
 def delete_post(id):
     try:
         post_id = ObjectId(id)
@@ -191,16 +321,22 @@ def delete_post(id):
 
 
 @app.route('/api/profile', methods=["GET"])
-@cross_origin(origins='*', allow_headers=['Content-Type', 'application/json'])
-def getProfileFromMongo(database="STUDYBUDDY", collection="user_details"):
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
+def getProfileFromMongo():
+    print("In profile")
+    current_user = get_jwt_identity()
+    print(current_user)
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    profiles = [x for x in mongoClient[database][collection].find()]
-    return dumps(profiles[0])
+    res = mongoClient["STUDYBUDDY"]["user_details"].find({ "user_name": current_user})
+
+    return dumps(res)
 
 
 @app.route('/api/profile', methods=["PUT"])
-@cross_origin(origins='*', allow_headers=['Content-Type', 'application/json'])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
 def edit_profile():
     req = request.json
     data = {}

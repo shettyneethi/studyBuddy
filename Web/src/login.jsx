@@ -22,9 +22,6 @@ const cookies = new Cookies();
 
 class Login extends React.Component {
 
-  // cookies = new Cookies();
-  // cookies.set('username', 'Pacman');
-
   constructor() {
     super();
 
@@ -34,7 +31,8 @@ class Login extends React.Component {
       isLoggedIn: false,
       message: "",
       isSuccess: false,
-      username: "" 
+      username: "" ,
+      token: ""
     }
 
   }
@@ -51,11 +49,11 @@ class Login extends React.Component {
   handleSubmit = () => {
 
     const data = {
-      user_name: "user_name", 
-      password : "password"
+      user_name: this.state.usrName, 
+      password : this.state.password
     };
 
-    fetch('http://127.0.0.1:5000/api/login', {
+    fetch('http://127.0.0.1:8080/api/login', {
       method: "POST",
       headers: {
         "Content-type": "application/json"
@@ -63,18 +61,11 @@ class Login extends React.Component {
       body: JSON.stringify(data)
     })
     .then(response => response.json())
-    .then(res => this.setState({ username: cookies.get('user_name:token'), isLoggedIn: true}));
+    .then(res => res["status"]==="SUCCESS" ? this.setState({token: res["token"], isLoggedIn: true}) : alert("Login Failed!"))
   }
-
-  
    
   render() {
-
-    // if(this.state.isLoggedIn === true){
-    //   return <Router><Redirect to={{pathname: '/home'}} /></Router>
-    // }
-    // console.log('I am in login');
-
+    const res = this.state.token
     return (
     <div>
       <Navbar bg="light" expand="lg">
@@ -88,8 +79,9 @@ class Login extends React.Component {
         StudyBuddy
         </Navbar.Brand>
       </Navbar>      
+
       
-      {this.state.isLoggedIn ? <Redirect to={{pathname: '/home'}} /> :
+      {this.state.isLoggedIn ? <Redirect to={{pathname: '/home', state:{token:res}}}/> :
       <div>
         <div id="login-form" align="center">
 
