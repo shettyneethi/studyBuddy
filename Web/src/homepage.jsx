@@ -29,8 +29,6 @@ class Homepage extends Component {
   controller = new window.AbortController();
 
   state = {
-    courses: ["CS", "MS", "FRCS"],
-    skills: ["C", "C++"],
     value: '',
     suggestions: [],
     cacheAPISugesstions: [],
@@ -54,8 +52,6 @@ class Homepage extends Component {
         <span>{"  "}</span>
         <span>{suggestion.course}</span>
       </div>
-
-
     );
   }
 
@@ -72,7 +68,6 @@ class Homepage extends Component {
         filterResults: this.state.posts
       });
     }
-
   };
 
  
