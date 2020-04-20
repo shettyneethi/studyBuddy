@@ -25,7 +25,7 @@ class Request extends Component {
     selectedSkill: "",
     selectedTag: "",
     message: "",
-    \ult: ""
+    result: ""
   };
   handleCourseChange = (event, data) => {
     this.setState({
