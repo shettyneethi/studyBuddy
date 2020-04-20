@@ -72,9 +72,17 @@ class Homepage extends Component {
 
  
   componentDidMount() {
-
+    
     this._isMounted = true;
+    console.log(localStorage.getItem('token'))
+    // console.log(this.state.token)
+    
     fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest', {
+      method: 'GET',
+            headers: {
+                "Content-type": "application/json",
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              },
       signal: this.controller.signal
     })
       .then(response => response.json())
@@ -178,8 +186,12 @@ class Homepage extends Component {
 
 
   render() {
+
+    console.log('In homepage render');
     const value = this.state.value;
     const suggestions = this.state.suggestions;
+
+    // console.log(this.state.token);
 
     // Autosuggest will pass through all these props to the input.
     const autoSuggestInputProps = {
@@ -194,6 +206,7 @@ class Homepage extends Component {
         <input {...inputProps} />
       </div>
     );
+
 
 
     return (

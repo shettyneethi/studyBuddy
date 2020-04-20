@@ -8,6 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import LoadingIcon from "./loading.gif"
+import Cookies from "universal-cookie"
 
 const styles = theme => ({
     root: {
@@ -21,10 +22,11 @@ const styles = theme => ({
 
 });
 
-
+const cookies = new Cookies();
 // const classes = useStyles();
 
 class UserCard extends Component {
+
 
 
     state = {
@@ -34,10 +36,20 @@ class UserCard extends Component {
         department: null
     }
     componentDidMount() {
-        fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile", {
-            method: 'GET'
-        },
-        ).then((response) => response.json())
+        
+        console.log('In didmount')
+        console.log("Location ",this.props.location)
+        console.log("state ",this.props.location.state.token)
+
+        const url = 'https://api-suggest-dot-studybuddy-5828.appspot.com'
+        fetch(`${url}/api/profile`, {
+            method: 'GET',
+            headers: {
+                "Content-type": "application/json",
+                'Authorization': 'Bearer ' + this.props.location.state.token
+              }
+        }).then((response) => response.json())
+       
             .then(response => {
                 this.setState({ name: response.name });
                 this.setState({ skills: response.skills });
@@ -48,7 +60,6 @@ class UserCard extends Component {
     }
     render() {
         const { classes } = this.props;
-
 
         if (this.state.name && this.state.skills && this.state.courses && this.state.department) {
             return (

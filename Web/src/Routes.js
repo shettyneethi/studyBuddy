@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import UserEdit from './UserEdit'
 import Homepage from "./homepage.jsx";
 import MyRequests from './myRequests.jsx';
-
+import Signup from './signup.jsx'
+import Login from './login.jsx';
 
 
 export default class Routes extends Component {
@@ -13,6 +14,11 @@ export default class Routes extends Component {
     }
     getMyRequests = (data) => {
         this.setState({ filterMyRequests: data })
+    }
+
+    getToken = (token) => {
+        console.log(token)
+        this.setState({token:token})
     }
     componentDidMount() {
 
@@ -40,18 +46,23 @@ export default class Routes extends Component {
     }
     
     render() {
+        console.log(this.state.token)
         return (
             <Router>
                 <Switch>
+                    <Route exact path="/"  component={Login}/>
 
-                    <Route exact path="/" render={props =>
-                        (<Homepage {...props} filterReq={this.getMyRequests} />)
-                    } />/>
+                    <Route exact path='/signup' component={Signup} />
 
-                <Route exact path="/myRequests" render={props =>
-                        (<MyRequests {...props} filterRes={this.state.filterMyRequests} />)
-                    } />
-                    <Route path='/profile/edit' component={UserEdit} />
+                    <Route exact path="/home" render={props =>
+                            (<Homepage {...props} filterReq={this.getMyRequests} />)
+                        } />
+
+                    <Route exact path="/myRequests" render={props =>
+                            (<MyRequests {...props} filterRes={this.state.filterMyRequests} />)
+                        } />
+
+                    <Route exact path='/profile/edit' component={UserEdit} />
                 </Switch>
             </Router>
         )

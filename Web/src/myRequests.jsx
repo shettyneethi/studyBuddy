@@ -7,18 +7,20 @@ import {
     BrowserRouter as Router,
     Route,
     Link,
-    Switch 
+    Switch,
+    Redirect
   } from 'react-router-dom';
 
 class MyRequests extends Component {
-    state = {  }
+
+    
     render() { 
         return ( 
             <React.Fragment>
             <Segment padded>
         <Grid padded>
         <Grid.Row padded>
-        <Link to="/" >Home</Link>
+        <Link  to='/home'>Home</Link>
         </Grid.Row>
  
         <Grid.Row padded>
