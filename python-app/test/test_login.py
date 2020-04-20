@@ -36,7 +36,7 @@ class LoginAPITest(unittest.TestCase):
     response = self.client().post('/api/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.login_request_success))
     print(response)
     self.assertEqual(response.status, '200 OK')
-    self.assertEqual(response.data, b'{"status": "SUCCESS"}')
+    self.assertIn( b'"status": "SUCCESS"',response.data)
 
   @patch('login.pymongo.MongoClient')
   def  test_fail_login(self, mock_client):
@@ -45,7 +45,7 @@ class LoginAPITest(unittest.TestCase):
       response = self.client().post('/api/login', headers={'Content-Type': 'application/json'}, data=json.dumps(self.login_request_fail))
       print(response)
       self.assertEqual(response.status, '200 OK')
-      self.assertEqual(response.data, b'{"status": "FAIL"}')
+      self.assertIn( b'"status": "FAIL"',response.data)
 
   @patch('login.pymongo.MongoClient')
   def  test_success_signup(self, mock_client):
@@ -55,7 +55,7 @@ class LoginAPITest(unittest.TestCase):
         response = self.client().post('/api/signup', headers={'Content-Type': 'application/json'}, data=json.dumps(self.signup_request_success))
         # print(response)
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.data, b'{"message": "Sign Up Successful", "status": "SUCCESS"}')
+        self.assertIn(b'"message": "Sign Up Successful", "status": "SUCCESS"', response.data)
 
   @patch('login.pymongo.MongoClient')
   def  test_fail_signup(self, mock_client):
@@ -63,10 +63,7 @@ class LoginAPITest(unittest.TestCase):
         response = self.client().post('/api/signup', headers={'Content-Type': 'application/json'}, data=json.dumps(self.signup_request_success))
         # print(response)
         self.assertEqual(response.status, '200 OK')
-        self.assertEqual(response.data, b'{"message": "Account with this username already exists", "status": "FAIL"}')
-
-    
+        self.assertIn(b'"message": "Account with this username already exists", "status": "FAIL"', response.data)
 
 if __name__ == "__main__":
     unittest.main()
-
