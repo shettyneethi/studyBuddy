@@ -151,29 +151,26 @@ def signup():
         "token" : "" 
     }
     
-    status = 400
+    status = 200
     
     try:
         if(usrDetails.find(myquery1).count() > 0):
-            print('In 1st if')
             response["message"] = "Account with this username already exists"
 
         elif(usrDetails.find(myquery2).count() > 0):
-            print("In 2nd if")
             response["message"] = "Account with this Email ID already exists"
 
         else:
-            print('In else')
             token = create_access_token(identity=data["user_name"])
             row['token']= token
             usrDetails.insert_one(row)
             response["status"] = "SUCCESS"
             response["message"] = "Sign Up Success!"
             response["token"] = token
-            status=200
+
     except:
-            print('In except')
             response["status"] = "ERROR"
+            status = 400
             
     response_pickled = jsonpickle.encode(response)
     
