@@ -16,10 +16,6 @@ export default class Routes extends Component {
         this.setState({ filterMyRequests: data })
     }
 
-    getToken = (token) => {
-        console.log(token)
-        this.setState({token:token})
-    }
     componentDidMount() {
 
         this._isMounted = true;
@@ -46,7 +42,8 @@ export default class Routes extends Component {
     }
     
     render() {
-        console.log(this.state.token)
+        console.log(localStorage.getItem('token'))
+        
         return (
             <Router>
                 <Switch>

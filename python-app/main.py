@@ -232,12 +232,15 @@ def suggest():
 ##### POST ######
 @app.route('/requests/create', methods=["POST"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
 def create_post():
     req = request.json
     data = {}
 
+    current_user = get_jwt_identity()
+
     try:
-        data["username"] = "test"
+        data["username"] = current_user
         data["course"] = req["course"]
         data["skill"] = req["skill"]
         data["msg"] = req["msg"]

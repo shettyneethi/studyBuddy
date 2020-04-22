@@ -43,6 +43,22 @@ class Homepage extends Component {
       500,
       this.onSuggestionsFetchRequested
     )
+
+    this._isMounted = true;
+    console.log(localStorage.getItem('token'))
+    // console.log(this.state.token)
+    
+    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest', {
+      method: 'GET',
+            headers: {
+                "Content-type": "application/json",
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              },
+      signal: this.controller.signal
+    })
+      .then(response => response.json())
+      .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res }));
+
   }
 
   renderSuggestion = suggestion => {
@@ -75,18 +91,6 @@ class Homepage extends Component {
     
     this._isMounted = true;
     console.log(localStorage.getItem('token'))
-    // console.log(this.state.token)
-    
-    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest', {
-      method: 'GET',
-            headers: {
-                "Content-type": "application/json",
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-              },
-      signal: this.controller.signal
-    })
-      .then(response => response.json())
-      .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res }));
 
     this.eventSource_a = new EventSource('https://34.71.199.201:8081/api/posts');
     this.eventSource_a.onmessage = e =>
@@ -191,7 +195,7 @@ class Homepage extends Component {
     const value = this.state.value;
     const suggestions = this.state.suggestions;
 
-    // console.log(this.state.token);
+    console.log(localStorage.getItem('token'))
 
     // Autosuggest will pass through all these props to the input.
     const autoSuggestInputProps = {
