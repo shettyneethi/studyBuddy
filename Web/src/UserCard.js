@@ -38,30 +38,24 @@ class UserCard extends Component {
     componentDidMount() {
         
         console.log('In didmount')
-        console.log("Location ",this.props.location)
-        console.log("state ",this.props.location.state.token)
+        
 
         const url = 'https://api-suggest-dot-studybuddy-5828.appspot.com'
         fetch(`${url}/api/profile`, {
             method: 'GET',
             headers: {
                 "Content-type": "application/json",
-                'Authorization': 'Bearer ' + this.props.location.state.token
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
               }
         }).then((response) => response.json())
-       
-            .then(response => {
-                this.setState({ name: response.name });
-                this.setState({ skills: response.skills });
-                this.setState({ courses: response.courses });
-                this.setState({ department: response.department });
-            });
-
+        .then(res => {
+            this.setState({ name: res[0].user_name, skills: res[0].skills, courses: res[0].courses, department: res[0].department });
+       });
     }
     render() {
         const { classes } = this.props;
 
-        if (this.state.name && this.state.skills && this.state.courses && this.state.department) {
+        if (this.state.name) {
             return (
                 <div>
                     <Card className={classes.root} >

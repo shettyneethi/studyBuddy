@@ -31,9 +31,10 @@ class UserEdit extends Component {
 
     state = {
         name: null,
-        skills: "Data Structures",
-        courses: "CSCI",
-        department: "CS"
+        skills: null,
+        courses: null,
+        department: null,
+        _id: null
     }
 
     componentWillMount() {
@@ -46,7 +47,7 @@ class UserEdit extends Component {
               }
         }).then((response) => response.json())
             .then(res => {
-                this.setState({ name: res[0].user_name });
+                this.setState({ name: res[0].user_name, skills: res[0].skills, courses: res[0].courses, department: res[0].department, _id: res[0]._id.$oid });
            });
     }
 
@@ -56,12 +57,15 @@ class UserEdit extends Component {
             name: this.state.name,
             skills: this.state.skills,
             courses: this.state.courses,
-            department: this.state.department
+            department: this.state.department,
+            _id: this.state._id
         };
         fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile', {
             method: "PUT",
             headers: {
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+
             },
             body: JSON.stringify(data)
         })
@@ -90,7 +94,7 @@ class UserEdit extends Component {
         
         const { classes } = this.props;
 
-        if (this.state.name && this.state.skills && this.state.courses && this.state.department) {
+        if (this.state.name) {
             return (
                 <div>
                     <IconButton aria-label="back" onClick={() => this.props.history.push('/home')}>
@@ -102,9 +106,9 @@ class UserEdit extends Component {
                                 <div>
                                     <br /><br /><br />
                                     <Typography variant="h4" align="center" gutterBottom>
-                                        Edit your profile
+                                    Hey, {this.state.name}, Edit your profile here!
                                 </Typography>
-                                    <TextField id="name" label="Name" className={classes.textField} defaultValue={this.state.name} onChange={this.onNameChange} />
+                                    {/* <TextField id="name" label="Name" className={classes.textField} defaultValue={this.state.name} onChange={this.onNameChange} editable={false}/> */}
                                     <br /><br />
                                     <TextField id="skills" label="Skills" className={classes.textField} defaultValue={this.state.skills} onChange={this.onSkillsChange} />
                                     <br /><br />

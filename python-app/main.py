@@ -128,6 +128,9 @@ def login():
     response_pickled = jsonpickle.encode(response)
     resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
+
+
+    print(resp)
    
     return resp
 
@@ -141,7 +144,7 @@ def signup():
     
     hashed_pwd = hashlib.md5(data["password"].encode()).hexdigest()
 
-    row = { "user_name": data["user_name"], "password" : hashed_pwd , "email": data["email"]}
+    row = { "user_name": data["user_name"], "password" : hashed_pwd , "email": data["email"] , "skills": "", "courses": "", "department":""}
     myquery1 = { "user_name": data["user_name"] }
     myquery2 = { "email": data["email"] }
 
