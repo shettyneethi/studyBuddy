@@ -22,7 +22,6 @@ import {
 } from 'react-router-dom';
 import 'abortcontroller-polyfill';
 import Logout from './logout.jsx';
-import axios from 'axios';
 
 
 
@@ -30,8 +29,6 @@ import axios from 'axios';
 class Homepage extends Component {
   _isMounted = false;
   controller = new window.AbortController();
-
-  signal = axios.CancelToken.source();
 
   state = {
     value: '',
@@ -48,30 +45,16 @@ class Homepage extends Component {
       500,
       this.onSuggestionsFetchRequested
     )
-
-    // this._isMounted = true;
-    // console.log(localStorage.getItem('token'))
-    // // console.log(this.state.token)
-    
-    // fetch('http://0.0.0.0:8080/suggest', {
-    //   method: 'GET',
-    //         headers: {
-    //             "Content-type": "application/json",
-    //             'Authorization': 'Bearer ' + localStorage.getItem('token')
-    //           },
-    //   signal: this.controller.signal
-    // })
-    //   .then(response => response.json())
-    //   .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res }));
-
-    //   this.eventSource_a = new EventSource('https://34.71.199.201:8081/api/posts');
-    // this.eventSource_a.onmessage = e =>
-    //   this.updateData(JSON.parse(e.data), e);
-
-    // this.eventSource_b = new EventSource('https://34.71.199.201:8081/api/updated/posts');
-    // this.eventSource_b.onmessage = e =>
-    //   this.updatePost(JSON.parse(e.data), e);
-
+    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest', {
+      method: 'GET',
+            headers: {
+                "Content-type": "application/json",
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              },
+      signal: this.controller.signal
+    })
+      .then(response => response.json())
+      .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res }));
   }
 
   renderSuggestion = suggestion => {
@@ -104,19 +87,6 @@ class Homepage extends Component {
     
     this._isMounted = true;
     console.log(localStorage.getItem('token'))
-    console.log(axios.defaults.headers.common["Authorization"]);
-
-    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com', {
-      method: 'GET',
-            headers: {
-                "Content-type": "application/json",
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-              },
-      signal: this.controller.signal
-    })
-      .then(response => response.json())
-      .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res }));
-
     this.eventSource_a = new EventSource('https://34.71.199.201:8081/api/posts');
     this.eventSource_a.onmessage = e =>
       this.updateData(JSON.parse(e.data), e);
@@ -152,9 +122,9 @@ class Homepage extends Component {
 
   componentWillUnmount() {
     this._isMounted = false;
-    // this.controller.abort();
+    this.controller.abort();
 
-    this.signal.cancel('Api is being canceled');
+    // this.signal.cancel('Api is being canceled');
     
     if (this.eventSource_a)
       this.eventSource_a.close();
@@ -168,7 +138,7 @@ class Homepage extends Component {
 
     var filterMyReq = this.state.filterResults;
     filterMyReq = filterMyReq.filter(
-      (item) => item.username == 'test');
+      (item) => item.username == localStorage.getItem('username'));
     this.props.filterReq(filterMyReq);
 
   }
@@ -276,7 +246,7 @@ class Homepage extends Component {
           </IconButton> */}
           <Logout/>
 
-          <ViewProfile />
+          <ViewProfile user_name={localStorage.getItem('username')}/>
         </Navbar>
 
         <Grid padded >

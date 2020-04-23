@@ -8,7 +8,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import LoadingIcon from "./loading.gif"
-import Cookies from "universal-cookie"
 
 const styles = theme => ({
     root: {
@@ -22,8 +21,6 @@ const styles = theme => ({
 
 });
 
-const cookies = new Cookies();
-// const classes = useStyles();
 
 class UserCard extends Component {
 
@@ -38,10 +35,11 @@ class UserCard extends Component {
     componentDidMount() {
         
         console.log('In didmount')
-        
+        const user_name = this.props.user_name;
+        console.log(user_name)
 
         const url = 'https://api-suggest-dot-studybuddy-5828.appspot.com'
-        fetch(`${url}/api/profile`, {
+        fetch(`${url}/api/profile/${user_name}`, {
             method: 'GET',
             headers: {
                 "Content-type": "application/json",

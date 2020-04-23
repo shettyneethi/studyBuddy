@@ -95,12 +95,14 @@ def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
              [collection].find(query).sort('_id', -1)]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(
         len(posts), str(sys.getsizeof(posts))))
+    print(posts[0])
     return posts
 
 
 @app.route('/api/login', methods=['POST'])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def login():
+    
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
     usrDetails = mydb["user_details"]
@@ -111,7 +113,8 @@ def login():
 
     response = {
         "status" : "FAIL",
-        "token" : ""
+        "token" : "",
+        "user_name": ""
     }
 
     status=200
@@ -120,6 +123,7 @@ def login():
             token = create_access_token(identity=data["user_name"])
             response["status"] = "SUCCESS"
             response["token"] = token
+            response["user_name"] = data["user_name"]
             usrDetails.update(myquery, {"$set": {"token": token}})
 
     except:
@@ -152,6 +156,7 @@ def signup():
     response = {
         "status" : "FAIL",
         "message" : "Sign Up Failed!",
+        "user_name": "",
         "token" : "" 
     }
     
@@ -171,6 +176,7 @@ def signup():
             response["status"] = "SUCCESS"
             response["message"] = "Sign Up Success!"
             response["token"] = token
+            response["user_name"] = data["user_name"]
 
     except:
             response["status"] = "ERROR"
@@ -180,7 +186,7 @@ def signup():
     
     resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
-    print(response)
+    print(resp)
     
     return resp
 
@@ -302,6 +308,20 @@ def update_post(id):
 
     return jsonify(response_data)
 
+# def get_profile_user_name(user_name):
+#     mongoClient = pymongo.MongoClient(
+#         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+#     res = mongoClient["STUDYBUDDY"]["user_details"].find({ "user_name": user_name})
+#     return dumps(res)
+
+# @app.route('/profile/<user_name>', methods=["GET"])
+# @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+# def retrive_profile(user_name):
+
+#     res = get_profile_user_name(user_name)
+
+#     return res
+
 
 @app.route('/requests/delete/<id>', methods=["DELETE"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization', "credentials"])
@@ -325,16 +345,18 @@ def delete_post(id):
     return jsonify(response_data)
 
 
-@app.route('/api/profile', methods=["GET"])
+@app.route('/api/profile/<user_name>', methods=["GET"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 @jwt_required
-def getProfileFromMongo():
+def getProfileFromMongo(user_name):
     print("In profile")
-    current_user = get_jwt_identity()
-    print(current_user)
+    # user_name = get_jwt_identity()
+    # print(user_name)
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    res = mongoClient["STUDYBUDDY"]["user_details"].find({ "user_name": current_user})
+    res = mongoClient["STUDYBUDDY"]["user_details"].find({ "user_name": user_name})
+
+    print(res)
 
     return dumps(res)
 

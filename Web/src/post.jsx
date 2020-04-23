@@ -10,7 +10,8 @@ class Post extends Component {
   state = {
     count: 0,
     people: [],
-    isOpen: false
+    isOpen: false,
+    isInterested: false
   };
 
   toggleModal = () => {
@@ -20,7 +21,7 @@ class Post extends Component {
   }
 
   handlePersonIcon = () => {
-    console.log("Open profile");
+    console.log('Open personIcon')
   };
 
   handleCount = () => {
@@ -46,32 +47,52 @@ class Post extends Component {
 
    
   handleInterested(id, username, interested_count, interested_people) {
-    
-    let people_update = [username].concat(interested_people)
-    let count_update = interested_count+1
-    const data = {
-      interested_people: people_update,
-      interested_count: count_update,
-      id: id 
-    };
-    
-    const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
 
-    fetch(`${url}/requests/update/${data.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-type": "application/json"
-      },
-      body: JSON.stringify(data)
-    })
-      .then(res => res.json())
+    let people_update = interested_people
+    let count_update = interested_count
+ 
 
+    if(!this.state.isInterested){
+    
+      people_update = [username].concat(people_update)
+      count_update = count_update+1
+      
+    }
+    else{
+      const index = people_update.indexOf(username);
+      people_update.splice(index, 1);
+      count_update = count_update-1
+    }
+
+      const data = {
+        interested_people: people_update,
+        interested_count: count_update,
+        id: id 
+      };
+
+      console.log(data)
+      
+      const url = "http://0.0.0.0:8080"
+
+      fetch(`${url}/requests/update/${data.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+        .then(res => res.json())
+
+       
+        this.setState({isInterested : !this.state.isInterested})
    
   };
   
   render() {
     const { username, interested_count, interested_people, msg, tag, course, skill, _id} = this.props.request
     const id = _id['$oid']
+    const current_user = localStorage.getItem('username')
+    // console.log(username);
     
     return (
       <React.Fragment>
@@ -82,14 +103,7 @@ class Post extends Component {
         
               <Grid.Column >
 
-         <IconButton onClick={this.handlePersonIcon}
-              edge="end"
-              aria-label="account of current user"
-              aria-haspopup="true"
-              color="inherit"
-            >
-              <AccountCircle style={{ fontSize: 40 }} />
-        </IconButton>
+        <ViewProfile user_name={username}/>
         
         </Grid.Column>
         <Grid.Column >
@@ -121,7 +135,7 @@ class Post extends Component {
         <Grid.Row  columns={3}>
         <Grid.Column width={3}>
         <button
-          onClick={() => {this.handleInterested(_id, username, interested_count, interested_people)}}
+          onClick={() => {this.handleInterested(_id, current_user, interested_count, interested_people)}}
           style={{ fontSize: 15 }}
           className="badge badge-secondary btn-sm "
           disabled={this.props.value}

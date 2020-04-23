@@ -39,7 +39,7 @@ class UserEdit extends Component {
 
     componentWillMount() {
         
-        fetch("https://api-suggest-dot-studybuddy-5828.appspot.com", {
+        fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile", {
             method: 'GET',
             headers: {
                 "Content-type": "application/json",
@@ -60,7 +60,7 @@ class UserEdit extends Component {
             department: this.state.department,
             _id: this.state._id
         };
-        fetch('https://api-suggest-dot-studybuddy-5828.appspot.com', {
+        fetch('hhttps://api-suggest-dot-studybuddy-5828.appspot.com/api/profile', {
             method: "PUT",
             headers: {
                 "Content-type": "application/json",

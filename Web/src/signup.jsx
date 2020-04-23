@@ -57,7 +57,7 @@ class Signup extends React.Component{
                 email: this.state.email
             };
 
-            fetch("https://api-suggest-dot-studybuddy-5828.appspot.com", {
+            fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/signup", {
                 method: "POST",
                 headers: {
                   "Content-type": "application/json"  
@@ -65,7 +65,7 @@ class Signup extends React.Component{
                 body: JSON.stringify(data)
             })
             .then(response => response.json())
-            .then(res => res["status"]==="SUCCESS" ?  (localStorage.setItem('token', res["token"]), this.setState({isSignedUp: true}))  : alert(res["message"]))
+            .then(res => res["status"]==="SUCCESS" ?  (localStorage.setItem('token', res["token"]), localStorage.setItem('username', res["user_name"]), this.setState({isSignedUp: true}))  : alert(res["message"]))
             }
             else {
                 this.setState({

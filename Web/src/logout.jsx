@@ -12,6 +12,7 @@ class Logout extends Component {
 
     handleLogout= () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('username');
     }
 
     render() { 

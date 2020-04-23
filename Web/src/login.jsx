@@ -62,7 +62,7 @@ class Login extends React.Component {
       body: JSON.stringify(data)
     })
     .then(response => response.json())
-    .then(res => res["status"]==="SUCCESS" ? (localStorage.setItem('token', res["token"]),this.setState({isLoggedIn: true}) , axios.defaults.headers.common["Authorization"] = 'Bearer ' + res["token"])  : alert("Login Failed!"));
+    .then(res => res["status"]==="SUCCESS" ? (localStorage.setItem('token', res["token"]), localStorage.setItem('username', res["user_name"]), this.setState({isLoggedIn: true}) ) : alert("Login Failed!"));
     
     // const { token } = this.state;
     
