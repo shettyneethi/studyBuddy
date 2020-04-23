@@ -25,8 +25,7 @@ class Signup extends React.Component{
           confirmPwd: "",
           isSignedUp: false,
           didPwdMatch: false,
-          result: "",
-          token:""
+          result: ""
         }
       }
 
@@ -58,7 +57,7 @@ class Signup extends React.Component{
                 email: this.state.email
             };
 
-            fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/signup", {
+            fetch("https://api-suggest-dot-studybuddy-5828.appspot.com", {
                 method: "POST",
                 headers: {
                   "Content-type": "application/json"  
@@ -66,7 +65,7 @@ class Signup extends React.Component{
                 body: JSON.stringify(data)
             })
             .then(response => response.json())
-            .then(res => res["status"]==="SUCCESS" ? this.setState({token:res["token"], isSignedUp: true},  localStorage.setItem('token', res["token"])) : alert(res["message"]))
+            .then(res => res["status"]==="SUCCESS" ?  (localStorage.setItem('token', res["token"]), this.setState({isSignedUp: true}))  : alert(res["message"]))
             }
             else {
                 this.setState({
@@ -79,7 +78,6 @@ class Signup extends React.Component{
     }
 
     render(){
-        const res = this.state.token
         
         return(
             <div>
@@ -89,8 +87,7 @@ class Signup extends React.Component{
                 {this.state.isSignedUp ? 
                 
                 <Redirect to={{
-                    pathname: '/profile/edit/', 
-                    state:{token:res}
+                    pathname: '/profile/edit/'
                 }}  /> 
                 
                 : 
