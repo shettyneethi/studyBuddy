@@ -90,8 +90,9 @@ def deletePostMongo(post_id):
 def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    query = { "isCompleted" : False }
     posts = [x for x in mongoClient[database]
-             [collection].find().sort('_id', -1)]
+             [collection].find(query).sort('_id', -1)]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(
         len(posts), str(sys.getsizeof(posts))))
     return posts
@@ -248,6 +249,7 @@ def create_post():
         data["interested_count"] = 0
         data["interested_people"] = []
         data["post_time"] = datetime.datetime.now()
+        data["isCompleted"] = False
 
         x = insertToMongo(data)
         logging.info("Succesfully pushed to MongoDB")
