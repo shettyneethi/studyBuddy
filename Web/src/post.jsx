@@ -50,9 +50,10 @@ class Post extends Component {
 
     let people_update = interested_people
     let count_update = interested_count
+    
  
 
-    if(!this.state.isInterested){
+    if(!people_update.includes(username)){
     
       people_update = [username].concat(people_update)
       count_update = count_update+1
@@ -63,12 +64,13 @@ class Post extends Component {
       people_update.splice(index, 1);
       count_update = count_update-1
     }
-
+    
       const data = {
         interested_people: people_update,
         interested_count: count_update,
-        id: id 
+        id: id
       };
+
 
       console.log(data)
       
@@ -82,17 +84,14 @@ class Post extends Component {
         body: JSON.stringify(data)
       })
         .then(res => res.json())
-
-       
-        this.setState({isInterested : !this.state.isInterested})
-   
   };
+
   
   render() {
-    const { username, interested_count, interested_people, msg, tag, course, skill, _id} = this.props.request
+    const { username, interested_count, interested_people, msg, tag, course, skill, _id, isCompleted} = this.props.request
     const id = _id['$oid']
     const current_user = localStorage.getItem('username')
-    // console.log(username);
+    
     
     return (
       <React.Fragment>
@@ -134,14 +133,14 @@ class Post extends Component {
 
         <Grid.Row  columns={3}>
         <Grid.Column width={3}>
-        <button
+        {current_user!==username ? <button
           onClick={() => {this.handleInterested(_id, current_user, interested_count, interested_people)}}
           style={{ fontSize: 15 }}
           className="badge badge-secondary btn-sm "
           disabled={this.props.value}
         >
           Interested
-        </button>
+        </button> : null}
         </Grid.Column>
 
         <Grid.Column width={3}>
