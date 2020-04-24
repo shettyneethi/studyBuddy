@@ -91,7 +91,7 @@ class Post extends Component {
     const { username, interested_count, interested_people, msg, tag, course, skill, _id, isCompleted} = this.props.request
     const id = _id['$oid']
     const current_user = localStorage.getItem('username')
-    // console.log(this.state.isInterested);
+    
     
     return (
       <React.Fragment>
@@ -133,14 +133,14 @@ class Post extends Component {
 
         <Grid.Row  columns={3}>
         <Grid.Column width={3}>
-        <button
+        {current_user!==username ? <button
           onClick={() => {this.handleInterested(_id, current_user, interested_count, interested_people)}}
           style={{ fontSize: 15 }}
           className="badge badge-secondary btn-sm "
           disabled={this.props.value}
         >
           Interested
-        </button>
+        </button> : null}
         </Grid.Column>
 
         <Grid.Column width={3}>
