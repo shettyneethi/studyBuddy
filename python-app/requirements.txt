@@ -8,5 +8,4 @@ dnspython==1.16.0
 kafka-python
 pytest
 jsonpickle
-secrets
 flask_jwt_extended
