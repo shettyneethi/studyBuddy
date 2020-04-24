@@ -124,7 +124,7 @@ def login():
             response["status"] = "SUCCESS"
             response["token"] = token
             response["user_name"] = data["user_name"]
-            usrDetails.update(myquery, {"$set": {"token": token}})
+            # usrDetails.update(myquery, {"$set": {"token": token}})
 
     except:
             response["status"] = "ERROR"
@@ -171,7 +171,7 @@ def signup():
 
         else:
             token = create_access_token(identity=data["user_name"])
-            row['token']= token
+            # row['token']= token
             usrDetails.insert_one(row)
             response["status"] = "SUCCESS"
             response["message"] = "Sign Up Success!"
@@ -207,7 +207,7 @@ def logout():
 
     try:
         if(usrDetails.find(myquery).count() == 1):
-            usrDetails.update(myquery, {"$unset": {"token":1} } )
+            # usrDetails.update(myquery, {"$unset": {"token":1} } )
             response["status"] = "SUCCESS"
     except:
             response["status"] = "ERROR"
@@ -308,20 +308,6 @@ def update_post(id):
 
     return jsonify(response_data)
 
-# def get_profile_user_name(user_name):
-#     mongoClient = pymongo.MongoClient(
-#         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-#     res = mongoClient["STUDYBUDDY"]["user_details"].find({ "user_name": user_name})
-#     return dumps(res)
-
-# @app.route('/profile/<user_name>', methods=["GET"])
-# @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
-# def retrive_profile(user_name):
-
-#     res = get_profile_user_name(user_name)
-
-#     return res
-
 
 @app.route('/requests/delete/<id>', methods=["DELETE"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization', "credentials"])
@@ -350,15 +336,38 @@ def delete_post(id):
 @jwt_required
 def getProfileFromMongo(user_name):
     print("In profile")
-    # user_name = get_jwt_identity()
-    # print(user_name)
+    print(user_name)
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     res = mongoClient["STUDYBUDDY"]["user_details"].find({ "user_name": user_name})
 
-    print(res)
 
-    return dumps(res)
+    # response_pickled = jsonpickle.encode(res)
+    resp =  Response(response=dumps(res),
+           status=200 , mimetype="application/json")
+    
+
+    return resp
+
+@app.route('/api/profile', methods=["GET"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
+def get_profile():
+    print("In changed profile")
+    user_name = get_jwt_identity()
+    print(user_name)
+    mongoClient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    res = mongoClient["STUDYBUDDY"]["user_details"].find({ "user_name": user_name})
+
+    # print(dumps(res))
+
+    resp =  Response(response=dumps(res),
+           status=200 , mimetype="application/json")
+
+    print(resp)
+
+    return resp
 
 
 @app.route('/api/profile', methods=["PUT"])
@@ -386,7 +395,12 @@ def edit_profile():
             "success": False,
             "status_code": 404
         }
-    return jsonify(response_data)
+
+        resp =  Response(response=response_data,
+           status=200 , mimetype="application/json")
+    
+    # return jsonify(response_data)
+    return resp
 
 
 if __name__ == '__main__':

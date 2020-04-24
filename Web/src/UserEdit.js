@@ -38,14 +38,15 @@ class UserEdit extends Component {
     }
 
     componentWillMount() {
-        
+
         fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile", {
             method: 'GET',
             headers: {
                 "Content-type": "application/json",
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
               }
-        }).then((response) => response.json())
+        })
+        .then((response) => response.json())
             .then(res => {
                 this.setState({ name: res[0].user_name, skills: res[0].skills, courses: res[0].courses, department: res[0].department, _id: res[0]._id.$oid });
            });
@@ -60,7 +61,7 @@ class UserEdit extends Component {
             department: this.state.department,
             _id: this.state._id
         };
-        fetch('hhttps://api-suggest-dot-studybuddy-5828.appspot.com/api/profile', {
+        fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile', {
             method: "PUT",
             headers: {
                 "Content-type": "application/json",

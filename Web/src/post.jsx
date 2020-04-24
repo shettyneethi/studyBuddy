@@ -50,9 +50,10 @@ class Post extends Component {
 
     let people_update = interested_people
     let count_update = interested_count
+    
  
 
-    if(!this.state.isInterested){
+    if(!people_update.includes(username)){
     
       people_update = [username].concat(people_update)
       count_update = count_update+1
@@ -63,16 +64,17 @@ class Post extends Component {
       people_update.splice(index, 1);
       count_update = count_update-1
     }
-
+    
       const data = {
         interested_people: people_update,
         interested_count: count_update,
-        id: id 
+        id: id
       };
+
 
       console.log(data)
       
-      const url = "http://0.0.0.0:8080"
+      const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
 
       fetch(`${url}/requests/update/${data.id}`, {
         method: "PUT",
@@ -82,17 +84,14 @@ class Post extends Component {
         body: JSON.stringify(data)
       })
         .then(res => res.json())
-
-       
-        this.setState({isInterested : !this.state.isInterested})
-   
   };
+
   
   render() {
-    const { username, interested_count, interested_people, msg, tag, course, skill, _id} = this.props.request
+    const { username, interested_count, interested_people, msg, tag, course, skill, _id, isCompleted} = this.props.request
     const id = _id['$oid']
     const current_user = localStorage.getItem('username')
-    // console.log(username);
+    // console.log(this.state.isInterested);
     
     return (
       <React.Fragment>
