@@ -38,7 +38,7 @@ class UserCard extends Component {
         const user_name = this.props.user_name;
         console.log(user_name)
 
-        const url = 'https://api-suggest-dot-studybuddy-5828.appspot.com'
+        const url = 'http://127.0.0.1:8080'
         fetch(`${url}/api/profile/${user_name}`, {
             method: 'GET',
             headers: {

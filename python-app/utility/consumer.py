@@ -78,5 +78,5 @@ def subcribe_to_kafka_deleted_posts():
     return res
             
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8081, ssl_context='adhoc')
+    app.run(host='127.0.0.1', port=8081, ssl_context='adhoc')
 

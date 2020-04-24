@@ -38,8 +38,10 @@ class UserEdit extends Component {
     }
 
     componentWillMount() {
+        const user_name = this.props.user_name
+        const url = 'http://127.0.0.1:8080/'
         
-        fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile", {
+        fetch(`${url}/api/profile/${user_name}`, {
             method: 'GET',
             headers: {
                 "Content-type": "application/json",
@@ -60,7 +62,7 @@ class UserEdit extends Component {
             department: this.state.department,
             _id: this.state._id
         };
-        fetch('hhttps://api-suggest-dot-studybuddy-5828.appspot.com/api/profile', {
+        fetch('http://127.0.0.1:8080/api/profile', {
             method: "PUT",
             headers: {
                 "Content-type": "application/json",
