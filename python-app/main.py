@@ -41,14 +41,15 @@ app.config['JWT_SECRET_KEY'] = 'rishitha'  # Change this!
 jwt = JWTManager(app)
 
 DATABASE = "test-db"
-COLLECTION = "sample-requests"
+POSTS_COLLECTION = "sample-requests"
+USERS_COLLECTION = "user_details"
 
 
 def insertToMongo(data):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient[DATABASE]
-    mycollections = mydb[COLLECTION]
+    mycollections = mydb[POSTS_COLLECTION]
     x = mycollections.insert_one(data)
 
     return x.acknowledged
@@ -58,7 +59,7 @@ def updateProfileToMongo(data):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
-    mycollections = mydb["user_details"]
+    mycollections = mydb[USERS_COLLECTION]
     myquery = {"_id": ObjectId(data["_id"])}
     newvalues = {"$set": {"name": data["name"], "skills": data["skills"],
                           "courses": data["courses"], "department": data["department"]}}
@@ -71,7 +72,7 @@ def updatePostMongo(data, post_id):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient[DATABASE]
-    mycollections = mydb[COLLECTION]
+    mycollections = mydb[POSTS_COLLECTION]
     new_data = {"$set": data}
     res = mycollections.update_one({"_id": post_id}, new_data)
 
@@ -81,13 +82,13 @@ def deletePostMongo(post_id):
     myclient = pymongo.MongoClient(
             "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient[DATABASE]
-    mycollections = mydb[COLLECTION]
+    mycollections = mydb[POSTS_COLLECTION]
     res = mycollections.delete_one({"_id": post_id})
 
     return res.deleted_count
 
 
-def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
+def getPostsFromMongo(database=DATABASE, collection=POSTS_COLLECTION):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     query = { "isCompleted" : False }
@@ -97,13 +98,30 @@ def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
         len(posts), str(sys.getsizeof(posts))))
     return posts
 
+def getEmailIDofInterested(post_id):
+    mongoClient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = mongoClient[DATABASE]
+    mycollection = mydb[POSTS_COLLECTION]
+    result = []
+    
+    query = {"_id": post_id}
+    post =  mycollection.find(query)
+    if(post.count() == 1):
+        usr_names = set(post[0]["interested_people"])
+        for usr in usr_names:
+            try :
+                result.append(mongoClient["STUDYBUDDY"][USERS_COLLECTION].find({ "user_name": usr })[0]["email"])
+            except:
+                continue
+    return result
 
 @app.route('/api/login', methods=['POST'])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def login():
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
-    usrDetails = mydb["user_details"]
+    usrDetails = mydb[USERS_COLLECTION]
     data = request.get_json()
     hashed_pwd = hashlib.md5(data["password"].encode()).hexdigest()
 
@@ -140,7 +158,7 @@ def login():
 def signup():
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
-    usrDetails = mydb["user_details"]
+    usrDetails = mydb[USERS_COLLECTION]
     data = request.get_json()
     
     hashed_pwd = hashlib.md5(data["password"].encode()).hexdigest()
@@ -190,7 +208,7 @@ def signup():
 def logout():
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
-    usrDetails = mydb["user_details"]
+    usrDetails = mydb[USERS_COLLECTION]
     data = request.get_json()
     myquery = { "token": data["token"] }
 
@@ -334,7 +352,7 @@ def getProfileFromMongo():
     print(current_user)
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    res = mongoClient["STUDYBUDDY"]["user_details"].find({ "user_name": current_user})
+    res = mongoClient["STUDYBUDDY"][USERS_COLLECTION].find({ "user_name": current_user})
 
     return dumps(res)
 
