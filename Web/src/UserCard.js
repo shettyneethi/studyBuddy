@@ -8,7 +8,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import LoadingIcon from "./loading.gif"
-import Cookies from "universal-cookie"
 
 const styles = theme => ({
     root: {
@@ -22,12 +21,10 @@ const styles = theme => ({
 
 });
 
-const cookies = new Cookies();
-// const classes = useStyles();
 
 class UserCard extends Component {
 
-
+    controller = new window.AbortController();
 
     state = {
         name: null,
@@ -36,24 +33,46 @@ class UserCard extends Component {
         department: null
     }
     componentDidMount() {
+
+       
         
         console.log('In didmount')
-        
+        const user_name = this.props.user_name;
+        console.log(user_name)
 
         const url = 'https://api-suggest-dot-studybuddy-5828.appspot.com'
-        fetch(`${url}/api/profile`, {
+        fetch(`${url}/api/profile/${user_name}`, {
             method: 'GET',
             headers: {
                 "Content-type": "application/json",
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
-              }
-        }).then((response) => response.json())
+              },
+              signal: this.controller.signal
+        }).then(response => response.json())
         .then(res => {
             this.setState({ name: res[0].user_name, skills: res[0].skills, courses: res[0].courses, department: res[0].department });
        });
+    
     }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+        this.controller.abort();
+    
+        // this.signal.cancel('Api is being canceled');
+        
+        if (this.eventSource_a)
+          this.eventSource_a.close();
+    
+        if (this.eventSource_b)
+          this.eventSource_b.close();
+      }
+    
+
     render() {
         const { classes } = this.props;
+
+        console.log(this.state.name);
 
         if (this.state.name) {
             return (
@@ -80,7 +99,7 @@ class UserCard extends Component {
                             </Typography>
 
                         </CardContent>
-                        <CardActions disableSpacing>
+                        {this.props.user_name==localStorage.getItem('username') ? <CardActions disableSpacing>
                             <IconButton aria-label="edit">
 
                                 <a href="/profile/edit" >
@@ -89,7 +108,7 @@ class UserCard extends Component {
                             </IconButton>
 
 
-                        </CardActions>
+                        </CardActions> : null}
 
 
 

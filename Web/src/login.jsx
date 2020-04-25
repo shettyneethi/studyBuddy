@@ -7,6 +7,7 @@ import { Navbar, Nav } from 'react-bootstrap';
 import {  Link, Redirect } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import { Grid, Segment,Label} from 'semantic-ui-react';
+import axios from 'axios';
 
 const MyButton = styled(Button)({
   background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
@@ -31,8 +32,7 @@ class Login extends React.Component {
       isLoggedIn: false,
       message: "",
       isSuccess: false,
-      username: "" ,
-      token: ""
+      username: "" 
     }
 
   }
@@ -53,6 +53,7 @@ class Login extends React.Component {
       password : this.state.password
     };
 
+
     fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/api/login', {
       method: "POST",
       headers: {
@@ -61,7 +62,7 @@ class Login extends React.Component {
       body: JSON.stringify(data)
     })
     .then(response => response.json())
-    .then(res => res["status"]==="SUCCESS" ? (this.setState({token: res["token"], isLoggedIn: true}) , localStorage.setItem('token', res["token"]))  : alert("Login Failed!"));
+    .then(res => res["status"]==="SUCCESS" ? (localStorage.setItem('token', res["token"]), localStorage.setItem('username', res["user_name"]), this.setState({isLoggedIn: true}) ) : alert("Login Failed!"));
     
     // const { token } = this.state;
     
@@ -69,7 +70,6 @@ class Login extends React.Component {
   }
    
   render() {
-    const res = this.state.token
     
     return (
     <div>
@@ -86,7 +86,7 @@ class Login extends React.Component {
       </Navbar>      
 
       
-      {this.state.isLoggedIn ? <Redirect to={{pathname: '/home', state:{token:res}}}/> :
+      {this.state.isLoggedIn ? <Redirect to={{pathname: '/home'}}/> :
       <div>
         <div id="login-form" align="center">
 

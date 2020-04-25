@@ -16,7 +16,9 @@ const useStyles = makeStyles({
 
 function SimpleDialog(props) {
     const classes = useStyles();
-    const { onClose, open } = props;
+    const { onClose, open, username } = props;
+
+    
 
     const handleClose = () => {
         onClose();
@@ -27,7 +29,7 @@ function SimpleDialog(props) {
     return (
         <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
 
-            <UserCard />
+            <UserCard user_name={username}/>
         </Dialog>
 
     );
@@ -39,8 +41,9 @@ SimpleDialog.propTypes = {
     selectedValue: PropTypes.string.isRequired,
 };
 
-export default function ViewProfile() {
+export default function ViewProfile(props) {
     const [open, setOpen] = React.useState(false);
+    
 
 
     const handleClickOpen = () => {
@@ -50,6 +53,8 @@ export default function ViewProfile() {
     const handleClose = (value) => {
         setOpen(false);
     };
+
+    console.log(props.user_name);
 
     return (
         <div>
@@ -65,7 +70,7 @@ export default function ViewProfile() {
                 <AccountCircle fontSize='large' />
             </IconButton>
 
-            <SimpleDialog open={open} onClose={handleClose} />
+            <SimpleDialog open={open} onClose={handleClose} username={props.user_name}/>
         </div>
     );
 }

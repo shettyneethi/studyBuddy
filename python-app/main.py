@@ -23,7 +23,6 @@ from flask_jwt_extended import (
 import jsonpickle
 import io
 import hashlib
-import secrets
 import json 
 
 
@@ -78,6 +77,7 @@ def updatePostMongo(data, post_id):
 
     return res.modified_count
 
+
 def deletePostMongo(post_id):
     myclient = pymongo.MongoClient(
             "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
@@ -98,6 +98,7 @@ def getPostsFromMongo(database=DATABASE, collection=POSTS_COLLECTION):
         len(posts), str(sys.getsizeof(posts))))
     return posts
 
+
 def getEmailIDofInterested(post_id):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
@@ -116,9 +117,22 @@ def getEmailIDofInterested(post_id):
                 continue
     return result
 
+
+@app.route('/api/getContactDetails/<id>', methods=["GET"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
+def getContactDetails(id):
+    post_id = ObjectId(id)
+    contacts = getEmailIDofInterested(post_id)
+
+    return Response(response=dumps(contacts),
+           status=200 , mimetype="application/json")
+
+
 @app.route('/api/login', methods=['POST'])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def login():
+    
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
     usrDetails = mydb[USERS_COLLECTION]
@@ -129,7 +143,8 @@ def login():
 
     response = {
         "status" : "FAIL",
-        "token" : ""
+        "token" : "",
+        "user_name": ""
     }
 
     status=200
@@ -138,7 +153,8 @@ def login():
             token = create_access_token(identity=data["user_name"])
             response["status"] = "SUCCESS"
             response["token"] = token
-            usrDetails.update(myquery, {"$set": {"token": token}})
+            response["user_name"] = data["user_name"]
+            # usrDetails.update(myquery, {"$set": {"token": token}})
 
     except:
             response["status"] = "ERROR"
@@ -147,11 +163,9 @@ def login():
     response_pickled = jsonpickle.encode(response)
     resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
-
-
-    print(resp)
    
     return resp
+
 
 @app.route('/api/signup', methods=['POST'])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
@@ -169,7 +183,8 @@ def signup():
 
     response = {
         "status" : "FAIL",
-        "message" : "Sign Up Failed!",
+        "messagpost_ide" : "Sign Up Failed!",
+        "user_name": "",
         "token" : "" 
     }
     
@@ -184,11 +199,12 @@ def signup():
 
         else:
             token = create_access_token(identity=data["user_name"])
-            row['token']= token
+            # row['token']= token
             usrDetails.insert_one(row)
             response["status"] = "SUCCESS"
             response["message"] = "Sign Up Success!"
             response["token"] = token
+            response["user_name"] = data["user_name"]
 
     except:
             response["status"] = "ERROR"
@@ -198,7 +214,7 @@ def signup():
     
     resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
-    print(response)
+    print(resp)
     
     return resp
 
@@ -219,7 +235,7 @@ def logout():
 
     try:
         if(usrDetails.find(myquery).count() == 1):
-            usrDetails.update(myquery, {"$unset": {"token":1} } )
+            # usrDetails.update(myquery, {"$unset": {"token":1} } )
             response["status"] = "SUCCESS"
     except:
             response["status"] = "ERROR"
@@ -230,6 +246,7 @@ def logout():
            status=status , mimetype="application/json")
     
     return resp
+
 
 @app.route('/status', methods=["GET"])
 @app.route('/', methods=["GET"])
@@ -247,6 +264,7 @@ def suggest():
     current_user = get_jwt_identity()
     print(current_user)
     return dumps(getPostsFromMongo())
+
 
 ##### POST ######
 @app.route('/requests/create', methods=["POST"])
@@ -320,7 +338,6 @@ def update_post(id):
 
     return jsonify(response_data)
 
-
 @app.route('/requests/delete/<id>', methods=["DELETE"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization', "credentials"])
 def delete_post(id):
@@ -343,18 +360,38 @@ def delete_post(id):
     return jsonify(response_data)
 
 
+@app.route('/api/profile/<user_name>', methods=["GET"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
+def getProfileFromMongo(user_name):
+    print("In profile")
+    print(user_name)
+    mongoClient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+
+    res = mongoClient["STUDYBUDDY"][USERS_COLLECTION].find({ "user_name": user_name})
+    resp =  Response(response=dumps(res),
+           status=200 , mimetype="application/json")
+    
+    return resp
+
+
 @app.route('/api/profile', methods=["GET"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 @jwt_required
-def getProfileFromMongo():
-    print("In profile")
-    current_user = get_jwt_identity()
-    print(current_user)
+def get_profile():
+    print("In changed profile")
+    user_name = get_jwt_identity()
+    print(user_name)
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    res = mongoClient["STUDYBUDDY"][USERS_COLLECTION].find({ "user_name": current_user})
+    res = mongoClient["STUDYBUDDY"][USERS_COLLECTION].find({ "user_name": user_name})
 
-    return dumps(res)
+    resp =  Response(response=dumps(res),
+           status=200 , mimetype="application/json")
+
+    print(resp)
+    return resp
 
 
 @app.route('/api/profile', methods=["PUT"])
@@ -382,7 +419,12 @@ def edit_profile():
             "success": False,
             "status_code": 404
         }
-    return jsonify(response_data)
+
+        resp =  Response(response=response_data,
+           status=200 , mimetype="application/json")
+    
+    # return jsonify(response_data)
+    return resp
 
 
 if __name__ == '__main__':
