@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Post from "./post.jsx";
 import { Segment } from "semantic-ui-react";
-
+import './posts.css';
 
 class Posts extends Component {
   render() {
@@ -13,6 +13,7 @@ class Posts extends Component {
               request={c}
               key={c.id}
               value = {this.props.value}
+              className="bg-post"
             ></Post>
           ))}
         </Segment>

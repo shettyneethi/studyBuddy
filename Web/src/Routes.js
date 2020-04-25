@@ -20,7 +20,7 @@ export default class Routes extends Component {
 
         this._isMounted = true;
     
-        this.eventSource= new EventSource('https://34.71.199.201:8081/api/deleted/posts');
+        this.eventSource= new EventSource('http://127.0.0.1:8081/api/deleted/posts');
         this.eventSource.onmessage = e =>
           this.deletePost(JSON.parse(e.data), e);
       }

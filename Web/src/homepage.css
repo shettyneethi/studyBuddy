@@ -1,21 +1,20 @@
 .gridContainer
 {
-  background-color:#fff
+  background-color:whitesmoke;
 }
 
 .searchDivison{
     width: 100%;
-
 }
-.postsDivision
+
+/* .postsDivision
 {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
+} */
 
 .requestButton {
   border:none;
   background-color: transparent;
-  
 }
 
 .inputContainer {
@@ -31,9 +30,8 @@
 }
 
 .postsDivision{
-    width: 700px;
-    height:670px;
-    overflow: scroll;
+  position: relative;
+  overflow: scroll;
 }
 
 .react-autosuggest__container {
@@ -49,7 +47,7 @@
   font-size: 16px;
   border: 1px solid #00B4CC;
   border-radius: 50px 50px 50px 50px;
-color: #9DBFAF;
+  color: #9DBFAF;
 }
 
 .react-autosuggest__input--focused {

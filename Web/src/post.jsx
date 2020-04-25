@@ -38,7 +38,7 @@ class Post extends Component {
       },
      }
      
-    const url = "https://127.0.0.1:8080"
+    const url = "http://127.0.0.1:8080"
     
     fetch(`${url}/requests/delete/${id}`, deleteMethod)
       .then(res => res.json())
@@ -99,9 +99,7 @@ class Post extends Component {
         <Grid padded>
           
         <Grid.Row  columns={2}>
-        
-              <Grid.Column >
-
+          <Grid.Column >
         <ViewProfile user_name={username}/>
         
         </Grid.Column>

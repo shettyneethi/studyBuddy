@@ -22,9 +22,6 @@ import {
 import 'abortcontroller-polyfill';
 import Logout from './logout.jsx';
 
-
-
-
 class Homepage extends Component {
   _isMounted = false;
   controller = new window.AbortController();
@@ -75,7 +72,7 @@ class Homepage extends Component {
     this._isMounted = true;
     console.log(localStorage.getItem('token'))
 
-    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/suggest', {
+    fetch('http://127.0.0.1:8080/suggest', {
       method: 'GET',
             headers: {
                 "Content-type": "application/json",
@@ -85,16 +82,14 @@ class Homepage extends Component {
     })
       .then(response => response.json())
       .then(res => this.setState({ cacheAPISugesstions: res, filterResults: res, posts: res }));
-    this.eventSource_a = new EventSource('https://34.71.199.201:8081/api/posts');
+    this.eventSource_a = new EventSource('http://127.0.0.1:8081/api/posts');
     this.eventSource_a.onmessage = e =>
       this.updateData(JSON.parse(e.data), e);
 
-    this.eventSource_b = new EventSource('https://34.71.199.201:8081/api/updated/posts');
+    this.eventSource_b = new EventSource('http://127.0.0.1:8081/api/updated/posts');
     this.eventSource_b.onmessage = e =>
       this.updatePost(JSON.parse(e.data), e);
   }
-
-
 
   updateData(data, e) {
     let res = this.state.filterResults
@@ -216,12 +211,10 @@ class Homepage extends Component {
       </div>
     );
 
-
-
     return (
       <div className="gridContainer">
 
-        <Navbar bg="light" expand="lg">
+        <Navbar bg="dark" expand="lg" sticky="top">
           <Navbar.Brand href="#home">
             <img
               alt=""
@@ -229,10 +222,10 @@ class Homepage extends Component {
               width="70"
               height="70"
             />{' '}
-          StudyBuddy
         </Navbar.Brand>
+        <Nav className="h1-nav">Study Buddy</Nav>
 
-          <Nav class="collapse navbar-collapse justify-content-center" padded>
+          <Nav className="navbar-collapse justify-content-center">
             <Autosuggest
               suggestions={suggestions}
               onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
@@ -246,11 +239,7 @@ class Homepage extends Component {
           </Nav>
 
           <Link to="/myRequests" onClick={this.handleMyRequest}>My Requests</Link>
-          {/* <IconButton aria-label="show 17 new notifications" color="inherit">
-            <Badge badgeContent={17} color="secondary">
-              <NotificationsIcon fontSize='large' />
-            </Badge>
-          </IconButton> */}
+        
           <Logout/>
 
           <ViewProfile user_name={localStorage.getItem('username')}/>
@@ -268,7 +257,7 @@ class Homepage extends Component {
 
             </Grid.Column>
             <Grid.Column width={6}>
-              <div className='newPostDivision' >
+              <div>
 
                 <IconButton onClick={this.toggleModal} >
 

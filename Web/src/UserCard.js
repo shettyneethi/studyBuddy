@@ -34,8 +34,6 @@ class UserCard extends Component {
     }
     componentDidMount() {
 
-       
-        
         console.log('In didmount')
         const user_name = this.props.user_name;
         console.log(user_name)
