@@ -180,6 +180,18 @@ class Post extends Component {
             </Modal>
 
           </Grid.Column>
+
+          <Grid.Column width={3}>
+          {this.props.value ?
+              <button
+                onClick={() => { if (window.confirm('Do you want to delete this item?')) this.handleDone(id) }}
+                style={{ fontSize: 15 }}
+                className="badge badge-secondary btn-sm "
+                >
+                Delete
+              </button>
+              : null}
+          </Grid.Column>
           
           {this.props.value ?
               <Grid.Column width={2}>

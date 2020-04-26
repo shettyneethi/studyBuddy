@@ -51,6 +51,8 @@ def insertToMongo(data):
     mycollections = mydb[POSTS_COLLECTION]
     x = mycollections.insert_one(data)
 
+    myclient.close()
+
     return x.acknowledged
 
 
@@ -64,7 +66,9 @@ def updateProfileToMongo(data):
                           "courses": data["courses"], "department": data["department"]}}
     x = mycollections.update_one(myquery, newvalues)
 
-    return x.acknowledged
+    myclient.close()
+
+    return x.modified_count
 
 
 def updatePostMongo(data, post_id):
@@ -75,6 +79,8 @@ def updatePostMongo(data, post_id):
     new_data = {"$set": data}
     res = mycollections.update_one({"_id": post_id}, new_data)
 
+    myclient.close()
+
     return res.modified_count
 
 
@@ -84,6 +90,8 @@ def deletePostMongo(post_id):
     mydb = myclient[DATABASE]
     mycollections = mydb[POSTS_COLLECTION]
     res = mycollections.delete_one({"_id": post_id})
+
+    myclient.close()
 
     return res.deleted_count
 
@@ -96,6 +104,8 @@ def getPostsFromMongo(database=DATABASE, collection=POSTS_COLLECTION):
              [collection].find(query).sort('_id', -1)]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(
         len(posts), str(sys.getsizeof(posts))))
+    
+    mongoClient.close()
     return posts
 
 
@@ -115,6 +125,8 @@ def getEmailIDofInterested(post_id):
                 result.append(mongoClient["STUDYBUDDY"][USERS_COLLECTION].find({ "user_name": usr })[0]["email"])
             except:
                 continue
+    
+    mongoClient.close()
     return result
 
 
@@ -163,6 +175,8 @@ def login():
     response_pickled = jsonpickle.encode(response)
     resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
+
+    myclient.close()
    
     return resp
 
@@ -215,6 +229,8 @@ def signup():
     resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
     print(resp)
+
+    myclient.close()
     
     return resp
 
@@ -244,6 +260,8 @@ def logout():
     response_pickled = jsonpickle.encode(response)
     resp =  Response(response=response_pickled,
            status=status , mimetype="application/json")
+
+    myclient.close()
     
     return resp
 
@@ -372,6 +390,8 @@ def getProfileFromMongo(user_name):
     res = mongoClient["STUDYBUDDY"][USERS_COLLECTION].find({ "user_name": user_name})
     resp =  Response(response=dumps(res),
            status=200 , mimetype="application/json")
+
+    mongoClient.close()
     
     return resp
 
@@ -391,6 +411,8 @@ def get_profile():
            status=200 , mimetype="application/json")
 
     print(resp)
+
+    mongoClient.close()
     return resp
 
 
@@ -420,11 +442,7 @@ def edit_profile():
             "status_code": 404
         }
 
-        resp =  Response(response=response_data,
-           status=200 , mimetype="application/json")
-    
-    # return jsonify(response_data)
-    return resp
+    return jsonify(response_data)
 
 
 if __name__ == '__main__':
