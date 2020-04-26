@@ -40,27 +40,26 @@ app.config['JWT_SECRET_KEY'] = 'rishitha'  # Change this!
 jwt = JWTManager(app)
 
 DATABASE = "test-db"
+DATABASE_USERS = "STUDYBUDDY"
 POSTS_COLLECTION = "sample-requests"
 USERS_COLLECTION = "user_details"
 
-
-def insertToMongo(data):
+def insertToMongo(data, database=DATABASE, collection=POSTS_COLLECTION):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient[DATABASE]
-    mycollections = mydb[POSTS_COLLECTION]
+    mydb = myclient[database]
+    mycollections = mydb[collection]
     x = mycollections.insert_one(data)
-
     myclient.close()
 
-    return x.acknowledged
+    return x.acknowledged, x.inserted_id
 
 
-def updateProfileToMongo(data):
+def updateProfileToMongo(data, database=DATABASE_USERS, collection=USERS_COLLECTION):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient["STUDYBUDDY"]
-    mycollections = mydb[USERS_COLLECTION]
+    mydb = myclient[database]
+    mycollections = mydb[collection]
     myquery = {"_id": ObjectId(data["_id"])}
     newvalues = {"$set": {"name": data["name"], "skills": data["skills"],
                           "courses": data["courses"], "department": data["department"]}}
@@ -71,11 +70,11 @@ def updateProfileToMongo(data):
     return x.modified_count
 
 
-def updatePostMongo(data, post_id):
+def updatePostMongo(data, post_id, database=DATABASE, collection=POSTS_COLLECTION):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient[DATABASE]
-    mycollections = mydb[POSTS_COLLECTION]
+    mydb = myclient[database]
+    mycollections = mydb[collection]
     new_data = {"$set": data}
     res = mycollections.update_one({"_id": post_id}, new_data)
 
@@ -84,11 +83,11 @@ def updatePostMongo(data, post_id):
     return res.modified_count
 
 
-def deletePostMongo(post_id):
+def deletePostMongo(post_id, database=DATABASE, collection=POSTS_COLLECTION):
     myclient = pymongo.MongoClient(
             "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient[DATABASE]
-    mycollections = mydb[POSTS_COLLECTION]
+    mydb = myclient[database]
+    mycollections = mydb[collection]
     res = mycollections.delete_one({"_id": post_id})
 
     myclient.close()
@@ -293,6 +292,7 @@ def create_post():
     data = {}
 
     current_user = get_jwt_identity()
+    print("current_user",current_user)
 
     try:
         data["username"] = current_user
@@ -334,12 +334,12 @@ def update_post(id):
 
         data["interested_count"] = req["interested_count"]
         data["interested_people"] = req["interested_people"]
-        post_id = ObjectId(req["id"].get('$oid'))
+        post_id = ObjectId(id)
 
         res = updatePostMongo(data, post_id)
 
         updated_data = data
-        updated_data['_id'] = req["id"]
+        updated_data['_id'] = {"$oid":id}
         send_to_kafka_updated_posts(updated_data)
 
         response_data = {
