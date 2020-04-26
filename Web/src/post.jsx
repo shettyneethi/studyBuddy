@@ -7,12 +7,33 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import ViewProfile from "./ViewProfile.js"
 
 class Post extends Component {
+
   state = {
     count: 0,
     people: [],
+    link : 'mailto:?subject=Mail from Study Buddy',
     isOpen: false,
     isInterested: false
   };
+
+  componentDidMount() {
+    if(this.props.value ){
+    const id = this.props.request['_id']['$oid']
+    URL = "https://api-suggest-dot-studybuddy-5828.appspot.com/api/getContactDetails/"+id
+
+    fetch(URL, {
+        headers: {
+                "Content-type": "application/json",
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              }
+      })
+      .then(response => response.json())
+      .then((data) => {
+          this.setState({link: 'mailto:'+data.join()+'?subject=Mail from Study Buddy'});
+        }); 
+    }
+
+  }
 
   toggleModal = () => {
     this.setState({
@@ -92,7 +113,6 @@ class Post extends Component {
     const id = _id['$oid']
     const current_user = localStorage.getItem('username')
     
-    
     return (
       <React.Fragment>
         <Segment>
@@ -111,64 +131,76 @@ class Post extends Component {
         </Grid.Row>
 
         <Grid.Row  columns={3}>
-              <Grid.Column >
-        <p> {username} </p>
-        </Grid.Column>   
-        <Grid.Column >
-        <p> {course} </p>
-        </Grid.Column>
-        <Grid.Column >
-        <p> {skill} </p>
-        </Grid.Column>
-
+          <Grid.Column >
+            <p> {username} </p>
+          </Grid.Column>
+          <Grid.Column >
+            <p> {course} </p>
+          </Grid.Column>
+          <Grid.Column >
+            <p> {skill} </p>
+          </Grid.Column>
         </Grid.Row>
 
         <Grid.Row  columns={1}>
           <Grid.Column >
-        <p> {msg}</p>
-        </Grid.Column>
+            <p> {msg} </p>
+          </Grid.Column>
         </Grid.Row>
 
         <Grid.Row  columns={3}>
-        <Grid.Column width={3}>
-        {current_user!==username ? <button
-          onClick={() => {this.handleInterested(_id, current_user, interested_count, interested_people)}}
-          style={{ fontSize: 15 }}
-          className="badge badge-secondary btn-sm "
-          disabled={this.props.value}
-        >
-          Interested
-        </button> : null}
-        </Grid.Column>
+          <Grid.Column width={3}>
+            {current_user!==username ?
+              <button
+                onClick={() => {this.handleInterested(_id, current_user, interested_count, interested_people)}}
+                style={{ fontSize: 15 }}
+                className="badge badge-secondary btn-sm "
+                disabled={this.props.value}
+                >
+                Interested
+              </button>
+              : null}
+          </Grid.Column>
 
-        <Grid.Column width={3}>
-        <button
-          onClick={this.toggleModal}
-          style={{ fontSize: 15 }}
-          className="badge badge-primary m-2"
-        >
-          {interested_count}
-        </button>
+          <Grid.Column width={3}>
+            <button
+              onClick={this.toggleModal}
+              style={{ fontSize: 15 }}
+              className="badge badge-primary m-2"
+            >
+              {interested_count}
+            </button>
 
-        <Modal show={this.state.isOpen}
-          onClose={this.toggleModal}
-          interested_people= {interested_people}>
-          Here's some content for the modal
-        </Modal>
+            <Modal show={this.state.isOpen}
+              onClose={this.toggleModal}
+              interested_people= {interested_people}>
+              Here's some content for the modal
+            </Modal>
 
-        </Grid.Column>
-        
-        <Grid.Column width={2}>
-        <button
-          onClick= {() => { if (window.confirm('Do you want to delete this item?')) this.handleDone(id) } }
-          style={{ fontSize: 15 }}
-          className="badge badge-success btn-sm "
-          disabled={!this.props.value}
-        >
-          Done
-        </button>
-        </Grid.Column>
-    
+          </Grid.Column>
+
+          <Grid.Column width={3}>
+          {this.props.value ?
+              <button
+                onClick={() => { if (window.confirm('Do you want to delete this item?')) this.handleDone(id) }}
+                style={{ fontSize: 15 }}
+                className="badge badge-secondary btn-sm "
+                >
+                Delete
+              </button>
+              : null}
+          </Grid.Column>
+          
+          {this.props.value ?
+              <Grid.Column width={2}>
+                        <button style={{ fontSize: 15 }}
+                            className="btn-md"> <a href={this.state.link}>MAIL</a>
+                        </button>
+              </Grid.Column>
+            : 
+              null
+          }
+
         </Grid.Row>
         
         </Grid>

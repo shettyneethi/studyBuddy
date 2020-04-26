@@ -67,20 +67,23 @@ class UsersTest(unittest.TestCase):
     self.assertEqual(expected, main.deletePostMongo(post_id))
 
   @patch('main.pymongo.MongoClient')
-  def  test_success_post(self, mock_client):
+  @patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
+  def  test_success_post(self, mock_client, mock_jwt):
 
     response = self.client().get('/suggest')
     self.assertEqual(response.status, '200 OK')
 
   @patch('main.pymongo.MongoClient')
-  def  test_success_post_creation(self, mock_client):
+  @patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
+  def  test_success_post_creation(self, mock_client, mock_jwt):
 
     response = self.client().post('/requests/create', headers={'Content-Type': 'application/json'}, data=json.dumps(self.success_post))
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.data, b'{"message":"Successful Post creation","sucess":true}\n')
 
   @patch('main.pymongo.MongoClient')
-  def  test_failed_post_creation(self, mock_client):
+  @patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
+  def  test_failed_post_creation(self, mock_client, mock_jwt):
 
     response = self.client().post('/requests/create', headers={'Content-Type': 'application/json'}, data=json.dumps(self.failed_post))
     self.assertEqual(response.status, '200 OK')

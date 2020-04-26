@@ -40,15 +40,18 @@ app.config['JWT_SECRET_KEY'] = 'rishitha'  # Change this!
 jwt = JWTManager(app)
 
 DATABASE = "test-db"
-COLLECTION = "sample-requests"
+POSTS_COLLECTION = "sample-requests"
+USERS_COLLECTION = "user_details"
 
 
 def insertToMongo(data):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient[DATABASE]
-    mycollections = mydb[COLLECTION]
+    mycollections = mydb[POSTS_COLLECTION]
     x = mycollections.insert_one(data)
+
+    myclient.close()
 
     return x.acknowledged
 
@@ -57,36 +60,43 @@ def updateProfileToMongo(data):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
-    mycollections = mydb["user_details"]
+    mycollections = mydb[USERS_COLLECTION]
     myquery = {"_id": ObjectId(data["_id"])}
     newvalues = {"$set": {"name": data["name"], "skills": data["skills"],
                           "courses": data["courses"], "department": data["department"]}}
     x = mycollections.update_one(myquery, newvalues)
 
-    return x.acknowledged
+    myclient.close()
+
+    return x.modified_count
 
 
 def updatePostMongo(data, post_id):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient[DATABASE]
-    mycollections = mydb[COLLECTION]
+    mycollections = mydb[POSTS_COLLECTION]
     new_data = {"$set": data}
     res = mycollections.update_one({"_id": post_id}, new_data)
 
+    myclient.close()
+
     return res.modified_count
+
 
 def deletePostMongo(post_id):
     myclient = pymongo.MongoClient(
             "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient[DATABASE]
-    mycollections = mydb[COLLECTION]
+    mycollections = mydb[POSTS_COLLECTION]
     res = mycollections.delete_one({"_id": post_id})
+
+    myclient.close()
 
     return res.deleted_count
 
 
-def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
+def getPostsFromMongo(database=DATABASE, collection=POSTS_COLLECTION):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     query = { "isCompleted" : False }
@@ -94,8 +104,41 @@ def getPostsFromMongo(database=DATABASE, collection=COLLECTION):
              [collection].find(query).sort('_id', -1)]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(
         len(posts), str(sys.getsizeof(posts))))
-    print(posts[0])
+    
+    mongoClient.close()
     return posts
+
+
+def getEmailIDofInterested(post_id):
+    mongoClient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+    mydb = mongoClient[DATABASE]
+    mycollection = mydb[POSTS_COLLECTION]
+    result = []
+    
+    query = {"_id": post_id}
+    post =  mycollection.find(query)
+    if(post.count() == 1):
+        usr_names = set(post[0]["interested_people"])
+        for usr in usr_names:
+            try :
+                result.append(mongoClient["STUDYBUDDY"][USERS_COLLECTION].find({ "user_name": usr })[0]["email"])
+            except:
+                continue
+    
+    mongoClient.close()
+    return result
+
+
+@app.route('/api/getContactDetails/<id>', methods=["GET"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
+def getContactDetails(id):
+    post_id = ObjectId(id)
+    contacts = getEmailIDofInterested(post_id)
+
+    return Response(response=dumps(contacts),
+           status=200 , mimetype="application/json")
 
 
 @app.route('/api/login', methods=['POST'])
@@ -104,7 +147,7 @@ def login():
     
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
-    usrDetails = mydb["user_details"]
+    usrDetails = mydb[USERS_COLLECTION]
     data = request.get_json()
     hashed_pwd = hashlib.md5(data["password"].encode()).hexdigest()
 
@@ -133,17 +176,17 @@ def login():
     resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
 
-
-    print(resp)
+    myclient.close()
    
     return resp
+
 
 @app.route('/api/signup', methods=['POST'])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def signup():
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
-    usrDetails = mydb["user_details"]
+    usrDetails = mydb[USERS_COLLECTION]
     data = request.get_json()
     
     hashed_pwd = hashlib.md5(data["password"].encode()).hexdigest()
@@ -154,7 +197,7 @@ def signup():
 
     response = {
         "status" : "FAIL",
-        "message" : "Sign Up Failed!",
+        "messagpost_ide" : "Sign Up Failed!",
         "user_name": "",
         "token" : "" 
     }
@@ -186,6 +229,8 @@ def signup():
     resp = Response(response=response_pickled,
            status=status , mimetype="application/json")
     print(resp)
+
+    myclient.close()
     
     return resp
 
@@ -195,7 +240,7 @@ def signup():
 def logout():
     myclient = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mydb = myclient["STUDYBUDDY"]
-    usrDetails = mydb["user_details"]
+    usrDetails = mydb[USERS_COLLECTION]
     data = request.get_json()
     myquery = { "token": data["token"] }
 
@@ -215,8 +260,11 @@ def logout():
     response_pickled = jsonpickle.encode(response)
     resp =  Response(response=response_pickled,
            status=status , mimetype="application/json")
+
+    myclient.close()
     
     return resp
+
 
 @app.route('/status', methods=["GET"])
 @app.route('/', methods=["GET"])
@@ -234,6 +282,7 @@ def suggest():
     current_user = get_jwt_identity()
     print(current_user)
     return dumps(getPostsFromMongo())
+
 
 ##### POST ######
 @app.route('/requests/create', methods=["POST"])
@@ -307,7 +356,6 @@ def update_post(id):
 
     return jsonify(response_data)
 
-
 @app.route('/requests/delete/<id>', methods=["DELETE"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization', "credentials"])
 def delete_post(id):
@@ -338,15 +386,15 @@ def getProfileFromMongo(user_name):
     print(user_name)
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    res = mongoClient["STUDYBUDDY"]["user_details"].find({ "user_name": user_name})
 
-
-    # response_pickled = jsonpickle.encode(res)
+    res = mongoClient["STUDYBUDDY"][USERS_COLLECTION].find({ "user_name": user_name})
     resp =  Response(response=dumps(res),
            status=200 , mimetype="application/json")
-    
 
+    mongoClient.close()
+    
     return resp
+
 
 @app.route('/api/profile', methods=["GET"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
@@ -357,15 +405,14 @@ def get_profile():
     print(user_name)
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    res = mongoClient["STUDYBUDDY"]["user_details"].find({ "user_name": user_name})
-
-    # print(dumps(res))
+    res = mongoClient["STUDYBUDDY"][USERS_COLLECTION].find({ "user_name": user_name})
 
     resp =  Response(response=dumps(res),
            status=200 , mimetype="application/json")
 
     print(resp)
 
+    mongoClient.close()
     return resp
 
 
@@ -395,11 +442,7 @@ def edit_profile():
             "status_code": 404
         }
 
-        resp =  Response(response=response_data,
-           status=200 , mimetype="application/json")
-    
-    # return jsonify(response_data)
-    return resp
+    return jsonify(response_data)
 
 
 if __name__ == '__main__':
