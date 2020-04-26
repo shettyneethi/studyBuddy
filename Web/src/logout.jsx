@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from "@material-ui/core/styles";
 import {
     BrowserRouter as Router,
     Route,
@@ -16,11 +19,24 @@ class Logout extends Component {
     }
 
     render() { 
+        const styles = {
+            tooltip: {
+              backgroundColor: "black",
+              color: "gainsboro",
+              fontSize: 14
+            }
+          };
+      
+        const CustomTooltip = withStyles(styles)(Tooltip);
         return (  
             <div>
-
-                <Link to="/" onClick={this.handleLogout}>Logout</Link>
-
+                <Link to="/" onClick={this.handleLogout}>
+                    <CustomTooltip title="Logout" placement="left">
+                        <ExitToAppIcon 
+                            style={{ fontSize: 40, color: 'gainsboro' }}>
+                        </ExitToAppIcon>
+                    </CustomTooltip>
+                </Link>
             </div>  
                 
         )

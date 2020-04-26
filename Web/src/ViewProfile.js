@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Dialog from '@material-ui/core/Dialog';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from "@material-ui/core/styles";
 import UserCard from "./UserCard";
 import grey from '@material-ui/core/colors/grey';
 
@@ -38,20 +39,24 @@ export default function ViewProfile(props) {
         setOpen(false);
     };
 
+    const styles = {
+        tooltip: {
+          backgroundColor: "black",
+          color: "gainsboro",
+          fontSize: 14
+        }
+    };
+  
+    const CustomTooltip = withStyles(styles)(Tooltip);
+
     console.log(props.user_name);
 
     return (
         <div>
-            <IconButton
-                edge="end"
-                aria-label="account of current user"
-                aria-haspopup="true"
-                onClick={handleClickOpen}
-                style= {{ color: grey[100] }}
-            >
-            <AccountCircleIcon fontSize="large"/>
-            </IconButton>
-
+            <CustomTooltip title="My Profile" placement="left">
+                <AccountCircleIcon  onClick={handleClickOpen}
+                    style= {{ fontSize:40, color: grey[100] }}/>
+            </CustomTooltip>
             <SimpleDialog open={open} onClose={handleClose} username={props.user_name}/>
         </div>
     );
