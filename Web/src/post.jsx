@@ -5,6 +5,7 @@ import Modal from './modal.jsx';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ViewProfile from "./ViewProfile.js"
+// import Time from 'react-time';
 
 class Post extends Component {
 
@@ -131,10 +132,10 @@ class Post extends Component {
 
   
   render() {
-    const { username, interested_count, interested_people, msg, tag, course, skill, _id, isCompleted} = this.props.request
+    const { username, interested_count, interested_people, msg, tag, course, skill, _id, isCompleted, post_time} = this.props.request
     const id = _id['$oid']
     const current_user = localStorage.getItem('username')
-    
+    const post_date = new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(post_time['$date']);
     return (
       <React.Fragment>
         <Segment>
@@ -145,7 +146,7 @@ class Post extends Component {
               <Grid.Column >
 
         <ViewProfile user_name={username}/>
-        
+        <p> {post_date} </p>
         </Grid.Column>
         <Grid.Column >
             <div>
@@ -166,6 +167,7 @@ class Post extends Component {
           </Grid.Column>
         </Grid.Row>
 
+
         <Grid.Row  columns={1}>
           <Grid.Column >
             <p> {msg} </p>
@@ -176,7 +178,7 @@ class Post extends Component {
           <Grid.Column width={3}>
             {current_user!==username ?
               <button
-                onClick={() => {this.handleInterested(_id, current_user, interested_count, interested_people)}}
+                onClick={() => {this.handleInterested(id, current_user, interested_count, interested_people)}}
                 style={{ fontSize: 15 }}
                 className="badge badge-secondary btn-sm "
                 disabled={this.props.value}
@@ -201,6 +203,18 @@ class Post extends Component {
               Here's some content for the modal
             </Modal>
 
+          </Grid.Column>
+
+          <Grid.Column width={3}>
+          {this.props.value ?
+              <button
+                onClick={() => { if (window.confirm('Do you want to delete this item?')) this.handleDone(id) }}
+                style={{ fontSize: 15 }}
+                className="badge badge-secondary btn-sm "
+                >
+                Delete
+              </button>
+              : null}
           </Grid.Column>
           
           {this.props.value ?
