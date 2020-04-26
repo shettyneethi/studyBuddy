@@ -129,6 +129,31 @@ def getContactDetails(id):
            status=200 , mimetype="application/json")
 
 
+@app.route('/api/finalizeGroup/<id>', methods=["PUT"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+def finalizeGroup(id):
+    req = request.json
+    data = { "isCompleted" : True }
+    post_id = ObjectId(id)
+    try:
+        
+        res = updatePostMongo(data, post_id)
+
+        response_data = {
+            "success": True,
+            "message": "Successful Post updation"
+        }
+    except:
+        response_data = {
+            "success": False,
+            "message": "Invalid data"
+        }
+    # print(response_data)
+    response_pickled = jsonpickle.encode(response_data)
+    return Response(response=response_pickled,
+           status=200 , mimetype="application/json")
+
+
 @app.route('/api/login', methods=['POST'])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
 def login():
