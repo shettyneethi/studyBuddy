@@ -14,24 +14,27 @@ class Post extends Component {
     people: [],
     link : 'mailto:?subject=Mail from Study Buddy',
     isOpen: false,
-    isInterested: false
+    isInterested: false,
+    isCompleted : false
   };
 
   componentDidMount() {
     if(this.props.value ){
-    const id = this.props.request['_id']['$oid']
-    URL = "https://api-suggest-dot-studybuddy-5828.appspot.com/api/getContactDetails/"+id
+      this.setState({isCompleted: this.props.request["isCompleted"]});
 
-    fetch(URL, {
-        headers: {
-                "Content-type": "application/json",
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-              }
-      })
-      .then(response => response.json())
-      .then((data) => {
-          this.setState({link: 'mailto:'+data.join()+'?subject=Mail from Study Buddy'});
-        }); 
+      const id = this.props.request['_id']['$oid']
+
+      URL = "https://api-suggest-dot-studybuddy-5828.appspot.com/api/getContactDetails/"+id
+      fetch(URL, {
+          headers: {
+                  "Content-type": "application/json",
+                  'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+        })
+        .then(response => response.json())
+        .then((data) => {
+            this.setState({link: 'mailto:'+data.join()+'?subject=Mail from Study Buddy'});
+          }); 
     }
 
   }
@@ -67,7 +70,26 @@ class Post extends Component {
 
   };
 
-   
+  handleFinalize(id) {
+    id = this.props.request['_id']['$oid']
+    const data = {"id" : id}
+
+    URL = "https://api-suggest-dot-studybuddy-5828.appspot.com/api/getContactDetails/"+id
+    fetch(URL, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then((res) => {
+            this.setState({isCompleted: res["success"]});
+          });
+
+  };
+
+  
   handleInterested(id, username, interested_count, interested_people) {
 
     let people_update = interested_people
@@ -200,6 +222,20 @@ class Post extends Component {
                         <button style={{ fontSize: 15 }}
                             className="btn-md"> <a href={this.state.link}>MAIL</a>
                         </button>
+              </Grid.Column>
+            : 
+              null
+          }
+
+          {this.props.value ?
+              <Grid.Column width={2}>
+                {this.state.isCompleted ?
+                        <label style={{ fontSize: 15 }}> <span>&#10003;</span>FINALIZED </label>
+                  :
+                        <button style={{ fontSize: 15 }}
+                        onClick={() => {this.handleFinalize(_id)}}
+                            className="btn-md"> <a href="#">FINALIZE</a>
+                        </button>}
               </Grid.Column>
             : 
               null
