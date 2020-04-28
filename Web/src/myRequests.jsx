@@ -18,7 +18,7 @@ class MyRequests extends Component {
 
     componentDidMount() {
 
-        URL = "http://0.0.0.0:8080/api/getMyRequest/"+localStorage.getItem('username')
+        URL = "https://api-suggest-dot-studybuddy-5828.appspot.com/api/getMyRequest/"+localStorage.getItem('username')
 
         fetch(URL, {
             method: "GET",
