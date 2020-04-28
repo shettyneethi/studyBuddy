@@ -12,8 +12,30 @@ import {
   } from 'react-router-dom';
 
 class MyRequests extends Component {
+    state = {
+        posts: []
+    };
 
-    
+    componentDidMount() {
+
+        URL = "http://0.0.0.0:8080/api/getMyRequest/"+localStorage.getItem('username')
+
+        fetch(URL, {
+            method: "GET",
+            headers: {
+                      "Content-type": "application/json",
+                      'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+            })
+            .then(response => response.json())
+            .then((data) => {
+                this.setState({posts: data});
+        }); 
+
+    }
+
+  
+
     render() { 
         return ( 
             <React.Fragment>
@@ -25,7 +47,7 @@ class MyRequests extends Component {
  
         <Grid.Row padded>
         <div className='postsDivision'>
-            <Posts filterRes={this.props.filterRes} value={true} />
+            <Posts filterRes={this.state.posts} value={true} />
             </div>
         </Grid.Row>
         </Grid>
