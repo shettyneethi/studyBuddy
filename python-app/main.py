@@ -95,15 +95,14 @@ def deletePostMongo(post_id, database=DATABASE, collection=POSTS_COLLECTION):
     return res.deleted_count
 
 
-def getPostsFromMongo(database=DATABASE, collection=POSTS_COLLECTION):
+def getPostsFromMongo(query, database=DATABASE, collection=POSTS_COLLECTION):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    query = { "isCompleted" : False }
     posts = [x for x in mongoClient[database]
              [collection].find(query).sort('_id', -1)]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(
         len(posts), str(sys.getsizeof(posts))))
-    
+
     mongoClient.close()
     return posts
 
@@ -314,8 +313,20 @@ def suggest():
     print("In suggest")
     current_user = get_jwt_identity()
     print(current_user)
-    return dumps(getPostsFromMongo())
+    myQuery = { "isCompleted" : False }
+    return dumps(getPostsFromMongo(query = myQuery))
 
+
+@app.route('/api/getMyRequest/<username>', methods=["GET"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
+def getMyRequest(username):
+    print(username)
+    myQuery = { "username" : username }
+    print(myQuery)
+    return  Response(response=dumps(getPostsFromMongo(query = myQuery)),
+           status=200 , mimetype="application/json")
+    
 
 ##### POST ######
 @app.route('/requests/create', methods=["POST"])
