@@ -18,7 +18,6 @@ function SimpleDialog(props) {
         <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
             <UserCard user_name={username}/>
         </Dialog>
-
     );
 }
 

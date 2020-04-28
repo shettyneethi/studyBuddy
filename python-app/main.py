@@ -40,27 +40,26 @@ app.config['JWT_SECRET_KEY'] = 'rishitha'  # Change this!
 jwt = JWTManager(app)
 
 DATABASE = "test-db"
+DATABASE_USERS = "STUDYBUDDY"
 POSTS_COLLECTION = "sample-requests"
 USERS_COLLECTION = "user_details"
 
-
-def insertToMongo(data):
+def insertToMongo(data, database=DATABASE, collection=POSTS_COLLECTION):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient[DATABASE]
-    mycollections = mydb[POSTS_COLLECTION]
+    mydb = myclient[database]
+    mycollections = mydb[collection]
     x = mycollections.insert_one(data)
-
     myclient.close()
 
-    return x.acknowledged
+    return x.acknowledged, x.inserted_id
 
 
-def updateProfileToMongo(data):
+def updateProfileToMongo(data, database=DATABASE_USERS, collection=USERS_COLLECTION):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient["STUDYBUDDY"]
-    mycollections = mydb[USERS_COLLECTION]
+    mydb = myclient[database]
+    mycollections = mydb[collection]
     myquery = {"_id": ObjectId(data["_id"])}
     newvalues = {"$set": {"name": data["name"], "skills": data["skills"],
                           "courses": data["courses"], "department": data["department"]}}
@@ -71,11 +70,11 @@ def updateProfileToMongo(data):
     return x.modified_count
 
 
-def updatePostMongo(data, post_id):
+def updatePostMongo(data, post_id, database=DATABASE, collection=POSTS_COLLECTION):
     myclient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient[DATABASE]
-    mycollections = mydb[POSTS_COLLECTION]
+    mydb = myclient[database]
+    mycollections = mydb[collection]
     new_data = {"$set": data}
     res = mycollections.update_one({"_id": post_id}, new_data)
 
@@ -84,11 +83,11 @@ def updatePostMongo(data, post_id):
     return res.modified_count
 
 
-def deletePostMongo(post_id):
+def deletePostMongo(post_id, database=DATABASE, collection=POSTS_COLLECTION):
     myclient = pymongo.MongoClient(
             "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mydb = myclient[DATABASE]
-    mycollections = mydb[POSTS_COLLECTION]
+    mydb = myclient[database]
+    mycollections = mydb[collection]
     res = mycollections.delete_one({"_id": post_id})
 
     myclient.close()
@@ -96,18 +95,34 @@ def deletePostMongo(post_id):
     return res.deleted_count
 
 
-def getPostsFromMongo(database=DATABASE, collection=POSTS_COLLECTION):
+def getPostsFromMongo(query, database=DATABASE, collection=POSTS_COLLECTION):
     mongoClient = pymongo.MongoClient(
         "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    query = { "isCompleted" : False }
     posts = [x for x in mongoClient[database]
              [collection].find(query).sort('_id', -1)]
     print("pulled {} posts from MongoDB, total size: {} bytes".format(
         len(posts), str(sys.getsizeof(posts))))
-    
+
     mongoClient.close()
     return posts
 
+def getProfilesFromMongo(database=DATABASE_USERS, collection=USERS_COLLECTION):
+    mongoClient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+
+    courses = mongoClient[database][collection].distinct('courses')
+    skills = mongoClient[database][collection].distinct('skills')
+
+    courses_res, skills_res = [],[]
+    for course in courses:
+        courses_res.extend(course.split(', '))
+    for skill in skills:
+        skills_res.extend(skill.split(', '))
+    courses_unique = list(set([x.lower() for x in courses_res]))
+    skills_unique = list(set([x.lower() for x in skills_res]))
+
+    mongoClient.close()
+    return {'courses':courses_unique, 'skills':skills_unique}
 
 def getEmailIDofInterested(post_id):
     mongoClient = pymongo.MongoClient(
@@ -138,6 +153,31 @@ def getContactDetails(id):
     contacts = getEmailIDofInterested(post_id)
 
     return Response(response=dumps(contacts),
+           status=200 , mimetype="application/json")
+
+
+@app.route('/api/finalizeGroup/<id>', methods=["PUT"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+def finalizeGroup(id):
+    req = request.json
+    data = { "isCompleted" : True }
+    post_id = ObjectId(id)
+    try:
+        
+        res = updatePostMongo(data, post_id)
+
+        response_data = {
+            "success": True,
+            "message": "Successful Post updation"
+        }
+    except:
+        response_data = {
+            "success": False,
+            "message": "Invalid data"
+        }
+    # print(response_data)
+    response_pickled = jsonpickle.encode(response_data)
+    return Response(response=response_pickled,
            status=200 , mimetype="application/json")
 
 
@@ -281,8 +321,20 @@ def suggest():
     print("In suggest")
     current_user = get_jwt_identity()
     print(current_user)
-    return dumps(getPostsFromMongo())
+    myQuery = { "isCompleted" : False }
+    return dumps(getPostsFromMongo(query = myQuery))
 
+
+@app.route('/api/getMyRequest/<username>', methods=["GET"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
+def getMyRequest(username):
+    print(username)
+    myQuery = { "username" : username }
+    print(myQuery)
+    return  Response(response=dumps(getPostsFromMongo(query = myQuery)),
+           status=200 , mimetype="application/json")
+    
 
 ##### POST ######
 @app.route('/requests/create', methods=["POST"])
@@ -293,6 +345,7 @@ def create_post():
     data = {}
 
     current_user = get_jwt_identity()
+    print("current_user",current_user)
 
     try:
         data["username"] = current_user
@@ -334,12 +387,12 @@ def update_post(id):
 
         data["interested_count"] = req["interested_count"]
         data["interested_people"] = req["interested_people"]
-        post_id = ObjectId(req["id"].get('$oid'))
+        post_id = ObjectId(id)
 
         res = updatePostMongo(data, post_id)
 
         updated_data = data
-        updated_data['_id'] = req["id"]
+        updated_data['_id'] = {"$oid":id}
         send_to_kafka_updated_posts(updated_data)
 
         response_data = {
@@ -414,6 +467,14 @@ def get_profile():
 
     mongoClient.close()
     return resp
+
+@app.route('/api/userDetails', methods=["GET"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
+def get_user_details():
+    res = getProfilesFromMongo()
+    print(dumps(res))
+    return dumps(res)
 
 
 @app.route('/api/profile', methods=["PUT"])

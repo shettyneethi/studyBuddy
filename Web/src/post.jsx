@@ -12,6 +12,9 @@ import ViewProfile from "./ViewProfile.js";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Grid, Paper } from "@material-ui/core";
 import './post.css'
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import ViewProfile from "./ViewProfile.js"
+// import Time from 'react-time';
 
 class Post extends Component {
 
@@ -20,24 +23,27 @@ class Post extends Component {
     people: [],
     link : 'mailto:?subject=Mail from Study Buddy',
     isOpen: false,
-    isInterested: false
+    isInterested: false,
+    isCompleted : false
   };
 
   componentDidMount() {
     if(this.props.value ){
-    const id = this.props.request['_id']['$oid']
-    URL = "https://api-suggest-dot-studybuddy-5828.appspot.com/api/getContactDetails/"+id
+      this.setState({isCompleted: this.props.request["isCompleted"]});
 
-    fetch(URL, {
-        headers: {
-                "Content-type": "application/json",
-                'Authorization': 'Bearer ' + localStorage.getItem('token')
-              }
-      })
-      .then(response => response.json())
-      .then((data) => {
-          this.setState({link: 'mailto:'+data.join()+'?subject=Mail from Study Buddy'});
-        }); 
+      const id = this.props.request['_id']['$oid']
+
+      URL = "https://api-suggest-dot-studybuddy-5828.appspot.com/api/getContactDetails/"+id
+      fetch(URL, {
+          headers: {
+                  "Content-type": "application/json",
+                  'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+        })
+        .then(response => response.json())
+        .then((data) => {
+            this.setState({link: 'mailto:'+data.join()+'?subject=Mail from Study Buddy'});
+          }); 
     }
 
   }
@@ -73,7 +79,26 @@ class Post extends Component {
 
   };
 
-   
+  handleFinalize(id) {
+    id = this.props.request['_id']['$oid']
+    const data = {"id" : id}
+
+    URL = "https://api-suggest-dot-studybuddy-5828.appspot.com/api/finalizeGroup/"+id
+    fetch(URL, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then((res) => {
+            this.setState({isCompleted: res["success"]});
+          });
+
+  };
+
+  
   handleInterested(id, username, interested_count, interested_people) {
 
     let people_update = interested_people
@@ -114,7 +139,7 @@ class Post extends Component {
 
   
   render() {
-    const { username, interested_count, interested_people, msg, tag, course, skill, _id, isCompleted} = this.props.request
+    const { username, interested_count, interested_people, msg, tag, course, skill, _id, isCompleted, post_time} = this.props.request
     const id = _id['$oid']
     const current_user = localStorage.getItem('username')
 
@@ -128,6 +153,7 @@ class Post extends Component {
 
     const CustomTooltip = withStyles(styles)(Tooltip);
 
+    const post_date = new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(post_time['$date']);
     return (
       <Segment>
       <Grid container spacing={3} className="post-border">
@@ -142,13 +168,16 @@ class Post extends Component {
         <Grid item xs={4}>
           <Label tag color="gainsboro" color="grey">{tag}</Label>
         </Grid>
-            
 
-        <Grid item xs={4}>  
+        <Grid item xs={2}>    
+          <p> {post_date} </p>
+        </Grid>
+        
+        <Grid item xs={3}>  
             <p> {course} </p>
         </Grid>     
 
-        <Grid item xs={4}>  
+        <Grid item xs={3}>  
             <p> {skill} </p>
         </Grid>
 
@@ -208,9 +237,22 @@ class Post extends Component {
             : 
             null
           }
-        </Grid>
-        
-      </Grid> 
+
+          {this.props.value ?
+            <Grid.Column width={2}>
+              {this.state.isCompleted ?
+                  <label style={{ fontSize: 15 }}> <span>&#10003;</span>FINALIZED </label>
+                  :
+                  <button style={{ fontSize: 15 }}
+                  onClick={() => {this.handleFinalize(_id)}}
+                      className="btn-md"> <a href="#">FINALIZE</a>
+                  </button>}
+              </Grid.Column>
+            : 
+            null
+          }
+          </Grid>
+        </Grid> 
       </Segment>   
     );
   }

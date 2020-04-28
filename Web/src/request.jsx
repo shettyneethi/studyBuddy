@@ -5,21 +5,16 @@ import "./request.css";
 
 class Request extends Component {
   state = {
-    courses: [
-      { key: "CS", text: "CS", value: "CS" },
-      { key: "MS", text: "MS", value: "MS" },
-      { key: "BS", text: "BS", value: "BS" }
-    ],
-    skills: [
-      { key: "C", text: "C", value: "C" },
-      { key: "C++", text: "C++", value: "C++" },
-      { key: "Python", text: "Python", value: "Python" }
-    ],
-
+    courses:[],
+    skills:[],
     tags: [
       { key: "Homework", text: "Homework", value: "Homework" },
       { key: "Project", text: "Project", value: "Project" },
-      { key: "Midterm", text: "Midterm", value: "Midterm" }
+      { key: "Midterm", text: "Midterm", value: "Midterm" },
+      { key: "Assignment", text: "Assignment", value: "Assignment"},
+      {key: "Final", text: "Final", value: "Final"},
+      {key: "Quiz", text: "Quiz", value: "Quiz"},
+      {key: "Lab", text: "Lab", value: "Lab"}
     ],
     selectedCourse: "",
     selectedSkill: "",
@@ -27,6 +22,34 @@ class Request extends Component {
     message: "",
     result: ""
   };
+
+
+  componentWillMount() {
+    console.log('In request willmount')
+    var courses = []
+    var skills = []
+    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/api/userDetails', {
+      method: 'GET',
+            headers: {
+                "Content-type": "application/json",
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              },
+    })
+      .then(response => response.json())
+      .then(res => { 
+        for(const item of res['courses']) { 
+          courses.push({key: item, text: item, value: item}) 
+        }
+        for(const item of res['skills']) { 
+          skills.push({key: item, text: item, value: item}) 
+        }
+      })
+      .then(this.setState({
+        courses:courses, skills:skills
+      })
+      );
+      
+  }
   handleCourseChange = (event, data) => {
     this.setState({
       selectedCourse: data.value
@@ -122,6 +145,36 @@ class Request extends Component {
           onClick={this.handlePost}>
         Post
         </button>
+        <Grid.Row  className="messageContainer">
+          <Grid.Column>
+          <div className='messageDivision'>
+            Message
+            </div>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row  className="textContainer">
+          <Grid.Column>
+          <div className='textDivision'>
+          <Form>
+            <TextArea placeholder='Optional description' onChange={this.handleMessageChange} />
+          </Form>
+          </div>
+          </Grid.Column>
+        </Grid.Row>
+
+        <Grid.Row columns={1}  className="heading">
+        <Grid.Column >
+          <div className = 'submitDivison'>
+          <button
+            style={{ fontSize: 15 }}
+            id = "butn"
+            className="badge badge-secondary btn-sm "
+            onClick={this.handlePost}>
+          Post
+          </button>
+          </div>
+        </Grid.Column>
+      </Grid.Row>
       </div>
     );
   }

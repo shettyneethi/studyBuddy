@@ -1,3 +1,4 @@
 /Web/node_modules
 *.py[cod]
 !**/__pycache__/
+!**/__tests__/__snapshots__/

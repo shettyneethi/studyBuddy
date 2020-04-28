@@ -118,8 +118,6 @@ class Homepage extends Component {
     this._isMounted = false;
     this.controller.abort();
 
-    // this.signal.cancel('Api is being canceled');
-    
     if (this.eventSource_a)
       this.eventSource_a.close();
 
@@ -192,11 +190,8 @@ class Homepage extends Component {
 
   render() {
 
-    console.log('In homepage render');
     const value = this.state.value;
     const suggestions = this.state.suggestions;
-
-    console.log(localStorage.getItem('token'))
 
     // Autosuggest will pass through all these props to the input.
     const autoSuggestInputProps = {
@@ -273,6 +268,8 @@ class Homepage extends Component {
           <IconButton disableTouchRipple>
             <ViewProfile user_name={localStorage.getItem('username')}/>
           </IconButton>
+          <Link to="/myRequests" onClick={this.handleMyRequest}>My Requests</Link>
+          <Logout/>
 
         </Navbar>
 

@@ -38,12 +38,12 @@ class UsersTest(unittest.TestCase):
      }
 
   @patch('main.pymongo.MongoClient')
-  def test_mongo(self, mock_client):
+  def test_insert_mongo(self, mock_client):
     mock_client()['test-db']['sample-requests'].insert_one.return_value.acknowledged = True
     expected = True
     data = {"key1":"1", "key2":"2"}
 
-    self.assertEqual(expected, main.insertToMongo(data))
+    self.assertEqual(expected, main.insertToMongo(data, 'test-db', 'sample-requests')[0])
 
   @patch('main.pymongo.MongoClient')
   def test_update_mongo(self, mock_client):
@@ -55,7 +55,7 @@ class UsersTest(unittest.TestCase):
      'post_id':{"id":{'$oid':'5e9657ffff088ab6993504f8'}}
     }
 
-    self.assertEqual(expected, main.updatePostMongo(data,self.id))
+    self.assertEqual(expected, main.updatePostMongo(data,self.id, 'test-db', 'sample-requests'))
 
   @patch('main.pymongo.MongoClient')
   def test_delete_mongo(self, mock_client):
@@ -64,7 +64,7 @@ class UsersTest(unittest.TestCase):
     
     post_id = '5e9657ffff088ab6993504f8'
     
-    self.assertEqual(expected, main.deletePostMongo(post_id))
+    self.assertEqual(expected, main.deletePostMongo(post_id, 'test-db', 'sample-requests'))
 
   @patch('main.pymongo.MongoClient')
   @patch('flask_jwt_extended.view_decorators.verify_jwt_in_request')
@@ -92,14 +92,14 @@ class UsersTest(unittest.TestCase):
   @patch('main.pymongo.MongoClient')
   def  test_success_post_update(self, mock_client):
 
-    response = self.client().put('/requests/update/'+str(json.dumps(self.id)), headers={'Content-Type': 'application/json'}, data=json.dumps(self.post_update_success))
+    response = self.client().put('/requests/update/'+str(self.id['id']['$oid']), headers={'Content-Type': 'application/json'}, data=json.dumps(self.post_update_success))
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.data, b'{"message":"Successful Post updation","sucess":true}\n')
 
   @patch('main.pymongo.MongoClient')
   def  test_fail_post_update(self, mock_client):
 
-    response = self.client().put('/requests/update/'+str(json.dumps(self.id)), headers={'Content-Type': 'application/json'}, data=json.dumps(self.post_update_fail))
+    response = self.client().put('/requests/update/'+str(self.id['id']['$oid']), headers={'Content-Type': 'application/json'}, data=json.dumps(self.post_update_fail))
     self.assertEqual(response.status, '200 OK')
     self.assertEqual(response.data, b'{"message":"Invalid data","sucess":false}\n')
 
