@@ -107,6 +107,15 @@ def getPostsFromMongo(database=DATABASE, collection=POSTS_COLLECTION):
     mongoClient.close()
     return posts
 
+def getProfilesFromMongo(database=DATABASE_USERS, collection=USERS_COLLECTION):
+    mongoClient = pymongo.MongoClient(
+        "mongodb+srv://admin:admin@cluster0-jacon.gcp.mongodb.net/test?retryWrites=true&w=majority")
+
+    courses = mongoClient[database][collection].distinct('courses')
+    skills = mongoClient[database][collection].distinct('skills')
+
+    mongoClient.close()
+    return {'courses':courses, 'skills':skills}
 
 def getEmailIDofInterested(post_id):
     mongoClient = pymongo.MongoClient(
@@ -439,6 +448,14 @@ def get_profile():
 
     mongoClient.close()
     return resp
+
+@app.route('/api/userDetails', methods=["GET"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
+def get_user_details():
+    res = getProfilesFromMongo()
+    print(dumps(res))
+    return dumps(res)
 
 
 @app.route('/api/profile', methods=["PUT"])

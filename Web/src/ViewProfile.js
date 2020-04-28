@@ -54,7 +54,6 @@ export default function ViewProfile(props) {
         setOpen(false);
     };
 
-    console.log(props.user_name);
 
     return (
         <div>
