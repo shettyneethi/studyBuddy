@@ -74,7 +74,7 @@ class Post extends Component {
     id = this.props.request['_id']['$oid']
     const data = {"id" : id}
 
-    URL = "https://api-suggest-dot-studybuddy-5828.appspot.com/api/getContactDetails/"+id
+    URL = "https://api-suggest-dot-studybuddy-5828.appspot.com/api/finalizeGroup/"+id
     fetch(URL, {
         method: "PUT",
         headers: {
