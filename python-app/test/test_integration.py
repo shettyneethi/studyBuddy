@@ -79,6 +79,7 @@ class UsersTest(unittest.TestCase):
     self.assertEqual(expected, main.updatePostMongo(data_update,self.post_id, self.DATABASE, self.POSTS_COLLECTION))
     self.assertEqual(expected, main.deletePostMongo(self.post_id, self.DATABASE, self.POSTS_COLLECTION))
 
+
   def make_headers(self,jwt):
     return {'Content-Type': 'application/json','Authorization': 'Bearer {}'.format(jwt)}
 
@@ -135,6 +136,10 @@ class UsersTest(unittest.TestCase):
     response = self.client().delete('/requests/delete/'+str(self.invalid_id),headers=self.make_headers(self.access_token))
     self.assertEqual(response.status_code, 200)
     self.assertEqual(response.data,  b'{"message":"Invalid post_id","sucess":false}\n')
+
+    response = self.client().get('/api/userDetails',headers=self.make_headers(self.access_token))
+    print(response.data)
+    self.assertEqual(response.status_code, 200)
   
 if __name__ == "__main__":   
     unittest.main()
