@@ -3,11 +3,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles } from "@material-ui/core/styles";
 import {
-    BrowserRouter as Router,
-    Route,
-    Link,
-    Switch,
-    Redirect
+    Link
   } from 'react-router-dom';
 
 
@@ -33,7 +29,7 @@ class Logout extends Component {
                 <Link to="/" onClick={this.handleLogout}>
                     <CustomTooltip title="Logout" placement="left">
                         <ExitToAppIcon 
-                            style={{ fontSize: 40, color: 'gainsboro' }}>
+                            style={{ fontSize: 30, color: 'gainsboro' }}>
                         </ExitToAppIcon>
                     </CustomTooltip>
                 </Link>

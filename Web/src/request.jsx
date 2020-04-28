@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import DropdownPlugin from "./dropdown.jsx";
 import { Grid, Segment, Form, TextArea } from "semantic-ui-react";
-import css from "./request.css";
+import "./request.css";
 
 class Request extends Component {
   state = {
@@ -78,76 +78,50 @@ class Request extends Component {
       return null;
     }
     return (
-          <div className='requestContainer'>
-            <Segment>
-              <Grid padded >
-              <Grid.Row className="heading">
-                <Grid.Column>
-                  <div className="headSection">
-                  <h2>Raise your buddy request here!</h2>
-                  </div>
-                </Grid.Column>
-                </Grid.Row>
+        <div className="requestContainer">
+          <div className="headSection">
+            <h2>Raise your buddy request here!</h2>
+          </div>
 
-                <Grid.Row  columns={3}  className="filtercontainer">
-                  <Grid.Column width={4} >
-                    <div className='courseDivision'>
-                    <DropdownPlugin
-                      menu={this.state.courses}
-                      title="Course"
-                      onSelect={this.handleCourseChange}
-                    ></DropdownPlugin>
-                    </div>
-                  </Grid.Column>
-                  <Grid.Column width={4}>
-                    <div className='skillDivision'>
-                    <DropdownPlugin
-                      menu={this.state.skills}
-                      title="Skill"
-                      onSelect={this.handleSkillChange}
-                    ></DropdownPlugin>
-                    </div>
-                  </Grid.Column>
-                  <Grid.Column width={4}>
-                <DropdownPlugin
-                  menu={this.state.tags}
-                  title="Tag"
-                  onSelect={this.handleTagChange}
-                  ></DropdownPlugin>
+            <div className='courseDivision'>
+            <DropdownPlugin
+              menu={this.state.courses}
+              title="Course"
+              onSelect={this.handleCourseChange}
+            ></DropdownPlugin>
+            </div>
+          
+            <div className='skillDivision'>
+            <DropdownPlugin
+              menu={this.state.skills}
+              title="Skill"
+              onSelect={this.handleSkillChange}
+            ></DropdownPlugin>
+            </div>
+          
+        <DropdownPlugin
+          menu={this.state.tags}
+          title="Tag"
+          onSelect={this.handleTagChange}
+          ></DropdownPlugin>
+      
+        <div className='messageDivision'>
+          Message
+          </div>
+        
+        <div className='textDivision'>
+        <Form>
+          <TextArea placeholder='Optional description' onChange={this.handleMessageChange} />
+        </Form>
+        </div>
+        
+        <button
+          style={{ fontSize: 15 }}
+          className="badge badge-secondary btn-sm "
 
-              </Grid.Column>
-              </Grid.Row>
-
-              <Grid.Row  className="messageContainer">
-                <Grid.Column>
-                <div className='messageDivision'>
-                  Message
-                  </div>
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row  className="textContainer">
-                <Grid.Column>
-                <div className='textDivision'>
-                <Form>
-                  <TextArea placeholder='Optional description' onChange={this.handleMessageChange} />
-                </Form>
-                </div>
-                </Grid.Column>
-              </Grid.Row>
-
-             <Grid.Row columns={1}  className="heading">
-              <Grid.Column >
-                <button
-                  style={{ fontSize: 15 }}
-                  className="badge badge-secondary btn-sm "
-
-                  onClick={this.handlePost}>
-                Post
-                </button>
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
-          </Segment>
+          onClick={this.handlePost}>
+        Post
+        </button>
       </div>
     );
   }

@@ -6,7 +6,7 @@ import './navbar.css';
 class NavBar extends React.Component{
     render(){
         return(
-            <Navbar bg="dark" expand="lg" variant="light">
+            <Navbar bg="dark" expand="lg" variant="light" sticky="top">
                 <Navbar.Brand className="center-nav">
                     <img
                     alt=""

@@ -1,22 +1,22 @@
 import React, { Component } from "react";
 import Post from "./post.jsx";
 import { Segment } from "semantic-ui-react";
-import './posts.css';
+
 
 class Posts extends Component {
   render() {
     return (
-      <div>
-        <Segment>
+      <div className="post-container">
           {this.props.filterRes.map(c => (
             <Post
               request={c}
               key={c.id}
               value = {this.props.value}
-              className="bg-post"
-            ></Post>
+            ><br/>
+            <br/>
+            </Post>
           ))}
-        </Segment>
+        
       </div>
     );
   }
