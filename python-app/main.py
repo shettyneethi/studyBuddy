@@ -113,8 +113,16 @@ def getProfilesFromMongo(database=DATABASE_USERS, collection=USERS_COLLECTION):
     courses = mongoClient[database][collection].distinct('courses')
     skills = mongoClient[database][collection].distinct('skills')
 
+    courses_res, skills_res = [],[]
+    for course in courses:
+        courses_res.extend(course.split(', '))
+    for skill in skills:
+        skills_res.extend(skill.split(', '))
+    courses_unique = list(set([x.lower() for x in courses_res]))
+    skills_unique = list(set([x.lower() for x in skills_res]))
+
     mongoClient.close()
-    return {'courses':courses, 'skills':skills}
+    return {'courses':courses_unique, 'skills':skills_unique}
 
 def getEmailIDofInterested(post_id):
     mongoClient = pymongo.MongoClient(
