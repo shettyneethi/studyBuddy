@@ -42,7 +42,6 @@ export default class Routes extends Component {
     }
     
     render() {
-        console.log(localStorage.getItem('token'))
         
         return (
             <Router>
