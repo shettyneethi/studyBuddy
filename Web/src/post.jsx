@@ -8,7 +8,10 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import GroupIcon from '@material-ui/icons/Group';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EmailIcon from '@material-ui/icons/Email';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { withStyles } from '@material-ui/core/styles';
 import { Grid } from "@material-ui/core";
 import './post.css'
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -70,7 +73,7 @@ class Post extends Component {
       },
      }
      
-    const url = "http://127.0.0.1:8080"
+    const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
     
     fetch(`${url}/requests/delete/${id}`, deleteMethod)
       .then(res => res.json())
@@ -123,7 +126,7 @@ class Post extends Component {
 
       console.log(data)
       
-      const url = "http://127.0.0.1:8080"
+      const url = "https://api-suggest-dot-studybuddy-5828.appspot.com"
 
       fetch(`${url}/requests/update/${data.id}`, {
         method: "PUT",
@@ -133,6 +136,7 @@ class Post extends Component {
         body: JSON.stringify(data)
       })
         .then(res => res.json())
+        .then(res => console.log(res))
   };
 
   
@@ -152,6 +156,7 @@ class Post extends Component {
     const CustomTooltip = withStyles(styles)(Tooltip);
 
     const post_date = new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(post_time['$date']);
+    
     return (
       <Segment>
       <Grid container spacing={3} className="post-border">
@@ -162,9 +167,19 @@ class Post extends Component {
           {username} 
         </Grid>
         <Grid item xs={4}>
-        </Grid>
-        <Grid item xs={4}>
           <Label tag color="gainsboro" color="grey">{tag}</Label>
+        </Grid>
+        <Grid item xs={3}>
+          {this.props.value ?
+            <CustomTooltip title="Delete post" placement="left">
+              <IconButton disableTouchRipple>
+                <DeleteIcon
+                  onClick={() => { if (window.confirm('Do you want to delete this item?')) this.handleDone(id) }}
+                  style={{ fontSize:25, color: "d80000" }} >
+                </DeleteIcon>
+              </IconButton>
+            </CustomTooltip>
+          : null}
         </Grid>
 
         <Grid item xs={3}>    
@@ -183,13 +198,13 @@ class Post extends Component {
             <p> {msg} </p>
         </Grid>      
             
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           {current_user!==username ?
             <IconButton disableTouchRipple>
               <CustomTooltip title="Interested" placement="left">
                 <ThumbUpOutlinedIcon 
                   style={{ fontSize: 30, color: "#3498DB" }} 
-                  onClick={() => {this.handleInterested(_id, current_user, interested_count, interested_people)}, <ThumbUpIcon />}
+                  onClick={() => {this.handleInterested(id, current_user, interested_count, interested_people)}}
                   disabled={this.props.value}>
                 </ThumbUpOutlinedIcon>
               </CustomTooltip>
@@ -197,7 +212,7 @@ class Post extends Component {
           : null}
         </Grid>
 
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <CustomTooltip title="Click to see interested people" placement="left">
             <Button
               onClick={this.toggleModal}
@@ -209,45 +224,53 @@ class Post extends Component {
             </Button>
           </CustomTooltip>
 
-
           <Modal show={this.state.isOpen}
             interested_people= {interested_people}>
           </Modal>
         </Grid>
 
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           {this.props.value ?
-            <button
-              onClick={() => { if (window.confirm('Do you want to delete this item?')) this.handleDone(id) }}
-              style={{ fontSize: 15 }}
-              className="badge badge-secondary btn-sm "
-              >
-              Delete
-            </button>
-          : null}
-        
-          {this.props.value ?
-            <button style={{ fontSize: 15 }}
-                className="btn-md"> <a href={this.state.link}>MAIL</a>
-            </button>
+            <CustomTooltip title="Contact interested people" placement="left">
+              <IconButton disableTouchRipple>
+                <a
+                  href={this.state.link}>
+                  <EmailIcon style={{ fontSize:30, color: "#3498DB" }}/>
+                </a>
+              </IconButton>
+            </CustomTooltip>
             : 
             null
           }
+        </Grid>
 
-          {this.props.value ?
-            <Grid.Column width={2}>
-              {this.state.isCompleted ?
-                  <label style={{ fontSize: 15 }}> <span>&#10003;</span>FINALIZED </label>
-                  :
-                  <button style={{ fontSize: 15 }}
-                  onClick={() => {this.handleFinalize(_id)}}
-                      className="btn-md"> <a href="#">FINALIZE</a>
-                  </button>}
-              </Grid.Column>
-            : 
-            null
-          }
-          </Grid>
+        {this.props.value ?
+          <Grid item xs={3}>
+            {this.state.isCompleted ?
+              <CustomTooltip title="Finalized contacts" placement="left">
+                <IconButton disableTouchRipple>
+                  <CheckCircleIcon disabled
+                    style={{ fontSize:25, color: "darkgrey" }} >
+                  </CheckCircleIcon>
+                </IconButton>
+              </CustomTooltip>
+              :
+              <CustomTooltip title="Click to finalize contacts" placement="left">
+                <IconButton disableTouchRipple>
+                  <CheckCircleIcon
+                    onClick={() => {this.handleFinalize(_id)}}
+                    style={{ fontSize:25, color: "009d00" }} >
+                  </CheckCircleIcon>
+                </IconButton>
+              </CustomTooltip>
+            }
+            </Grid>
+          : 
+          null
+        }
+
+        <Grid item xs={9}/>
+
         </Grid> 
       </Segment>   
     );

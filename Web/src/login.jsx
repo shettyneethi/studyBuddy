@@ -43,7 +43,7 @@ class Login extends React.Component {
     };
 
 
-    fetch('http://127.0.0.1:8080/api/login', {
+    fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/api/login', {
       method: "POST",
       headers: {
         "Content-type": "application/json"

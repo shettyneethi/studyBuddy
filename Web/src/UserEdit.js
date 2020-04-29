@@ -3,10 +3,15 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import { Container } from "@material-ui/core";
 import LoadingIcon from "./loading.gif"
-import Button from '@material-ui/core/Button';
+import { Button } from 'react-bootstrap';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import HomeIcon from '@material-ui/icons/Home';
+import { Navbar, Nav } from 'react-bootstrap';
+import fav from './images/fav.jpg'
+import Tooltip from '@material-ui/core/Tooltip';
+import Logout from './logout';
+
 const styles = theme => ({
     textField: {
         width: '60%',
@@ -38,10 +43,8 @@ class UserEdit extends Component {
     }
 
     componentWillMount() {
-        const user_name = this.props.user_name
-        const url = 'http://127.0.0.1:8080/'
-        
-        fetch(`${url}/api/profile/${user_name}`, {
+
+        fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile", {
             method: 'GET',
             headers: {
                 "Content-type": "application/json",
@@ -63,7 +66,7 @@ class UserEdit extends Component {
             department: this.state.department,
             _id: this.state._id
         };
-        fetch('http://127.0.0.1:8080/api/profile', {
+        fetch('https://api-suggest-dot-studybuddy-5828.appspot.com/api/profile', {
             method: "PUT",
             headers: {
                 "Content-type": "application/json",
@@ -94,15 +97,48 @@ class UserEdit extends Component {
     }
 
     render() {
+
+        const styles = {
+            tooltip: {
+              backgroundColor: "black",
+              color: "gainsboro",
+              fontSize: 14
+            }
+        };
+      
+        const CustomTooltip = withStyles(styles)(Tooltip);
         
         const { classes } = this.props;
 
         if (this.state.name) {
             return (
                 <div>
-                    <IconButton aria-label="back" onClick={() => this.props.history.push('/home')}>
-                        <ArrowBackIcon fontSize="large" />
-                    </IconButton>
+                    <Navbar bg="dark" expand="lg" variant="light">
+                        <Navbar.Brand>
+                            <img
+                            alt=""
+                            src={fav}
+                            width="70"
+                            height="70"
+                            background="transparent"
+                            />{'  '}
+                        </Navbar.Brand>
+                        <Nav className="h1-nav">Study Buddy</Nav>
+
+                        <Nav className="navbar-collapse justify-content-end">
+                            <IconButton aria-label="back" onClick={() => this.props.history.push('/home')}>
+                                <CustomTooltip title="Home" placement="left">
+                                    <HomeIcon 
+                                    style={{ fontSize: 30, color: 'gainsboro' }}>
+                                    </HomeIcon>
+                                </CustomTooltip>
+                            </IconButton>
+                        </Nav>
+
+                        <IconButton disableTouchRipple>
+                            <Logout/>
+                        </IconButton>
+                    </Navbar>
                     <Container width="lg">
                         <center>
                             <form className={classes.root} noValidate autoComplete="on" onSubmit={this.handleSubmit}>
@@ -110,7 +146,7 @@ class UserEdit extends Component {
                                     <br /><br /><br />
                                     <Typography variant="h4" align="center" gutterBottom>
                                     Hey, {this.state.name}, Edit your profile here!
-                                </Typography>
+                                    </Typography>
                                     {/* <TextField id="name" label="Name" className={classes.textField} defaultValue={this.state.name} onChange={this.onNameChange} editable={false}/> */}
                                     <br /><br />
                                     <TextField id="skills" label="Skills" className={classes.textField} defaultValue={this.state.skills} onChange={this.onSkillsChange} />
@@ -121,17 +157,11 @@ class UserEdit extends Component {
 
                                     <TextField id="department" label="Department" className={classes.textField} defaultValue={this.state.department} onChange={this.onDepartmentChange} />
                                     <br /><br />
-                                    <Button variant="contained" color="primary" onClick={(e) => this.handleSubmit(e)}>
-                                        Save
-      </Button>
+                                    <Button variant="outline-dark" onClick={(e) => this.handleSubmit(e)}>Save</Button>
                                 </div>
-
                             </form>
-
                         </center>
                     </Container>
-
-
                 </div>
             );
         } else {

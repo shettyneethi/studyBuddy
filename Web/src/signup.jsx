@@ -48,7 +48,7 @@ class Signup extends React.Component{
                 email: this.state.email
             };
 
-            fetch("http://127.0.0.1:8080/api/signup", {
+            fetch("https://api-suggest-dot-studybuddy-5828.appspot.com/api/signup", {
                 method: "POST",
                 headers: {
                   "Content-type": "application/json"  

@@ -383,13 +383,23 @@ def create_post():
 def update_post(id):
     req = request.json
     data = {}
+    print("ID",id)
+    print(req)
     try:
 
+        print("Pushed")
+        
         data["interested_count"] = req["interested_count"]
         data["interested_people"] = req["interested_people"]
         post_id = ObjectId(id)
+        
+        print(post_id) 
+        
+        print("394")
 
         res = updatePostMongo(data, post_id)
+        
+        print("res print")
 
         updated_data = data
         updated_data['_id'] = {"$oid":id}
@@ -413,6 +423,7 @@ def update_post(id):
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization', "credentials"])
 def delete_post(id):
     try:
+        print("Delete id",id)
         post_id = ObjectId(id)
         res = deletePostMongo(post_id)
         send_to_kafka_updated_posts({'_id':id})
