@@ -1,18 +1,9 @@
 import React from 'react';
-import { Button, TextField } from '@material-ui/core';
-import { styled } from '@material-ui/core/styles';
+import { TextField } from '@material-ui/core';
 import './signup.css';
 import { Redirect } from 'react-router-dom';
-
-const MyButton = styled(Button)({
-    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-    border: 0,
-    borderRadius: 3,
-    boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-    color: 'white',
-    height: 48,
-    padding: '0 30px',
-  });
+import { Button } from 'react-bootstrap';
+import NavBar from './navbar';
 
 class Signup extends React.Component{
     constructor() {
@@ -25,8 +16,7 @@ class Signup extends React.Component{
           confirmPwd: "",
           isSignedUp: false,
           didPwdMatch: false,
-          result: "",
-          token:""
+          result: ""
         }
       }
 
@@ -66,7 +56,7 @@ class Signup extends React.Component{
                 body: JSON.stringify(data)
             })
             .then(response => response.json())
-            .then(res => res["status"]==="SUCCESS" ? this.setState({token:res["token"], isSignedUp: true},  localStorage.setItem('token', res["token"])) : alert(res["message"]))
+            .then(res => res["status"]==="SUCCESS" ?  (localStorage.setItem('token', res["token"]), localStorage.setItem('username', res["user_name"]), this.setState({isSignedUp: true}))  : alert(res["message"]))
             }
             else {
                 this.setState({
@@ -79,32 +69,30 @@ class Signup extends React.Component{
     }
 
     render(){
-        const res = this.state.token
         
         return(
-            <div>
+            <div className="bg-color">
+                <NavBar />
 
-                {this.state.didPwdMatch? null : <h3 align="center"> {this.state.message} </h3>}
+                {this.state.didPwdMatch? null : <h1 align="center"> {this.state.message} </h1>}
 
                 {this.state.isSignedUp ? 
                 
                 <Redirect to={{
-                    pathname: '/profile/edit/', 
-                    state:{token:res}
+                    pathname: '/profile/edit/'
                 }}  /> 
                 
                 : 
-
-                    <div id="signup-form" align="center">
-                        <form className="signupForm">
-                            <h1 align="center">Create your account here!</h1>
-                            <TextField required className="standard-required" type="text" label="Username" name="username" value={this.state.usrName} onChange={this.handleUserNameChange}></TextField><br /><br />
-                            <TextField required className="standard-required" type="email" label="Email" onChange={this.handleEmailChange}></TextField><br /><br />
-                            <TextField required className="standard-required" type="password" name="password" label="Password" onChange={this.handlePasswordChange}></TextField ><br /><br />
-                            <TextField required className="standard-required" type="password" name="Confirm password" label="Confirm Password" onChange={this.handleConfirmPassword}></TextField ><br /><br />
-                            <MyButton onClick={this.handleSubmit}>Submit</MyButton>
-                        </form>
-                    </div>
+                <div id="signup-form" align="center">
+                    <form className="signupForm"><br/><br/><br/>
+                        <h1 align="center">Create your account here!</h1>
+                        <TextField required className="standard-required" type="text" label="Username" name="username" value={this.state.usrName} onChange={this.handleUserNameChange}></TextField><br /><br />
+                        <TextField required className="standard-required" type="email" label="Email" onChange={this.handleEmailChange}></TextField><br /><br />
+                        <TextField required className="standard-required" type="password" name="password" label="Password" onChange={this.handlePasswordChange}></TextField ><br /><br />
+                        <TextField required className="standard-required" type="password" name="Confirm password" label="Confirm Password" onChange={this.handleConfirmPassword}></TextField ><br /><br /><br/>
+                        <Button variant="outline-dark" onClick={this.handleSubmit}>Submit</Button>
+                    </form>
+                </div>
                 }
             </div>
         )

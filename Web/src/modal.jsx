@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Segment,Label} from 'semantic-ui-react';
-import CheckboxCustom from './checkbox'
+import { Segment } from 'semantic-ui-react';
+import { Grid } from "@material-ui/core";
+import './modal.css';
 
 
 class Modal extends React.Component {
   state = {
     tags: ['name1', 'name2','name3', 'name4']
-
   };
 
   render() {
@@ -17,40 +17,24 @@ class Modal extends React.Component {
     }
 
     return ( 
-        <div>
-      <div className="backdrop" >
-        <Segment padded>
-          <Grid.Row padded> 
-          <Grid.Column padded>
-
-            <div >
-            { 
-        this.props.interested_people.map((c, idx) => (
-          <div key={idx}>
-            {
-              c.split(",").map(item => (
-                <span>
-                  {item}
-                  <br/>
-                </span>
-              ))
-            }
-          </div>
-         ))
-      }
-            </div>
-            </Grid.Column>
-            </Grid.Row>
-
-          <div className="footer">
-            <button onClick={this.props.onClose}>
-              Close
-            </button>
-          </div>
-          </Segment>
-        </div>
-      </div>
-    //   </div>
+      <Segment className="mod">
+        <Grid item xs={2}> 
+          { 
+            this.props.interested_people.map((c, idx) => (
+              <div key={idx}>
+                {
+                  c.split(",").map(item => (
+                    <span>
+                      {item}
+                      <br/>
+                    </span>
+                  ))
+                }
+              </div>
+            ))
+          }
+        </Grid>
+      </Segment>
     );
   }
 }

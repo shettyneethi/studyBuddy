@@ -55,7 +55,8 @@ class LoginAPITest(unittest.TestCase):
         response = self.client().post('/api/signup', headers={'Content-Type': 'application/json'}, data=json.dumps(self.signup_request_success))
         # print(response)
         self.assertEqual(response.status, '200 OK')
-        self.assertIn(b'"message": "Sign Up Success!", "status": "SUCCESS"', response.data)
+        self.assertIn(b'"message": "Sign Up Success!"', response.data)
+        self.assertIn(b'"status": "SUCCESS"', response.data)
 
   @patch('main.pymongo.MongoClient')
   def  test_fail_signup(self, mock_client):
@@ -63,7 +64,8 @@ class LoginAPITest(unittest.TestCase):
         response = self.client().post('/api/signup', headers={'Content-Type': 'application/json'}, data=json.dumps(self.signup_request_fail))
         # print(response)
         self.assertEqual(response.status, '200 OK')
-        self.assertIn(b'"message": "Account with this username already exists", "status": "FAIL"', response.data)
+        self.assertIn(b'"message": "Account with this username already exists"', response.data)
+        self.assertIn(b'"status": "FAIL"', response.data)
 
 if __name__ == "__main__":
     unittest.main()
