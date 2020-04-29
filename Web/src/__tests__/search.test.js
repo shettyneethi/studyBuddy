@@ -8,6 +8,7 @@ import "jest-localstorage-mock";
 import renderer from 'react-test-renderer';
 import Posts from '../posts.jsx';
 import Request from '../request.jsx';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 
 const posts = [{
@@ -98,7 +99,7 @@ describe('Check Homepage functionality', () => {
     it('should open request modal', async () => {
 
         const wrapper = shallow(<Homepage />);
-        const icon = wrapper.find("#newPost");
+        const icon = wrapper.find(AddCircleIcon);
 
         expect(icon.exists()).toEqual(true)
 
