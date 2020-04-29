@@ -268,8 +268,6 @@ class Homepage extends Component {
           <IconButton disableTouchRipple>
             <ViewProfile user_name={localStorage.getItem('username')}/>
           </IconButton>
-          <Link to="/myRequests" onClick={this.handleMyRequest}>My Requests</Link>
-          <Logout/>
 
         </Navbar>
 

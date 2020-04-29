@@ -8,13 +8,11 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import GroupIcon from '@material-ui/icons/Group';
-import ViewProfile from "./ViewProfile.js";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Grid, Paper } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import './post.css'
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ViewProfile from "./ViewProfile.js"
-// import Time from 'react-time';
 
 class Post extends Component {
 
@@ -169,11 +167,11 @@ class Post extends Component {
           <Label tag color="gainsboro" color="grey">{tag}</Label>
         </Grid>
 
-        <Grid item xs={2}>    
+        <Grid item xs={3}>    
           <p> {post_date} </p>
         </Grid>
         
-        <Grid item xs={3}>  
+        <Grid item xs={2}>  
             <p> {course} </p>
         </Grid>     
 
@@ -213,9 +211,7 @@ class Post extends Component {
 
 
           <Modal show={this.state.isOpen}
-            onClose={this.toggleModal}
             interested_people= {interested_people}>
-            Here's some content for the modal
           </Modal>
         </Grid>
 

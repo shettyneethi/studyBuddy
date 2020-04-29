@@ -1,6 +1,12 @@
 import React, { Component } from "react";
 import DropdownPlugin from "./dropdown.jsx";
-import { Grid, Segment, Form, TextArea } from "semantic-ui-react";
+import { Segment, Form, TextArea } from "semantic-ui-react";
+import { Grid } from "@material-ui/core";
+import SendIcon from '@material-ui/icons/Send';
+import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
+
 import "./request.css";
 
 class Request extends Component {
@@ -100,82 +106,74 @@ class Request extends Component {
     if (!this.props.show) {
       return null;
     }
-    return (
-        <div className="requestContainer">
-          <div className="headSection">
-            <h2>Raise your buddy request here!</h2>
-          </div>
 
-            <div className='courseDivision'>
+    const styles = {
+      tooltip: {
+        backgroundColor: "black",
+        color: "gainsboro",
+        fontSize: 14
+      }
+    };
+
+    const CustomTooltip = withStyles(styles)(Tooltip);
+
+    return (
+      <Segment className="mainContainer">
+        <Grid  container spacing={2} className="requestContainer">
+          <Grid item xs={12}>
+            <h2>Raise your buddy request here!</h2>
+          </Grid>
+
+          <Grid item xs={4}>
             <DropdownPlugin
               menu={this.state.courses}
               title="Course"
               onSelect={this.handleCourseChange}
             ></DropdownPlugin>
-            </div>
-          
-            <div className='skillDivision'>
+          </Grid>
+        
+          <Grid item xs={4}>
             <DropdownPlugin
               menu={this.state.skills}
               title="Skill"
               onSelect={this.handleSkillChange}
             ></DropdownPlugin>
-            </div>
+          </Grid>
           
-        <DropdownPlugin
-          menu={this.state.tags}
-          title="Tag"
-          onSelect={this.handleTagChange}
-          ></DropdownPlugin>
+          <Grid item xs={4}>
+            <DropdownPlugin
+              menu={this.state.tags}
+              title="Tag"
+              onSelect={this.handleTagChange}
+            ></DropdownPlugin>
+          </Grid>
       
-        <div className='messageDivision'>
-          Message
-          </div>
+          <Grid item xs={12}>
+            <h4> Message: </h4>
+          </Grid>
         
-        <div className='textDivision'>
-        <Form>
-          <TextArea placeholder='Optional description' onChange={this.handleMessageChange} />
-        </Form>
-        </div>
-        
-        <button
-          style={{ fontSize: 15 }}
-          className="badge badge-secondary btn-sm "
-
-          onClick={this.handlePost}>
-        Post
-        </button>
-        <Grid.Row  className="messageContainer">
-          <Grid.Column>
-          <div className='messageDivision'>
-            Message
-            </div>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row  className="textContainer">
-          <Grid.Column>
-          <div className='textDivision'>
-          <Form>
-            <TextArea placeholder='Optional description' onChange={this.handleMessageChange} />
-          </Form>
-          </div>
-          </Grid.Column>
-        </Grid.Row>
-
-        <Grid.Row columns={1}  className="heading">
-        <Grid.Column >
-          <div className = 'submitDivison'>
-          <button
-            style={{ fontSize: 15 }}
-            id = "butn"
-            className="badge badge-secondary btn-sm "
-            onClick={this.handlePost}>
-          Post
-          </button>
-          </div>
-        </Grid.Column>
-      </Grid.Row>
-      </div>
+          <Grid item xs={12}>
+            <Form>
+              <TextArea placeholder='Optional description' onChange={this.handleMessageChange} />
+            </Form>
+          </Grid>
+          
+          <Grid item xs={3}>  
+            <CustomTooltip title="Send request" placement="left">
+              <Button
+                onClick={this.handlePost}
+                style={{ fontSize: 15 }}
+                variant="contained"
+                id = "butn"
+                color = "primary"
+                startIcon={<SendIcon />}
+              >
+              Post
+              </Button>
+            </CustomTooltip>
+          </Grid>
+        </Grid>
+      </Segment>
     );
   }
 }
