@@ -52,7 +52,7 @@ export default function ViewProfile(props) {
 
     return (
         <div>
-            <CustomTooltip title="My Profile" placement="left">
+            <CustomTooltip title="Profile" placement="left">
                 <AccountCircleIcon  onClick={handleClickOpen}
                     style= {{ fontSize:30, color: grey[100] }}/>
             </CustomTooltip>

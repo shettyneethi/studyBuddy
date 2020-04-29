@@ -315,7 +315,7 @@ def status():
 
 @app.route('/suggest', methods=["GET"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
-@cache.cached(timeout=50)
+@cache.cached(timeout=1)
 @jwt_required
 def suggest():
     print("In suggest")

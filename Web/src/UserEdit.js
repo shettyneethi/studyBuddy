@@ -76,7 +76,7 @@ class UserEdit extends Component {
             body: JSON.stringify(data)
         })
 
-            .then(this.props.history.push('/home'))
+            // .then(this.props.history.push('/home'))
             .then(() => {
                 alert("Hey " + data.name.split(" ")[0] + ", your profile updated successfully");
             })

@@ -90,7 +90,21 @@ class Homepage extends Component {
     this.eventSource_b = new EventSource('https://34.71.199.201:8081/api/updated/posts');
     this.eventSource_b.onmessage = e =>
       this.updatePost(JSON.parse(e.data), e);
+
+    this.eventSource_c= new EventSource('https://34.71.199.201:8081/api/deleted/posts');
+    this.eventSource_c.onmessage = e =>
+    this.deletePost(JSON.parse(e.data), e);
   }
+
+  deletePost(data, e) {
+    console.log('In delete post')
+    let post = this.state.filterResults
+    let post_id = data['_id']
+    post = post.filter(item => item['_id']['$oid'] !== post_id)
+    console.log(post)
+
+    this.setState({ filterResults: post});
+}
 
   updateData(data, e) {
     let res = this.state.filterResults
@@ -123,6 +137,9 @@ class Homepage extends Component {
 
     if (this.eventSource_b)
       this.eventSource_b.close();
+    
+    if(this.eventSource_c)
+    this.eventSource_c.close();
   }
 
 

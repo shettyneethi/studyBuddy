@@ -13,8 +13,15 @@ import {
 class MyRequests extends Component {
     _isMounted = false;
     state = {
-        posts: []
+        posts: [],
+        id: ""
     };
+
+    // getDeletedId = (data) => {
+    //     this.setState({
+    //         id: data
+    //     });
+    // }
 
     componentDidMount() {
 
