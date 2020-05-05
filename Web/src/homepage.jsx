@@ -21,6 +21,7 @@ import {
 } from 'react-router-dom';
 import 'abortcontroller-polyfill';
 import Logout from './logout.jsx';
+import Collaborator from './collaborators.jsx';
 
 
 
@@ -34,6 +35,7 @@ class Homepage extends Component {
     suggestions: [],
     cacheAPISugesstions: [],
     isOpen: false,
+    isGraphOpen: false,
     filterResults: [],
     posts: [],
     filterRequests: []
@@ -191,6 +193,12 @@ class Homepage extends Component {
     });
   }
 
+  toggleGraph = () => {
+    this.setState({
+      isGraphOpen: !this.state.isGraphOpen
+    });
+  }
+
 
   render() {
 
@@ -211,9 +219,10 @@ class Homepage extends Component {
       </div>
     );
 
-
+    console.log(this.state.isGraphOpen)
 
     return (
+      
       <div className="gridContainer">
 
         <Navbar bg="light" expand="lg">
@@ -239,7 +248,19 @@ class Homepage extends Component {
               renderInputComponent={renderInputComponent}
             />
           </Nav>
+          <div className='collaboratorDivison' >
 
+                <IconButton id="collaborators" onClick={this.toggleGraph} >
+                  <AddCircleIcon style={{ fontSize: 40, color: 'black' }} ></AddCircleIcon>
+                </IconButton>
+                {"Previous collaborators with your skills"}
+
+                <Collaborator show={this.state.isGraphOpen}
+                  onClose={this.toggleGraph}
+                >
+                  Here's some content for the modal
+                </Collaborator>
+              </div>
           <Link to="/myRequests" onClick={this.handleMyRequest}>My Requests</Link>
           <Logout/>
 
