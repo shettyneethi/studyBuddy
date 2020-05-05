@@ -7,3 +7,4 @@ gunicorn==19.9.0
 dnspython==1.16.0
 kafka-python
 pyopenssl
+prometheus_flask_exporter

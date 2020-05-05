@@ -6,16 +6,17 @@ import { Segment } from "semantic-ui-react";
 class Posts extends Component {
   render() {
     return (
-      <div>
-        <Segment>
+      <div className="post-container">
           {this.props.filterRes.map(c => (
             <Post
               request={c}
               key={c.id}
               value = {this.props.value}
-            ></Post>
+            ><br/>
+            <br/>
+            </Post>
           ))}
-        </Segment>
+        
       </div>
     );
   }

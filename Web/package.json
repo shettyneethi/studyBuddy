@@ -42,11 +42,13 @@
     "throttle-debounce": "^2.0.1",
     "universal-cookie": "^4.0.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest-junit": "^10.0.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "CI=true react-scripts test --env=jsdom --testResultsProcessor=jest-junit",
     "eject": "react-scripts eject"
   }
 }

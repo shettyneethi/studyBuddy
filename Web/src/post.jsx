@@ -1,11 +1,21 @@
 import React, { Component } from "react";
 import PersonIcon from "@material-ui/icons/Person";
-import { Grid, Segment,Label} from 'semantic-ui-react';
+import { Segment,Label} from 'semantic-ui-react';
 import Modal from './modal.jsx';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined';
+import ThumbUpIcon from '@material-ui/icons/ThumbUp';
+import GroupIcon from '@material-ui/icons/Group';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EmailIcon from '@material-ui/icons/Email';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { withStyles } from '@material-ui/core/styles';
+import { Grid } from "@material-ui/core";
+import './post.css'
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ViewProfile from "./ViewProfile.js"
-// import Time from 'react-time';
 
 class Post extends Component {
 
@@ -94,8 +104,6 @@ class Post extends Component {
 
     let people_update = interested_people
     let count_update = interested_count
-    
- 
 
     if(!people_update.includes(username)){
     
@@ -128,6 +136,7 @@ class Post extends Component {
         body: JSON.stringify(data)
       })
         .then(res => res.json())
+        .then(res => console.log(res))
   };
 
   
@@ -135,117 +144,135 @@ class Post extends Component {
     const { username, interested_count, interested_people, msg, tag, course, skill, _id, isCompleted, post_time} = this.props.request
     const id = _id['$oid']
     const current_user = localStorage.getItem('username')
+
+    const styles = {
+      tooltip: {
+        backgroundColor: "black",
+        color: "gainsboro",
+        fontSize: 14
+      }
+    };
+
+    const CustomTooltip = withStyles(styles)(Tooltip);
+
     const post_date = new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(post_time['$date']);
+    
     return (
-      <React.Fragment>
-        <Segment>
-        <Grid padded>
-          
-        <Grid.Row  columns={2}>
+      <Segment>
+      <Grid container spacing={3} className="post-border">
+        <Grid item xs={1} className="bg-post">
+          <ViewProfile user_name={username}/>
+        </Grid>
+        <Grid item xs={3}>
+          {username} 
+        </Grid>
+        <Grid item xs={4}>
+          <Label tag color="gainsboro" color="grey">{tag}</Label>
+        </Grid>
+        <Grid item xs={3}>
+          {this.props.value ?
+            <CustomTooltip title="Delete post" placement="left">
+              <IconButton disableTouchRipple>
+                <DeleteIcon
+                  onClick={() => { if (window.confirm('Do you want to delete this item?')) this.handleDone(id) }}
+                  style={{ fontSize:25, color: "d80000" }} >
+                </DeleteIcon>
+              </IconButton>
+            </CustomTooltip>
+          : null}
+        </Grid>
+
+        <Grid item xs={3}>    
+          <p> {post_date} </p>
+        </Grid>
         
-              <Grid.Column >
-
-        <ViewProfile user_name={username}/>
-        <p> {post_date} </p>
-        </Grid.Column>
-        <Grid.Column >
-            <div>
-              <Label tag color="teal">{tag}</Label>
-            </div>
-          </Grid.Column>
-        </Grid.Row>
-
-        <Grid.Row  columns={3}>
-          <Grid.Column >
-            <p> {username} </p>
-          </Grid.Column>
-          <Grid.Column >
+        <Grid item xs={2}>  
             <p> {course} </p>
-          </Grid.Column>
-          <Grid.Column >
+        </Grid>     
+
+        <Grid item xs={3}>  
             <p> {skill} </p>
-          </Grid.Column>
-        </Grid.Row>
+        </Grid>
 
-
-        <Grid.Row  columns={1}>
-          <Grid.Column >
+        <Grid item xs={4}>
             <p> {msg} </p>
-          </Grid.Column>
-        </Grid.Row>
+        </Grid>      
+            
+        <Grid item xs={3}>
+          {current_user!==username ?
+            <IconButton disableTouchRipple>
+              <CustomTooltip title="Interested" placement="left">
+                <ThumbUpOutlinedIcon 
+                  style={{ fontSize: 30, color: "#3498DB" }} 
+                  onClick={() => {this.handleInterested(id, current_user, interested_count, interested_people)}}
+                  disabled={this.props.value}>
+                </ThumbUpOutlinedIcon>
+              </CustomTooltip>
+            </IconButton>
+          : null}
+        </Grid>
 
-        <Grid.Row  columns={3}>
-          <Grid.Column width={3}>
-            {current_user!==username ?
-              <button
-                onClick={() => {this.handleInterested(id, current_user, interested_count, interested_people)}}
-                style={{ fontSize: 15 }}
-                className="badge badge-secondary btn-sm "
-                disabled={this.props.value}
-                >
-                Interested
-              </button>
-              : null}
-          </Grid.Column>
-
-          <Grid.Column width={3}>
-            <button
+        <Grid item xs={3}>
+          <CustomTooltip title="Click to see interested people" placement="left">
+            <Button
               onClick={this.toggleModal}
               style={{ fontSize: 15 }}
-              className="badge badge-primary m-2"
+              variant="contained"
+              startIcon={<GroupIcon />}
             >
-              {interested_count}
-            </button>
+            {interested_count}
+            </Button>
+          </CustomTooltip>
 
-            <Modal show={this.state.isOpen}
-              onClose={this.toggleModal}
-              interested_people= {interested_people}>
-              Here's some content for the modal
-            </Modal>
-
-          </Grid.Column>
-
-          <Grid.Column width={3}>
-          {this.props.value ?
-              <button
-                onClick={() => { if (window.confirm('Do you want to delete this item?')) this.handleDone(id) }}
-                style={{ fontSize: 15 }}
-                className="badge badge-secondary btn-sm "
-                >
-                Delete
-              </button>
-              : null}
-          </Grid.Column>
-          
-          {this.props.value ?
-              <Grid.Column width={2}>
-                        <button style={{ fontSize: 15 }}
-                            className="btn-md"> <a href={this.state.link}>MAIL</a>
-                        </button>
-              </Grid.Column>
-            : 
-              null
-          }
-
-          {this.props.value ?
-              <Grid.Column width={2}>
-                {this.state.isCompleted ?
-                        <label style={{ fontSize: 15 }}> <span>&#10003;</span>FINALIZED </label>
-                  :
-                        <button style={{ fontSize: 15 }}
-                        onClick={() => {this.handleFinalize(_id)}}
-                            className="btn-md"> <a href="#">FINALIZE</a>
-                        </button>}
-              </Grid.Column>
-            : 
-              null
-          }
-
-        </Grid.Row>
-        
+          <Modal show={this.state.isOpen}
+            interested_people= {interested_people}>
+          </Modal>
         </Grid>
-        </Segment>
-      </React.Fragment>
+
+        <Grid item xs={3}>
+          {this.props.value ?
+            <CustomTooltip title="Contact interested people" placement="left">
+              <IconButton disableTouchRipple>
+                <a
+                  href={this.state.link}>
+                  <EmailIcon style={{ fontSize:30, color: "#3498DB" }}/>
+                </a>
+              </IconButton>
+            </CustomTooltip>
+            : 
+            null
+          }
+        </Grid>
+
+        {this.props.value ?
+          <Grid item xs={3}>
+            {this.state.isCompleted ?
+              <CustomTooltip title="Finalized contacts" placement="left">
+                <IconButton disableTouchRipple>
+                  <CheckCircleIcon disabled
+                    style={{ fontSize:25, color: "darkgrey" }} >
+                  </CheckCircleIcon>
+                </IconButton>
+              </CustomTooltip>
+              :
+              <CustomTooltip title="Click to finalize contacts" placement="left">
+                <IconButton disableTouchRipple>
+                  <CheckCircleIcon
+                    onClick={() => {this.handleFinalize(_id)}}
+                    style={{ fontSize:25, color: "009d00" }} >
+                  </CheckCircleIcon>
+                </IconButton>
+              </CustomTooltip>
+            }
+            </Grid>
+          : 
+          null
+        }
+
+        <Grid item xs={9}/>
+
+        </Grid> 
+      </Segment>   
     );
   }
 }

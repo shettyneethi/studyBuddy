@@ -11,8 +11,8 @@ import LoadingIcon from "./loading.gif"
 
 const styles = theme => ({
     root: {
-        width: 410,
-        height: 460
+        width: 400,
+        height: 300
     },
     media: {
         height: 250,
@@ -34,8 +34,6 @@ class UserCard extends Component {
     }
     componentDidMount() {
 
-       
-        
         console.log('In didmount')
         const user_name = this.props.user_name;
         console.log(user_name)
@@ -78,16 +76,11 @@ class UserCard extends Component {
             return (
                 <div>
                     <Card className={classes.root} >
-
-                        <CardMedia
-                            className={classes.media}
-                            image="https://source.unsplash.com/user/sethdoylee/R5tHd-aYmPs"
-                            title="User Profile"
-                        />
                         <CardContent>
-                            <Typography id="name" variant="h4" color="textSecondary" component="p">
+                            <Typography id="name" variant="h2" color="textSecondary" component="p">
                                 {this.state.name}
                             </Typography>
+                            <br/><br/><br/>
                             <Typography id="skills" variant="h6" color="textSecondary" component="p">
                                 Skills: {this.state.skills}
                             </Typography>

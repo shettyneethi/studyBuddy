@@ -1,23 +1,12 @@
 import React from 'react';
-import { Button, TextField } from '@material-ui/core';
-import { styled } from '@material-ui/core/styles';
+import { TextField } from '@material-ui/core';
+import { Grid } from 'semantic-ui-react';
 import "./login.css";
-import logo from './logo.jpg'
-import { Navbar, Nav } from 'react-bootstrap';
+import './homepage.css';
+import { Button } from 'react-bootstrap';
+import NavBar from './navbar';
 import {  Link, Redirect } from 'react-router-dom';
 import Cookies from 'universal-cookie';
-import { Grid, Segment,Label} from 'semantic-ui-react';
-import axios from 'axios';
-
-const MyButton = styled(Button)({
-  background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-  border: 0,
-  borderRadius: 3,
-  boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-  color: 'white',
-  height: 48,
-  padding: '0 30px',
-});
 
 const cookies = new Cookies();
 
@@ -49,7 +38,7 @@ class Login extends React.Component {
   handleSubmit = () => {
 
     const data = {
-      user_name: this.state.usrName, 
+      user_name: this.state.usrName,
       password : this.state.password
     };
 
@@ -64,54 +53,33 @@ class Login extends React.Component {
     .then(response => response.json())
     .then(res => res["status"]==="SUCCESS" ? (localStorage.setItem('token', res["token"]), localStorage.setItem('username', res["user_name"]), this.setState({isLoggedIn: true}) ) : alert("Login Failed!"));
     
-    // const { token } = this.state;
-    
-    
   }
    
   render() {
-    
     return (
-    <div>
-      <Navbar bg="light" expand="lg">
-        <Navbar.Brand>
-            <img
-            alt=""
-            src={logo}
-            width="60"
-            height="60"
-            />{' '}
-        StudyBuddy
-        </Navbar.Brand>
-      </Navbar>      
+    <div className="bg-color">
+      <NavBar />
 
-      
       {this.state.isLoggedIn ? <Redirect to={{pathname: '/home'}}/> :
       <div>
         <div id="login-form" align="center">
 
-          <form className="loginForm">
-            <br></br>
-            <br></br>
-            <br></br>
-            <h1 align="center">Let's get you started</h1>
-
-            <TextField required className="standard-required" type="text" label="Username" name="username" onChange={this.handleUserNameChange} value={this.state.usrName} ></TextField><br /><br />
-
-            <TextField required className="standard-required" type="password" name="password" label="Password" onChange={this.handlePasswordChange}></TextField ><br /><br />
-            <MyButton onClick={this.handleSubmit}>Submit</MyButton>
+          <form>
+            <br/><br/><br/>
+            <h1 align="center">Let's get you started!</h1>
+            <br/><br/>
+            <TextField required className="standard-required" type="text" label="Username" name="username" onChange={this.handleUserNameChange} value={this.state.usrName} ></TextField><br/><br/><br/>
+            <TextField required className="standard-required" type="password" name="password" label="Password" onChange={this.handlePasswordChange}></TextField ><br/><br/><br/>
+            <Button variant="outline-dark" onClick={this.handleSubmit}>Submit</Button>
           </form>
-          <br></br>
-          <br></br>
-          <br></br>
+          <br/><br/><br/>
           <div>
-            <h2>Don't have an account yet? <Link to="/signup">Sign up here!</Link></h2>
+            <h1 align="center">Don't have an account yet? <Link to="/signup">Sign up here!</Link></h1>
           </div>
         </div>
-        }
       </div>
       }
-  </div> 
+    </div> 
     )
   }
 }

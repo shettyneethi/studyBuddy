@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-// import Header from './header.jsx';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Posts from "./posts.jsx";
 import SearchBar from "react-search-bar-semantic-ui";
@@ -9,9 +8,11 @@ import { debounce } from 'throttle-debounce'
 import Request from './request.jsx';
 import { Navbar, Nav } from 'react-bootstrap';
 import fav from './images/fav.jpg'
-import Badge from '@material-ui/core/Badge';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from "@material-ui/core/styles";
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import MessageIcon from '@material-ui/icons/Message';
 import ViewProfile from "./ViewProfile.js"
 import {
   BrowserRouter as Router,
@@ -22,9 +23,6 @@ import {
 import 'abortcontroller-polyfill';
 import Logout from './logout.jsx';
 import Collaborator from './collaborators.jsx';
-
-
-
 
 class Homepage extends Component {
   _isMounted = false;
@@ -94,9 +92,21 @@ class Homepage extends Component {
     this.eventSource_b = new EventSource('https://34.71.199.201:8081/api/updated/posts');
     this.eventSource_b.onmessage = e =>
       this.updatePost(JSON.parse(e.data), e);
+
+    this.eventSource_c= new EventSource('https://34.71.199.201:8081/api/deleted/posts');
+    this.eventSource_c.onmessage = e =>
+    this.deletePost(JSON.parse(e.data), e);
   }
 
+  deletePost(data, e) {
+    console.log('In delete post')
+    let post = this.state.filterResults
+    let post_id = data['_id']
+    post = post.filter(item => item['_id']['$oid'] !== post_id)
+    console.log(post)
 
+    this.setState({ filterResults: post});
+}
 
   updateData(data, e) {
     let res = this.state.filterResults
@@ -129,6 +139,9 @@ class Homepage extends Component {
 
     if (this.eventSource_b)
       this.eventSource_b.close();
+    
+    if(this.eventSource_c)
+    this.eventSource_c.close();
   }
 
 
@@ -207,7 +220,7 @@ class Homepage extends Component {
 
     // Autosuggest will pass through all these props to the input.
     const autoSuggestInputProps = {
-      placeholder: 'Search..',
+      placeholder: 'Search course..',
       value,
       onChange: this.onChange
     };
@@ -220,12 +233,21 @@ class Homepage extends Component {
     );
 
     console.log(this.state.isGraphOpen)
+    const styles = {
+      tooltip: {
+        backgroundColor: "black",
+        color: "gainsboro",
+        fontSize: 14
+      }
+    };
+
+    const CustomTooltip = withStyles(styles)(Tooltip);
 
     return (
       
       <div className="gridContainer">
 
-        <Navbar bg="light" expand="lg">
+        <Navbar bg="dark" expand="lg" sticky="top">
           <Navbar.Brand href="#home">
             <img
               alt=""
@@ -233,10 +255,10 @@ class Homepage extends Component {
               width="70"
               height="70"
             />{' '}
-          StudyBuddy
         </Navbar.Brand>
+        <Nav className="h1-nav">Study Buddy</Nav>
 
-          <Nav class="collapse navbar-collapse justify-content-center" padded>
+          <Nav className="navbar-collapse justify-content-center">
             <Autosuggest
               suggestions={suggestions}
               onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
@@ -263,42 +285,41 @@ class Homepage extends Component {
               </div>
           <Link to="/myRequests" onClick={this.handleMyRequest}>My Requests</Link>
           <Logout/>
+          <IconButton disableTouchRipple>
+            <CustomTooltip title="Create new request" placement="left">
+              <AddCircleIcon style={{ fontSize: 30, color: 'gainsboro' }} onClick={this.toggleModal}></AddCircleIcon>
+            </CustomTooltip>
+          </IconButton>
 
-          <ViewProfile user_name={localStorage.getItem('username')}/>
+          
+          <Link to="/myRequests" onClick={this.handleMyRequest}>
+            <IconButton disableTouchRipple>
+              <CustomTooltip title="My Requests" placement="left">
+                <MessageIcon 
+                  style={{ fontSize: 30, color: 'gainsboro' }}>
+                </MessageIcon>
+              </CustomTooltip>
+            </IconButton>
+          </Link>
+          
+          <IconButton disableTouchRipple>
+            <Logout/>
+          </IconButton>
+
+          <IconButton disableTouchRipple>
+            <ViewProfile user_name={localStorage.getItem('username')}/>
+          </IconButton>
+
         </Navbar>
 
-        <Grid padded >
-          <Grid.Row columns={3} padded>
-            <Grid.Column width={1}>
-            </Grid.Column>
-            <Grid.Column width={9}>
-
-              <div className='postsDivision'>
-                <Posts filterRes={this.state.filterResults} value={false}/>
-              </div>
-
-            </Grid.Column>
-            <Grid.Column width={6}>
-              <div className='newPostDivision' >
-
-                <IconButton id="newPost" onClick={this.toggleModal} >
-
-                  <AddCircleIcon style={{ fontSize: 40, color: 'black' }} ></AddCircleIcon>
-                </IconButton>
-                {"Create New Buddy Request"}
-
-                <Request show={this.state.isOpen}
-                  onClose={this.toggleModal}
-                >
-                  Here's some content for the modal
-                </Request>
-              </div>
-
-            </Grid.Column >
-          </Grid.Row>
-        </Grid>
+        <Posts filterRes={this.state.filterResults} value={false}/>
+    
+        <Request show={this.state.isOpen}
+          onClose={this.toggleModal}>
+          Here's some content for the modal
+        </Request>
+      
       </div>
-
     );
   }
 }
