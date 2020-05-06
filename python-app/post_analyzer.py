@@ -9,12 +9,18 @@ import sys
 from collections import Counter
 from bson.json_util import dumps
 import json 
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
 # from multiexit import register
 # import time
 
 # create flask app
 app = Flask(__name__)
 CORS(app)
+app.config['JWT_SECRET_KEY'] = 'rishitha'  # Change this!
+jwt = JWTManager(app)
 
 DATABASE = "test-db"
 DATABASE_USERS = "STUDYBUDDY"
@@ -22,23 +28,44 @@ POSTS_COLLECTION = "sample-requests"
 USERS_COLLECTION = "user_details"
 
 
+skill_res = {}
+
+
 @app.route('/analysis/<skill>', methods=["GET"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+@jwt_required
 def analyse_user_skills(skill):
-    skill_res = collect_skills()
-    colors = ['#E38627','#C13C37', '#6A2135', '#f00', '#0f0']
-    data = {'color': colors}
+    print('In analyze user skills')
+    print("skill", skill)
+    print('Skill res', skill_res)
+
+    data = {}
     
-    for tup in skill_res[skill]:
-        data['skill'].append(tup[0])
-        data['value'].append(tup[1])
-    print(data)
+    if skill.lower() not in skill_res:
+        return data
+
+    backgroundColor = ['#E38627','#C13C37', '#6A2135', '#f00', '#0f0']
+    data = {'backgroundColor': backgroundColor}
+    
+    for tup in skill_res[skill.lower()]:
+        if 'skill' in data:
+            data['skill'].append(tup[0])
+        else:
+            data['skill'] = [tup[0]]
+
+        if 'data' in data:
+            data['data'].append(tup[1])
+        else:
+            data['data'] = [tup[1]]
+    
+    print("DATA", data)
     
     return data
     
 
 def analyze_skills(post_details, database=DATABASE_USERS, collection=USERS_COLLECTION):
-    skill_users, skill_res = {},{}
+    skill_users = {}
+    
     for post in post_details:
         skill_interested = []
         for interested_user in post['interested_people']:
@@ -51,10 +78,16 @@ def analyze_skills(post_details, database=DATABASE_USERS, collection=USERS_COLLE
             if len(skill_user)>0:
                 skill_interested.extend(skill_user[0]['skills'].split(', '))
 
+        # print("INTERSTED",skill_interested)
+
         if post['skill'] in skill_users:
             skill_users[post['skill']].extend(skill_interested)
         else:
-            skill_users[post['skill']] = []
+            skill_users[post['skill']] = skill_interested
+
+        # print('SKILL_USERS', skill_users)
+
+        
 
     for skill in skill_users:
         l = Counter(skill_users[skill])
@@ -66,8 +99,8 @@ def analyze_skills(post_details, database=DATABASE_USERS, collection=USERS_COLLE
         else:
             skill_res[skill] = l.most_common(len(l))
 
-    # print(skill_res)
-    return skill_res
+    
+    # return skill_res
         
 def getPostsFromMongo(query, database=DATABASE, collection=POSTS_COLLECTION):
     mongoClient = pymongo.MongoClient(
@@ -81,6 +114,7 @@ def getPostsFromMongo(query, database=DATABASE, collection=POSTS_COLLECTION):
     return posts
 
 
+#### ANALYZING SKILLS EVERY 10 SEC ##############
 def collect_skills():
     print("Hello")
     myQuery = { "isCompleted" : True,  'interested_people': {'$not': {'$size': 0}}}
@@ -96,7 +130,7 @@ scheduler.add_job(
     func=collect_skills,
     trigger=IntervalTrigger(seconds=10),
     id='printing_time_job',
-    max_instances=10,
+    max_instances=1,
     name='Print time every 2 seconds',
     replace_existing=True)
 

@@ -277,12 +277,9 @@ class Homepage extends Component {
                 </IconButton>
                 {"Previous collaborators with your skills"}
 
-                <Collaborator show={this.state.isGraphOpen}
-                  onClose={this.toggleGraph}
-                >
-                  Here's some content for the modal
-                </Collaborator>
-              </div>
+          </div>
+
+                
           <Link to="/myRequests" onClick={this.handleMyRequest}>My Requests</Link>
           <Logout/>
           <IconButton disableTouchRipple>
@@ -311,6 +308,13 @@ class Homepage extends Component {
           </IconButton>
 
         </Navbar>
+
+        <Collaborator show={this.state.isGraphOpen}
+                  onClose={this.toggleGraph}
+                >
+                  Here's some content for the modal
+        </Collaborator>
+             
 
         <Posts filterRes={this.state.filterResults} value={false}/>
     
