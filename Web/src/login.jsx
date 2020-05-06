@@ -57,7 +57,7 @@ class Login extends React.Component {
    
   render() {
     return (
-    <div className="bg-color">
+    <div className="bg-color" id ="sub">
       <NavBar />
 
       {this.state.isLoggedIn ? <Redirect to={{pathname: '/home'}}/> :
@@ -70,11 +70,11 @@ class Login extends React.Component {
             <br/><br/>
             <TextField required className="standard-required" type="text" label="Username" name="username" onChange={this.handleUserNameChange} value={this.state.usrName} ></TextField><br/><br/><br/>
             <TextField required className="standard-required" type="password" name="password" label="Password" onChange={this.handlePasswordChange}></TextField ><br/><br/><br/>
-            <Button variant="outline-dark" onClick={this.handleSubmit}>Submit</Button>
+            <Button  name="submit" variant="outline-dark" onClick={this.handleSubmit}>Submit</Button>
           </form>
           <br/><br/><br/>
           <div>
-            <h1 align="center">Don't have an account yet? <Link to="/signup">Sign up here!</Link></h1>
+            <h1 align="center">Don't have an account yet? <Link id = 'sign' to="/signup">Sign up here!</Link></h1>
           </div>
         </div>
       </div>

@@ -112,7 +112,7 @@ class UserEdit extends Component {
 
         if (this.state.name) {
             return (
-                <div>
+                <div id = 'userEdit'>
                     <Navbar bg="dark" expand="lg" variant="light">
                         <Navbar.Brand>
                             <img
@@ -136,7 +136,7 @@ class UserEdit extends Component {
                         </Nav>
 
                         <IconButton disableTouchRipple>
-                            <Logout/>
+                            <Logout />
                         </IconButton>
                     </Navbar>
                     <Container width="lg">

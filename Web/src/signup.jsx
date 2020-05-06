@@ -71,7 +71,7 @@ class Signup extends React.Component{
     render(){
         
         return(
-            <div className="bg-color">
+            <div className="bg-color" id ="signUp">
                 <NavBar />
 
                 {this.state.didPwdMatch? null : <h1 align="center"> {this.state.message} </h1>}
@@ -87,10 +87,10 @@ class Signup extends React.Component{
                     <form className="signupForm"><br/><br/><br/>
                         <h1 align="center">Create your account here!</h1>
                         <TextField required className="standard-required" type="text" label="Username" name="username" value={this.state.usrName} onChange={this.handleUserNameChange}></TextField><br /><br />
-                        <TextField required className="standard-required" type="email" label="Email" onChange={this.handleEmailChange}></TextField><br /><br />
+                        <TextField required className="standard-required" type="email" label="Email" name = "email" onChange={this.handleEmailChange}></TextField><br /><br />
                         <TextField required className="standard-required" type="password" name="password" label="Password" onChange={this.handlePasswordChange}></TextField ><br /><br />
-                        <TextField required className="standard-required" type="password" name="Confirm password" label="Confirm Password" onChange={this.handleConfirmPassword}></TextField ><br /><br /><br/>
-                        <Button variant="outline-dark" onClick={this.handleSubmit}>Submit</Button>
+                        <TextField required className="standard-required" type="password" name="Confirmpassword" label="Confirm Password" onChange={this.handleConfirmPassword}></TextField ><br /><br /><br/>
+                        <Button name = "submit" variant="outline-dark" onClick={this.handleSubmit}>Submit</Button>
                     </form>
                 </div>
                 }

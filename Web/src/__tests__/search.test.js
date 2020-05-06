@@ -99,7 +99,7 @@ describe('Check Homepage functionality', () => {
     it('should open request modal', async () => {
 
         const wrapper = shallow(<Homepage />);
-        const icon = wrapper.find(AddCircleIcon);
+        const icon = wrapper.find("#newpost");
 
         expect(icon.exists()).toEqual(true)
 

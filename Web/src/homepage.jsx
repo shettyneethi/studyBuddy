@@ -245,7 +245,7 @@ class Homepage extends Component {
 
     return (
       
-      <div className="gridContainer">
+      <div className="gridContainer" data-testid="posts">
 
         <Navbar bg="dark" expand="lg" sticky="top">
           <Navbar.Brand href="#home">
@@ -273,7 +273,7 @@ class Homepage extends Component {
           <div className='collaboratorDivison' >
 
                 <IconButton id="collaborators" onClick={this.toggleGraph} >
-                  <AddCircleIcon style={{ fontSize: 40, color: 'black' }} ></AddCircleIcon>
+                  <AddCircleIcon id="colab" style={{ fontSize: 40, color: 'black' }} ></AddCircleIcon>
                 </IconButton>
                 {"Previous collaborators with your skills"}
 
@@ -284,7 +284,7 @@ class Homepage extends Component {
           <Logout/>
           <IconButton disableTouchRipple>
             <CustomTooltip title="Create new request" placement="left">
-              <AddCircleIcon style={{ fontSize: 30, color: 'gainsboro' }} onClick={this.toggleModal}></AddCircleIcon>
+              <AddCircleIcon id="newpost" style={{ fontSize: 30, color: 'gainsboro' }} onClick={this.toggleModal}></AddCircleIcon>
             </CustomTooltip>
           </IconButton>
 
@@ -316,7 +316,7 @@ class Homepage extends Component {
         </Collaborator>
              
 
-        <Posts filterRes={this.state.filterResults} value={false}/>
+        <Posts  filterRes={this.state.filterResults} value={false}/>
     
         <Request show={this.state.isOpen}
           onClose={this.toggleModal}>

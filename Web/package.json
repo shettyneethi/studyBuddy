@@ -46,12 +46,14 @@
     "universal-cookie": "^4.0.3"
   },
   "devDependencies": {
-    "jest-junit": "^10.0.0"
+    "faker": "^4.1.0",
+    "jest-junit": "^10.0.0",
+    "puppeteer": "^3.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "CI=true react-scripts test --env=jsdom --testResultsProcessor=jest-junit",
+    "test": "CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }
 }

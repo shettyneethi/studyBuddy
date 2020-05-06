@@ -26,7 +26,7 @@ class Logout extends Component {
         const CustomTooltip = withStyles(styles)(Tooltip);
         return (  
             <div>
-                <Link to="/" onClick={this.handleLogout}>
+                <Link id="logout" to="/" onClick={this.handleLogout}>
                     <CustomTooltip title="Logout" placement="left">
                         <ExitToAppIcon 
                             style={{ fontSize: 30, color: 'gainsboro' }}>
