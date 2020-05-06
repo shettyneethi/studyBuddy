@@ -57,7 +57,7 @@ class Collaborator extends Component {
         var color = [];
         var d = [];
 
-        fetch(`http://127.0.0.1:8082/analysis/${this.state.selectedSkill}`,{
+        fetch(`https://api-analyze-dot-studybuddy-5828.appspot.com/analysis/${this.state.selectedSkill}`,{
         method: 'GET',
         headers: {
             "Content-type": "application/json",

@@ -3,7 +3,7 @@ const puppeteer = require('puppeteer');
 
 // import {puppeteer} from 'puppeteer';
 
-const pageUrl = 'http://localhost:3000/';
+const pageUrl = 'https://studybuddy-5828.appspot.com/';
 
 let browser 
 let page
@@ -63,9 +63,9 @@ describe('My Page', () => {
                     
 
                     await page.click('input[name=username]')
-                    await page.type('input[name=username]', 'abcd')
+                    await page.type('input[name=username]', 'xyz')
                     await page.click('input[name=email]')
-                    await page.type('input[name=email]', 'abcd@gmail.com')
+                    await page.type('input[name=email]', 'xyz@gmail.com')
                     await page.click('input[name=password]')
                     await page.type('input[name=password]', 'qwert')
                     await page.click('input[name=Confirmpassword]')
@@ -91,9 +91,9 @@ describe('My Page', () => {
                         
     
                         await page.click('input[name=username]')
-                        await page.type('input[name=username]', 'abc')
+                        await page.type('input[name=username]', 'pqr')
                         await page.click('input[name=email]')
-                        await page.type('input[name=email]', 'abc@gmail.com')
+                        await page.type('input[name=email]', 'pqr@gmail.com')
                         await page.click('input[name=password]')
                         await page.type('input[name=password]', 'qwert')
                         await page.click('input[name=Confirmpassword]')
