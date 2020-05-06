@@ -40,7 +40,7 @@ describe('My Page', () => {
                 await page.waitForSelector('#sub');
         
                 await page.click('input[name=username]')
-                await page.type('input[name=username]', 'prinku')
+                await page.type('input[name=username]', 'pri')
                 await page.click('input[name=password]')
                 await page.type('input[name=password]', 'qwert')
                 await page.click('button[name=submit]')
@@ -63,9 +63,9 @@ describe('My Page', () => {
                     
 
                     await page.click('input[name=username]')
-                    await page.type('input[name=username]', 'xyz')
+                    await page.type('input[name=username]', 'priyanka')
                     await page.click('input[name=email]')
-                    await page.type('input[name=email]', 'xyz@gmail.com')
+                    await page.type('input[name=email]', 'priyanka@gmail.com')
                     await page.click('input[name=password]')
                     await page.type('input[name=password]', 'qwert')
                     await page.click('input[name=Confirmpassword]')
@@ -91,9 +91,9 @@ describe('My Page', () => {
                         
     
                         await page.click('input[name=username]')
-                        await page.type('input[name=username]', 'pqr')
+                        await page.type('input[name=username]', 'priya')
                         await page.click('input[name=email]')
-                        await page.type('input[name=email]', 'pqr@gmail.com')
+                        await page.type('input[name=email]', 'priya@gmail.com')
                         await page.click('input[name=password]')
                         await page.type('input[name=password]', 'qwert')
                         await page.click('input[name=Confirmpassword]')
