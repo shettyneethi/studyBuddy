@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import DropdownPlugin from "./dropdown.jsx";
-// import { PieChart } from 'react-minimal-pie-chart';
+import { Segment } from 'semantic-ui-react';
 import {Pie} from 'react-chartjs-2';
 import Button from '@material-ui/core/Button';
+import './collaborators.css';
 
 class Collaborator extends Component {
     state = { 
@@ -20,9 +21,6 @@ class Collaborator extends Component {
 
     controller = new window.AbortController();
 
-    
-
-
     componentDidMount(){
         var skills = []
         const user_name = localStorage.getItem('username')
@@ -36,35 +34,30 @@ class Collaborator extends Component {
               },
               signal: this.controller.signal
         }).then(response => response.json())
-        // .then(res => console.log(res))
         .then(res => { 
             var l = res[0].skills.split(', ')
             for(const item of l) { 
               skills.push({key: item, text: item, value: item}) 
             }
-          })
-          .then(
-            this.setState({
-            skills:skills
-          })
-          );
-
-          console.log(skills)
-}
+        })
+        .then(this.setState({skills:skills
+        })
+        );
+        console.log(skills)
+    }
 
     handleSkillChange = (event, data) => {
-
-        // var pie = [];
         this.setState({
           selectedSkill: data.value
         });
-      };
+    };
+
     handleSkill = () => {
         var l = [];
         var color = [];
         var d = [];
 
-        fetch(`http://0.0.0.0:8082/analysis/${this.state.selectedSkill}`,{
+        fetch(`http://127.0.0.1:8082/analysis/${this.state.selectedSkill}`,{
         method: 'GET',
         headers: {
             "Content-type": "application/json",
@@ -76,21 +69,15 @@ class Collaborator extends Component {
         for(var i=0; i<res['skill'].length; i++){
             color.push(res['backgroundColor'][i]);
             d.push(res['data'][i]);
-            // pie.push({ backgroundColor: res['backgroundColor'][i], data: res['data'][i] } );
             l.push(res['skill'][i]);
         }
-        }
-    ).then(this.setState({
-        res_skills: [ {
+    }).then(this.setState({
+        res_skills: [{
             backgroundColor: color,
             data: d
-        } ],
+        }],
         labels: l
-    }
-
-    ))
-
-
+    }))
     }
 
     handleSubmit = () => {
@@ -105,15 +92,23 @@ class Collaborator extends Component {
             return null;
         }
         return ( 
-            <div> 
-                {/* <div className='selectSkill'> */}
+            <Segment className="piechart"> 
+                <h4>Choose a skill:  </h4>
                 <DropdownPlugin
                     menu={this.state.skills}
                     title="Skill"
                     onSelect={this.handleSkillChange}
-                ></DropdownPlugin>
-                {/* </div> */}
+                ></DropdownPlugin><br/><br/>
 
+                <Button
+                    onClick={this.handleSubmit}
+                    style={{ fontSize: 15 }}
+                    variant="contained"
+                    id = "butn"
+                    color = "primary"
+                >
+                Show stats
+                </Button>
                 
                 <Pie
                 data={ {
@@ -122,18 +117,7 @@ class Collaborator extends Component {
                 }}
                 />
                 
-               
-                <Button
-                onClick={this.handleSubmit}
-                style={{ fontSize: 15 }}
-                variant="contained"
-                id = "butn"
-                color = "primary"
-                // startIcon={<SendIcon />}
-              >
-              Submit
-              </Button>
-            </div>
+            </Segment>
         );
     }
 }

@@ -13,6 +13,7 @@ import { withStyles } from "@material-ui/core/styles";
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import MessageIcon from '@material-ui/icons/Message';
+import EqualizerIcon from '@material-ui/icons/Equalizer';
 import ViewProfile from "./ViewProfile.js"
 import {
   BrowserRouter as Router,
@@ -270,25 +271,19 @@ class Homepage extends Component {
               renderInputComponent={renderInputComponent}
             />
           </Nav>
-          <div className='collaboratorDivison' >
+          
+          <IconButton id="collaborators" onClick={this.toggleGraph} >
+            <CustomTooltip title="Statistics" placement="left">
+              <EqualizerIcon id="colab" style={{ fontSize: 30, color: 'gainsboro' }} ></EqualizerIcon>
+            </CustomTooltip>
+          </IconButton>
 
-                <IconButton id="collaborators" onClick={this.toggleGraph} >
-                  <AddCircleIcon id="colab" style={{ fontSize: 40, color: 'black' }} ></AddCircleIcon>
-                </IconButton>
-                {"Previous collaborators with your skills"}
-
-          </div>
-
-                
-          <Link to="/myRequests" onClick={this.handleMyRequest}>My Requests</Link>
-          <Logout/>
           <IconButton disableTouchRipple>
             <CustomTooltip title="Create new request" placement="left">
               <AddCircleIcon id="newpost" style={{ fontSize: 30, color: 'gainsboro' }} onClick={this.toggleModal}></AddCircleIcon>
             </CustomTooltip>
           </IconButton>
 
-          
           <Link to="/myRequests" onClick={this.handleMyRequest}>
             <IconButton disableTouchRipple>
               <CustomTooltip title="My Requests" placement="left">
@@ -310,13 +305,10 @@ class Homepage extends Component {
         </Navbar>
 
         <Collaborator show={this.state.isGraphOpen}
-                  onClose={this.toggleGraph}
-                >
-                  Here's some content for the modal
+                  onClose={this.toggleGraph}>
         </Collaborator>
              
-
-        <Posts  filterRes={this.state.filterResults} value={false}/>
+        <Posts filterRes={this.state.filterResults} value={false}/>
     
         <Request show={this.state.isOpen}
           onClose={this.toggleModal}>
