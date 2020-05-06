@@ -30,6 +30,11 @@ USERS_COLLECTION = "user_details"
 
 skill_res = {}
 
+@app.route('/', methods=["GET"])
+@cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
+def status():
+    return "app is running!"
+
 
 @app.route('/analysis/<skill>', methods=["GET"])
 @cross_origin(origins='*', allow_headers=['Content-Type', 'Authorization'])
@@ -87,20 +92,13 @@ def analyze_skills(post_details, database=DATABASE_USERS, collection=USERS_COLLE
 
         # print('SKILL_USERS', skill_users)
 
-        
-
     for skill in skill_users:
         l = Counter(skill_users[skill])
-        
-        # l = [(i, l[i] / len(l) * 100.0) for i in l]
-        # print(l)
         if len(l)>=5:
             skill_res[skill] = l.most_common(5)
         else:
             skill_res[skill] = l.most_common(len(l))
 
-    
-    # return skill_res
         
 def getPostsFromMongo(query, database=DATABASE, collection=POSTS_COLLECTION):
     mongoClient = pymongo.MongoClient(
@@ -114,7 +112,7 @@ def getPostsFromMongo(query, database=DATABASE, collection=POSTS_COLLECTION):
     return posts
 
 
-#### ANALYZING SKILLS EVERY 10 SEC ##############
+#### ANALYZING SKILLS EVERY 20 SEC ##############
 def collect_skills():
     print("Hello")
     myQuery = { "isCompleted" : True,  'interested_people': {'$not': {'$size': 0}}}
@@ -123,12 +121,12 @@ def collect_skills():
     
   
 
-# create schedule for printing time
+# create schedule for analyzing frequency of skills #
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
     func=collect_skills,
-    trigger=IntervalTrigger(seconds=10),
+    trigger=IntervalTrigger(seconds=20),
     id='printing_time_job',
     max_instances=1,
     name='Print time every 2 seconds',

@@ -92,7 +92,8 @@ class Collaborator extends Component {
             return null;
         }
         return ( 
-            <Segment className="piechart"> 
+            <Segment className="piechart">
+                <h3>Popularity of the skills of previous collaborators given the buddy skill requirement</h3>
                 <h4>Choose a skill:  </h4>
                 <DropdownPlugin
                     menu={this.state.skills}
